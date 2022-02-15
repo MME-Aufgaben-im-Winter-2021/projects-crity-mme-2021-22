@@ -1,19 +1,111 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>crity</title>
+        <link rel="stylesheet" href="./resources/public/style.css" />
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MME: Projekte im WS 2021/22</title>
-    <link rel="stylesheet" href="./resources/css/style.css">
-</head>
+    <body>
+        <!-- content wrapper -->
+        <div class="flex flex-col h-screen justify-between">
 
-<body>
-    <div class="ui">
-        <h1>MME: Projekte im WS 2021/22</h1>
-    </div>
+            <!-- navbar -->
+            <nav class="bg-slate-800" id="navbar">
+                <div class="px-6 mx-auto">
+                    <div class="flex justify-between">
+                        <!-- logo -->
+                        <div>
+                            <a href="#" class="flex items-center text-white">
+                                <img src="./resources/img/logo_white.svg" class="h-10 w-10 mr-3 my-2"></img>
+                                <span>crity</span>
+                            </a>
+                        </div>
+                        <!-- info -->
+                        <div class="flex items-center text-white">
+                            <ul class="flex items-center">
+                                <li class="">file-name.pdf</li>
+                                <li class="mx-12 ">-</li>
+                                <li class="">version</li>
+                            </ul>
+                        </div>
+                        <!-- user-icon/login -->
+                        <div class="flex items-center text-white">
+                            <button class="bg-slate-400 hover:bg-slate-600 py-2 px-4 rounded">Login</button>
+                        </div>
+                    </div>
+                </div>
+            <!-- /navbar -->
+            </nav>
 
-   <script type="module" src="./src/index.js"></script>
-</body>
+            <!-- main content -->
+            <div class="mb-auto flex flex-grow flex-row w-screen justify-between" id="main-container">
 
+                <!-- sidebar left -->
+                <div class="w-1/4 mr-auto bg-zinc-100 overflow-y-scroll" id="sidebar-left">
+                    <!-- TODO: Erstellen eines Folien-Thumbnail-Templates -->
+                </div>
+
+                <!-- content center -->
+                <div class="w-full bg-zinc-50 overflow-y-scroll" id="content-center">
+                    <canvas>
+                        <!-- TODO: Implementierung von PDF.js zur Darstellung der Folien -->
+                    </canvas>
+                </div>
+
+                <!-- sidebar right -->
+                <div class="flex flex-col w-2/5 ml-auto bg-black" id="sidebar-right">
+
+                    <!-- search/sort/filter bar -->
+                    <div class="flex flex-col w-auto bg-zinc-200">
+                        <div class="flex justify-end items-center">
+                            <!-- search bar -->
+                            <div class="relative grow flex p-1"> 
+                                <input type="text" class="float-right grow pr-12 pl-5 py-2 rounded z-0 focus:outline-none" placeholder="Search...">
+                                <button class="absolute top-3 right-3"> 
+                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                                    </svg> 
+                                </button>
+                            </div>
+                            <!-- sort/filter btn -->
+                            <div class="flex items-center">
+                                <button class="px-1" id="sort-btn"> 
+                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z" clipRule="evenodd" />
+                                    </svg> 
+                                </button>
+                                <button class="px-1" id="filter-btn"> 
+                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    <!-- /search/sort/filter bar -->
+                    </div>
+
+                    <!-- comment list -->
+                    <div class="w-auto flex-grow bg-zinc-100 overflow-y-scroll">
+                        <!-- TODO: erstellen von Kommentar-Templates für Haupt-Kommentare und Antwort-Kommentare -->
+                    </div>
+
+                <!-- /sidebar right-->
+                </div>
+                
+            <!-- /main content -->
+            </div>
+
+            <!-- timeline -->
+            <div class="bg-slate-800 text-white h-1/4 overflow-x-scroll" id="bottom-bar">
+                <canvas>
+                    <!-- TODO: Darstellung der Iterationen via Canvas?? -->
+                </canvas>
+            </div>
+
+        <!-- /content wrapper -->    
+        </div>
+        <script type="module" src="./src/index.js"></script>
+    </body>
 </html>
