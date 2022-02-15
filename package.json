@@ -19,6 +19,7 @@
         "dev": "npm-watch",
         "runDevelopementServer": "node start_dev_server.js",
         "build": "node build_for_deployment.js",
+        "build-css": "npx tailwindcss -c ./tailwind.config.cjs -i ./app/resources/css/style.css -o ./app/resources/public/style.css --watch",
         "check": "eslint app/src/",
         "prebuild": "npm install && npm run check"
     },
@@ -30,6 +31,10 @@
         "express": "^4.17.2",
         "fs-extra": "^10.0.0",
         "npm-watch": "^0.11.0",
-        "open": "^8.4.0"
+        "open": "^8.4.0",
+        "tailwindcss": "^3.0.22"
+    },
+    "dependencies": {
+        "version": "^0.0.4"
     }
 }
