@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>crity</title>
         <link rel="stylesheet" href="./resources/public/style.css" />
+        <link rel="stylesheet" href="./resources/css/text_layer_builder.css" />
     </head>
 
     <body>
@@ -40,18 +41,23 @@
             </nav>
 
             <!-- main content -->
-            <div class="mb-auto flex flex-grow flex-row w-screen justify-between" id="main-container">
+            <div class="mb-auto flex flex-grow flex-row w-screen justify-between h-0" id="main-container">
 
                 <!-- sidebar left -->
                 <div class="w-1/4 mr-auto bg-zinc-100 overflow-y-scroll" id="sidebar-left">
-                    <!-- TODO: Erstellen eines Folien-Thumbnail-Templates -->
+                    <!-- TODO: Just a stub; do this properly -->
+                    <template id="thumbnail-template">
+                        <!-- HACK: For now, a useless div wrapper because querySelector cannot match itself. -->
+                        <div>
+                            <canvas></canvas>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- content center -->
-                <div class="w-full bg-zinc-50 overflow-y-scroll" id="content-center">
-                    <canvas>
-                        <!-- TODO: Implementierung von PDF.js zur Darstellung der Folien -->
-                    </canvas>
+                <div class="w-full bg-zinc-50 overflow-y-scroll relative" id="content-center">
+                    <canvas id="pdf-canvas"></canvas>
+                    <div id="pdf-text-layer" class="textLayer"></div>
                 </div>
 
                 <!-- sidebar right -->
@@ -106,6 +112,7 @@
 
         <!-- /content wrapper -->    
         </div>
+        <script src="./src/third/pdf.js.build/pdf.js"></script>
         <script type="module" src="./src/index.js"></script>
     </body>
 </html>
