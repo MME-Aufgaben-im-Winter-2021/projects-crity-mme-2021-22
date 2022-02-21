@@ -3,3 +3,4 @@ node_modules
 
 # Local IDE files
 .vscode
+.idea

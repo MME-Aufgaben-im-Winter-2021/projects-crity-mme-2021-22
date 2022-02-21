@@ -34,16 +34,3 @@ body {
     margin: 0;
     padding: 0;
 }
-
-.ui {
-    display: flex;
-    flex-direction: column;
-    width: 90vw;
-    margin: 0 auto;
-    padding: 0;
-}
-
-.ui h1 {
-    text-align: center;
-    color: var(--jet);
-}
