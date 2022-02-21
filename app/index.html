@@ -10,108 +10,188 @@
 
     <body>
         <!-- content wrapper -->
-        <div class="flex flex-col h-screen justify-between">
-
+        <div class="flex h-screen flex-col">
             <!-- navbar -->
-            <nav class="bg-slate-800" id="navbar">
-                <div class="px-6 mx-auto">
-                    <div class="flex justify-between">
-                        <!-- logo -->
-                        <div>
-                            <a href="#" class="flex items-center text-white">
-                                <img src="./resources/img/logo_white.svg" class="h-10 w-10 mr-3 my-2"></img>
-                                <span>crity</span>
-                            </a>
-                        </div>
-                        <!-- info -->
-                        <div class="flex items-center text-white">
-                            <ul class="flex items-center">
-                                <li class="">file-name.pdf</li>
-                                <li class="mx-12 ">-</li>
-                                <li class="">version</li>
-                            </ul>
-                        </div>
-                        <!-- user-icon/login -->
-                        <div class="flex items-center text-white">
-                            <button class="bg-slate-400 hover:bg-slate-600 py-2 px-4 rounded">Login</button>
-                        </div>
+            <nav class="sticky top-0 z-50 flex-grow-0 bg-slate-800" id="navbar">
+                <div class="mx-auto flex justify-between px-6">
+                    <!-- logo -->
+                    <div>
+                        <a href="#" class="flex items-center text-white">
+                            <img src="./resources/img/logo_white.svg" class="my-2 mr-3 h-10 w-10" />
+                            <span>crity</span>
+                        </a>
+                    </div>
+                    <!-- info -->
+                    <div class="flex items-center text-white">
+                        <ul class="flex items-center">
+                            <li class="">file-name.pdf</li>
+                            <li class="mx-12">-</li>
+                            <li class="">version</li>
+                        </ul>
+                    </div>
+                    <!-- user-icon/login -->
+                    <div class="flex items-center text-white">
+                        <button class="rounded bg-slate-400 py-2 px-4 hover:bg-slate-600">Login</button>
                     </div>
                 </div>
-            <!-- /navbar -->
+                <!-- /navbar -->
             </nav>
 
             <!-- main content -->
-            <div class="mb-auto flex flex-grow flex-row w-screen justify-between h-0" id="main-container">
-
+            <div class="flex h-3/5 w-screen flex-auto flex-row justify-between overflow-y-hidden" id="main-container">
                 <!-- sidebar left -->
-                <div class="w-1/4 mr-auto bg-zinc-100 overflow-y-scroll" id="sidebar-left">
-                    <!-- TODO: Just a stub; do this properly -->
-                    <template id="thumbnail-template">
-                        <!-- HACK: For now, a useless div wrapper because querySelector cannot match itself. -->
-                        <div>
-                            <canvas></canvas>
-                        </div>
-                    </template>
+                <div class="mr-auto flex h-full w-1/4 flex-col overflow-y-scroll bg-zinc-100" id="sidebar-left">
+                    <div class="flex w-auto flex-col gap-2 p-2" id="thumbnail-list">
+                        <!-- Thumbnails einzelner Seiten können hier mittels des Thumbnail-Templates eingefügt werden -->
+                    </div>
                 </div>
 
                 <!-- content center -->
-                <div class="w-full bg-zinc-50 overflow-y-scroll relative" id="content-center">
+                <div class="w-full overflow-y-scroll bg-zinc-50 relative" id="content-center">
                     <canvas id="pdf-canvas"></canvas>
                     <div id="pdf-text-layer" class="textLayer"></div>
                 </div>
 
                 <!-- sidebar right -->
-                <div class="flex flex-col w-2/5 ml-auto bg-black" id="sidebar-right">
-
+                <div class="ml-auto flex h-full w-2/5 flex-col" id="sidebar-right">
                     <!-- search/sort/filter bar -->
-                    <div class="flex flex-col w-auto bg-zinc-200">
-                        <div class="flex justify-end items-center">
-                            <!-- search bar -->
-                            <div class="relative grow flex p-1"> 
-                                <input type="text" class="float-right grow pr-12 pl-5 py-2 rounded z-0 focus:outline-none" placeholder="Search...">
-                                <button class="absolute top-3 right-3"> 
-                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                                    </svg> 
-                                </button>
-                            </div>
-                            <!-- sort/filter btn -->
-                            <div class="flex items-center">
-                                <button class="px-1" id="sort-btn"> 
-                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z" clipRule="evenodd" />
-                                    </svg> 
-                                </button>
-                                <button class="px-1" id="filter-btn"> 
-                                    <svg class="text-gray-600 h-6 w-6" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
+                    <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
+                        <!-- search bar -->
+                        <div class="relative flex-grow p-1">
+                            <input
+                                type="text"
+                                class="z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
+                                placeholder="Search..."
+                            />
+                            <button class="absolute top-3 right-3">
+                                <svg
+                                    class="h-6 w-6 text-gray-600"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
                         </div>
-                    <!-- /search/sort/filter bar -->
+                        <!-- sort/filter btn -->
+                        <div class="flex items-center">
+                            <button class="px-1" id="sort-btn">
+                                <svg
+                                    class="h-6 w-6 text-gray-600"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                            <button class="px-1" id="filter-btn">
+                                <svg
+                                    class="h-6 w-6 text-gray-600"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- /search/sort/filter bar -->
                     </div>
 
                     <!-- comment list -->
-                    <div class="w-auto flex-grow bg-zinc-100 overflow-y-scroll">
-                        <!-- TODO: erstellen von Kommentar-Templates für Haupt-Kommentare und Antwort-Kommentare -->
+                    <div class="flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2" id="comment-list">
+                        <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
                     </div>
 
-                <!-- /sidebar right-->
+                    <!-- /sidebar right-->
                 </div>
-                
-            <!-- /main content -->
+
+                <!-- /main content -->
             </div>
 
             <!-- timeline -->
-            <div class="bg-slate-800 text-white h-1/4 overflow-x-scroll" id="bottom-bar">
+            <div class="bottom-0 h-1/5 w-screen flex-none overflow-x-scroll bg-slate-800 text-white" id="bottom-bar">
+                <!-- "hide"-arrow, to be shown when timeline is visible -->
+                <div class="relative top-0 right-0 ml-auto mr-32 h-6 w-6 rounded-b bg-slate-600">
+                    <button class="absolute top-0 right-0">
+                        <svg
+                            class="h-6 w-6 text-white"
+                            id="arrow-"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
+                </div>
+                <!-- "unhide"-arrow, to be shown when timeline is hidden -->
+                <div
+                    class="absolute bottom-0 right-0 ml-auto mr-32 hidden h-6 w-6 overflow-hidden rounded-t bg-slate-600"
+                >
+                    <button class="top-6 right-0">
+                        <svg
+                            class="h-6 w-6 text-white"
+                            id="arrow-"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                transform="scale(1 -1) translate(0 -20)"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
+                </div>
                 <canvas>
                     <!-- TODO: Darstellung der Iterationen via Canvas?? -->
                 </canvas>
             </div>
 
-        <!-- /content wrapper -->    
+            <!-- /content wrapper -->
         </div>
+
+        <template id="thumbnail-template">
+            <!-- TODO: Just a stub; do this properly -->
+            <div class="h-40 w-full flex-none items-center justify-start bg-black opacity-50">
+                <canvas></canvas>
+            </div>
+        </template>
+
+        <!-- TODO: Thread-Template fertigstellen -->
+        <template id="thread">
+            <!-- thread container -->
+            <div class="h-60 w-full flex-none items-center justify-start bg-black opacity-50">
+                <!-- TODO: erstellen eines Thread-Haupt-Kommentar-Templates -->
+                <div></div>
+                <!-- TODO: erstellen eines Thread-Antwort-Kommentar-Templates -->
+                <div></div>
+            </div>
+        </template>
+
+        
         <script src="./src/third/pdf.js.build/pdf.js"></script>
         <script type="module" src="./src/index.js"></script>
     </body>
