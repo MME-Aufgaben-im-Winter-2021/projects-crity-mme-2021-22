@@ -144,9 +144,21 @@ class UiPageCanvas {
             // transformed_y = transform[1]*x + transform[3]*y + transform[5]
             transform: [scaleX, 0, 0, scaleY, 0, 0],
 
-            viewport
+            viewport,
         });
     }
+}
+
+/// After the function executes, the @p elements will have the CSS-class @p className if and 
+/// only if @p predicate is ´true´.
+function ensureCssClassPresentIff(predicate, className, ...elements) {
+    elements.forEach(element => {
+        if (predicate) {
+            element.classList.add(className);
+        } else {
+            element.classList.remove(className);
+        }
+    });
 }
 
 // Represents the widget for a single PDF page in the thumbnail bar.
@@ -155,13 +167,18 @@ class UiPageCanvas {
 class UiThumbnail {
     constructor(pageNo) {
         this.el = cloneDomTemplate("#thumbnail-template");
-        this.pageNo = pageNo;
-
         this.el.addEventListener("click", () => this.onClick());
+
+        this.pageNo = pageNo;
+        this.pageNoEl = this.el.querySelector(".page-number");
+        this.pageNoEl.textContent = pageNo;
 
         let pageCanvasEl = this.el.querySelector("canvas");
         this.pageCanvas = new UiPageCanvas(pageCanvasEl);
+
+        session.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState());
         
+        this.updateSelectionState();
         this._fetchPage();
     }
 
@@ -175,13 +192,19 @@ class UiThumbnail {
     }
 
     // Compute width and height such that correct proportions are preserved and the longer axis has size `TARGET_SIZE`.
-    static TARGET_SIZE = 200;
+    static TARGET_SIZE = 150;
+    //static DBG_FORCE_ASP = 0.5;
     computeDimensions(activePdfPage) {
         // There are probably more elegant ways to do this, but hopefully this is correct ;)
         // Note that at the end, width/height=asp as expected.
 
         let viewport = activePdfPage.viewport;
+
         let asp = viewport.width / viewport.height;
+        if (typeof UiThumbnail.DBG_FORCE_ASP !== "undefined") {
+            asp = UiThumbnail.DBG_FORCE_ASP;
+        }
+
         let width, height;
         if (asp > 1) {
             width = UiThumbnail.TARGET_SIZE;
@@ -192,6 +215,11 @@ class UiThumbnail {
         }
 
         return [width, height];
+    }
+
+    updateSelectionState() {
+        let isSelected = (session.activePdf.activePageNo === this.pageNo);
+        ensureCssClassPresentIff(isSelected, "selected", this.el, this.pageNoEl);
     }
 
     onClick() {
