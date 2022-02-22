@@ -1,7 +1,12 @@
-import Observable from "./Observable.js";
+import {Event, Observable} from "./Observable.js";
 
 // TODO: Chop this up into multiple files.
 // TODO: Address ESlint whining.
+
+var nextUniqueClientId = 1;
+function generateUniqueClientId() {
+    return nextUniqueClientId++;
+}
 
 // General code layout:
 //
@@ -65,8 +70,44 @@ class ActivePdf extends Observable {
 }
 
 class Version {
-    constructor() {
+    constructor(label, pdfUrl) {
+        this.label = label;
+        this.pdfUrl = pdfUrl;
+    }
+}
 
+// Array + Events.
+class ObservableArray extends Observable {
+    static EVENT_ITEM_ADDED = "ITEM_ADDED";
+    
+    // TODO: Add those?
+    //static EVENT_ITEM_REMOVED = "ITEM_REMOVED";
+    //static EVENT_FULL_UPDATE = "FULL_UPDATE";
+
+    constructor() {
+        super();
+        this.items = [];
+    }
+
+    push(item) {
+        this.items.push(item);
+        this.notifyAll(new Event(ObservableArray.EVENT_ITEM_ADDED, {item}));
+    }
+
+    getFirst() {
+        if (this.items.length === 0) {
+            return null;
+        }
+
+        return this.items[0];
+    }
+
+    getLast() {
+        if (this.items.length === 0) {
+            return null;
+        }
+        
+        return this.items[this.items.length - 1];
     }
 }
 
@@ -74,7 +115,7 @@ class Version {
 class Session extends Observable {
     // Events {
 
-    // Someone set a new active PDF and it is ready for usage.
+    // Someone set a new active PDF and it is ready.
     // >> `pdfUrl`: The (shortened) URL of the PDF that was loaded.
     static EVENT_PDF_LOADED = "PDF_LOADED";
 
@@ -84,7 +125,8 @@ class Session extends Observable {
         super();
 
         this.activePdf = null;
-        this.versions = [];
+        this.activeVersion = null;
+        this.versions = new ObservableArray();
     }
 
     async loadPdf(pdfUrl) {
@@ -95,6 +137,27 @@ class Session extends Observable {
 
         // TODO: Check if the PDF is empty.
         this.activePdf.setActivePage(1);
+    }
+
+    setVersion(version) {
+        if (this.activeVersion === version) {
+            return;
+        }
+
+        this.activeVersion = version;
+
+        (async () => {
+            let storageFileId = version.pdfUrl;
+
+            let storageFile = await this.appwrite.storage.getFile(storageFileId);
+            let storageFileUrl = await this.appwrite.storage.getFileDownload(storageFileId);
+    
+            session.loadPdf(storageFileUrl.href);
+        })();
+    }
+
+    addVersion(version) {
+        this.versions.push(version);
     }
 
     hasPdf() {
@@ -142,7 +205,7 @@ class DbSession extends Session {
 
         console.log("storageFile", storageFile);
 
-        await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
+        await this.appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
     }
 
     async createPresentation(title, description) {
@@ -164,12 +227,17 @@ class DbSession extends Session {
         if (false) {
             let presentationId = await this.createPresentation("MME V15: Workshop", "Die allerletzte MME Präsentation?");
         
-            let response = await fetch("/resources/test.pdf");
-            let data = await response.blob();
-            console.log(data);
-            let file = new File([data], "test.pdf");
-        
-            await this.createPresentationVersion(presentationId, "V1", file);
+            let addTestVersion = async (url, label) => {
+                let response = await fetch(url);
+                let data = await response.blob();
+                console.log(data);
+                let file = new File([data], "test.pdf");
+            
+                await this.createPresentationVersion(presentationId, label, file);
+            }
+
+            await addTestVersion("/resources/test.pdf", "V1");
+            await addTestVersion("/resources/test2.pdf", "V2");
         }
     }
 
@@ -186,13 +254,20 @@ class DbSession extends Session {
             Query.equal("presentation", presentationId)
         ]);
 
-        let presentationVersion = presentationVersions.documents[presentationVersions.documents.length - 1];
-        let storageFileId = presentationVersion.storageFile;
+        for (let i = 0; i < presentationVersions.documents.length; i++) {
+            let presentationVersion = presentationVersions.documents[i];
 
-        let storageFile = await this.appwrite.storage.getFile(storageFileId);
-        let storageFileUrl = await this.appwrite.storage.getFileDownload(storageFileId);
+            let label = presentationVersion.label;
 
-        session.loadPdf(storageFileUrl.href);
+            let storageFileId = presentationVersion.storageFile;
+            let pdfUrl = await this.appwrite.storage.getFileDownload(storageFileId);
+
+            let version = new Version(label, pdfUrl);
+
+            this.addVersion(version);
+        }
+
+        this.setVersion(this.versions.getLast());
     }
 }
 
@@ -214,6 +289,8 @@ class UiPageCanvas {
     constructor(canvasEl) {
         this.canvasEl = canvasEl;
         this.canvasCtx = this.canvasEl.getContext("2d");
+        this.currentRenderTask = null;
+        this.currentPage = null;
     }
 
     // This will be how big the canvas shows up in the UI.
@@ -232,7 +309,18 @@ class UiPageCanvas {
 
     /// Tells PDFJS to asynchronously draw the PDF into our canvas.
     /// @param[pdfPage] Has type PdfPage.
-    async renderPage(pdfPage) {
+    renderPage(pdfPage) {
+        if (pdfPage === null) {
+            return;
+        }
+
+        this.currentPdfPage = pdfPage;
+
+        if (this.currentRenderTask !== null) {
+            this.currentRenderTask.cancel();
+            this.currentRenderTask = null;
+        }
+
         let viewport = pdfPage.viewport;
 
         // Without any transform, PDFJS will try to render in the coordinate system
@@ -241,9 +329,9 @@ class UiPageCanvas {
         let scaleX = this.canvasEl.width / viewport.width;
         let scaleY = this.canvasEl.height / viewport.height;
 
-        await pdfPage.pdfJsPage.render({
+        let renderTask = pdfPage.pdfJsPage.render({
             canvasContext: this.canvasCtx,
-            
+
             // I think this encodes the first two rows of the 3x3 homogeneous transform in column-major
             // layout (last row can be set to 0 0 1 for affine transforms). It is applied like so:
             // transformed_x = transform[0]*x + transform[2]*y + transform[4]
@@ -252,6 +340,14 @@ class UiPageCanvas {
 
             viewport,
         });
+
+        this.currentRenderTask = renderTask;
+
+        (async () => {
+            let result = await renderTask.promise;
+            console.log("render task result", result);
+            this.currentRenderTask = null;
+        })();
     }
 }
 
@@ -347,6 +443,8 @@ class UiThumbnailBar {
     // Responsible for creating all the little thumbnails.
     // TODO: Remove old thumbnails once a new PDF is loaded?
     createThumbnails() {
+        this.el.innerHTML = "";
+
         let numPages = session.activePdf.pdfJsPdf.numPages;
 
         for (let i = 0; i < numPages; i++) {
@@ -384,7 +482,7 @@ class UiContentCenter {
         this.pageCanvas.setDimensions(viewport.width, viewport.height);
         this.pageCanvas.renderPage(activePdfPage);
 
-        { // Update the text layer`.`
+        { // Update the text layer.
             this.textLayerEl.innerHTML = "";
 
             this.textLayerEl.style.width = Math.floor(viewport.width) + "px";
@@ -425,10 +523,44 @@ class UiContentCenter {
     }
 }
 
+// An item in the timeline, representing a version of the presentation.
+class UiTimelineVersion {
+    constructor(version) {
+        this.el = cloneDomTemplate("#version-template");
+
+        this.labelEl = this.el.querySelector(".label");
+        this.labelEl.textContent = version.label;
+
+        this.el.addEventListener("click", () => this.onClick());
+
+        this.version = version;
+    }
+
+    onClick() {
+        session.setVersion(this.version);
+    }
+}
+
+class UiTimeline {
+    constructor() {
+        this.el = document.querySelector("#version-list");
+
+        session.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e));
+    }
+
+    // TODO: This only works if it's called once.
+    onVersionAdded(e) {
+        let version = e.data.item;
+        let uiVersion = new UiTimelineVersion(version);
+        this.el.appendChild(uiVersion.el);
+    }
+}
+
 class UserInterface {
     constructor() {
         this.thumbnailBar = new UiThumbnailBar();
         this.contentCenter = new UiContentCenter();
+        this.timeline = new UiTimeline;
     }
 }
 

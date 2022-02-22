@@ -1,4 +1,4 @@
-<!-- In your browser, open http://localhost:8080/?presentation=6214f3d59a6b33571fe6 -->
+<!-- In your browser, open http://localhost:8080/?presentation=6215045835be1bc7a2ad -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -164,9 +164,11 @@
                         </svg>
                     </button>
                 </div>
-                <canvas>
-                    <!-- TODO: Darstellung der Iterationen via Canvas?? -->
-                </canvas>
+
+                <!-- TODO: Do we want a canvas for fancy graphics? -->
+                <div class="flex" id="version-list">
+
+                </div>
             </div>
 
             <!-- /content wrapper -->
@@ -205,7 +207,7 @@
         </template>
 
         <!-- TODO: Thread-Template fertigstellen -->
-        <template id="thread">
+        <template id="thread-template">
             <!-- thread container -->
             <div class="h-60 w-full flex-none items-center justify-start bg-black opacity-50">
                 <!-- TODO: erstellen eines Thread-Haupt-Kommentar-Templates -->
@@ -215,6 +217,11 @@
             </div>
         </template>
 
+        <template id="version-template">
+            <button>
+                <span class="label">12</span>
+            </button>
+        </template>
         
         <script src="./src/third/pdf.js.build/pdf.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/appwrite@6.0.1"></script>
