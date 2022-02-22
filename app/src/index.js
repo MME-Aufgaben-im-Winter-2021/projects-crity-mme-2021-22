@@ -327,5 +327,99 @@ function loadTestData() {
     session.loadPdf("/resources/test.pdf");
 }
 
+
+//
+// APPWRITE TESTING
+//
+
+// TODO: Keep this global?
+var appwrite = new Appwrite();
+
+async function logIn(email, password) {
+    let response = await appwrite.account.createSession(email, password);
+}
+
+async function checkIfLoggedIn() {
+    try {
+        let response = await appwrite.account.get();
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function createPresentationVersion(presentationId, label, file) {
+    let storageFile = await appwrite.storage.createFile(
+        "unique()",
+        file, 
+        ["role:all"], 
+        ["role:all"]);
+
+    console.log("storageFile", storageFile);
+        
+    await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
+}
+
+async function createPresentation(title, description) {
+    let presentation = await appwrite.database.createDocument("presentations", "unique()", {title, description});
+    return presentation.$id;
+}
+
+async function loadLoginData() {
+    appwrite
+        .setEndpoint("https://appwrite.software-engineering.education/v1")
+        .setProject("6206644928ab8835c77f"); // crity
+
+    // File upload always fails without a session.
+    let alreadyLoggedIn = await checkIfLoggedIn();
+    if (!alreadyLoggedIn) {
+        await logIn("max.mustermann@example.com", "strenggeheim");
+    }
+
+    let account = await appwrite.account.get();
+    console.log(account);
+
+    // Create dummy presentation for testing purposes.
+    if (false) {
+        let presentationId = await createPresentation("MME V15: Workshop", "Die allerletzte MME Präsentation?");
+    
+        let response = await fetch("/resources/test.pdf");
+        let data = await response.blob();
+        console.log(data);
+        let file = new File([data], "test.pdf");
+    
+        await createPresentationVersion(presentationId, "V1", file);
+    }
+}
+
+async function parseUrl() {
+    let urlSearchParams = new URLSearchParams(window.location.search);
+
+    let presentationId = urlSearchParams.get("presentation");
+    console.log(presentationId);
+
+    let presentation = await appwrite.database.getDocument("presentations", presentationId);
+    console.log("loaded presentation", presentation);
+
+    let presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
+        Query.equal("presentation", presentationId)
+    ]);
+
+    let presentationVersion = presentationVersions.documents[presentationVersions.documents.length - 1];
+    let storageFileId = presentationVersion.storageFile;
+
+    let storageFile = await appwrite.storage.getFile(storageFileId);
+    let storageFileUrl = await appwrite.storage.getFileDownload(storageFileId);
+
+    session.loadPdf(storageFileUrl.href);
+
+    console.log("storage file url", storageFileUrl.href);
+
+    console.log("presentation versions", presentationVersions);
+}
+
 new UserInterface();
-loadTestData();
+
+loadLoginData();
+//loadTestData();
+parseUrl();
