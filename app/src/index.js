@@ -64,6 +64,12 @@ class ActivePdf extends Observable {
     }
 }
 
+class Version {
+    constructor() {
+
+    }
+}
+
 // The global object representing all the abstract state of the tab.
 class Session extends Observable {
     // Events {
@@ -76,7 +82,9 @@ class Session extends Observable {
 
     constructor() {
         super();
+
         this.activePdf = null;
+        this.versions = [];
     }
 
     async loadPdf(pdfUrl) {
@@ -88,11 +96,109 @@ class Session extends Observable {
         // TODO: Check if the PDF is empty.
         this.activePdf.setActivePage(1);
     }
+
+    hasPdf() {
+        return this.activePdf !== null;
+    }
+}
+
+class DbSession extends Session {
+    constructor() {
+        super();
+
+        // WARNING: Keep this synchronous, I guess.
+        this.appwrite = new Appwrite();
+        this.appwrite
+            .setEndpoint("https://appwrite.software-engineering.education/v1")
+            .setProject(/* crity */ "6206644928ab8835c77f");
+
+        this.initAsynchronously();
+    }
+
+    async initAsynchronously() {
+        await this.loadLoginData();
+        await this.fetchVersions();
+    }
+    
+    async logIn(email, password) {
+        let response = await this.appwrite.account.createSession(email, password);
+    }
+
+    async checkIfLoggedIn() {
+        try {
+            let response = await this.appwrite.account.get();
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async createPresentationVersion(presentationId, label, file) {
+        let storageFile = await this.appwrite.storage.createFile(
+            "unique()",
+            file, 
+            ["role:all"], 
+            ["role:all"]);
+
+        console.log("storageFile", storageFile);
+
+        await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
+    }
+
+    async createPresentation(title, description) {
+        let presentation = await this.appwrite.database.createDocument("presentations", "unique()", {title, description});
+        return presentation.$id;
+    }
+
+    async loadLoginData() {
+        // File upload always fails without a session.
+        let alreadyLoggedIn = await this.checkIfLoggedIn();
+        if (!alreadyLoggedIn) {
+            await this.logIn("max.mustermann@example.com", "strenggeheim");
+        }
+
+        let account = await this.appwrite.account.get();
+        console.log(account);
+
+        // Create dummy presentation for testing purposes.
+        if (false) {
+            let presentationId = await this.createPresentation("MME V15: Workshop", "Die allerletzte MME Präsentation?");
+        
+            let response = await fetch("/resources/test.pdf");
+            let data = await response.blob();
+            console.log(data);
+            let file = new File([data], "test.pdf");
+        
+            await this.createPresentationVersion(presentationId, "V1", file);
+        }
+    }
+
+    async fetchVersions() {
+        let urlSearchParams = new URLSearchParams(window.location.search);
+
+        let presentationId = urlSearchParams.get("presentation");
+        console.log(presentationId);
+
+        let presentation = await this.appwrite.database.getDocument("presentations", presentationId);
+        console.log("loaded presentation", presentation);
+
+        let presentationVersions = await this.appwrite.database.listDocuments("presentationVersions", [
+            Query.equal("presentation", presentationId)
+        ]);
+
+        let presentationVersion = presentationVersions.documents[presentationVersions.documents.length - 1];
+        let storageFileId = presentationVersion.storageFile;
+
+        let storageFile = await this.appwrite.storage.getFile(storageFileId);
+        let storageFileUrl = await this.appwrite.storage.getFileDownload(storageFileId);
+
+        session.loadPdf(storageFileUrl.href);
+    }
 }
 
 // Having this as a global variable is arguably better than
 // storing a reference to this in every class.
-var session = new Session();
+var session = new DbSession();
 
 // IIRC, calling clone on the template directly produces a document fragment;
 // this causes subtle issues when working with the fragment that are not
@@ -230,12 +336,17 @@ class UiThumbnail {
 class UiThumbnailBar {
     constructor() {
         this.el = document.querySelector("#sidebar-left");
-        session.addEventListener(Session.EVENT_PDF_LOADED, () => this.onPdfLoaded());
+
+        if (session.hasPdf()) {
+            this.createThumbnails();
+        }
+
+        session.addEventListener(Session.EVENT_PDF_LOADED, () => this.createThumbnails());
     }
 
     // Responsible for creating all the little thumbnails.
     // TODO: Remove old thumbnails once a new PDF is loaded?
-    onPdfLoaded() {
+    createThumbnails() {
         let numPages = session.activePdf.pdfJsPdf.numPages;
 
         for (let i = 0; i < numPages; i++) {
@@ -321,6 +432,8 @@ class UserInterface {
     }
 }
 
+new UserInterface();
+
 // Keep all the artificial testing stuff in one place so we know where to look
 // once we have to replace it.
 function loadTestData() {
@@ -328,98 +441,4 @@ function loadTestData() {
 }
 
 
-//
-// APPWRITE TESTING
-//
-
-// TODO: Keep this global?
-var appwrite = new Appwrite();
-
-async function logIn(email, password) {
-    let response = await appwrite.account.createSession(email, password);
-}
-
-async function checkIfLoggedIn() {
-    try {
-        let response = await appwrite.account.get();
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
-
-async function createPresentationVersion(presentationId, label, file) {
-    let storageFile = await appwrite.storage.createFile(
-        "unique()",
-        file, 
-        ["role:all"], 
-        ["role:all"]);
-
-    console.log("storageFile", storageFile);
-        
-    await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
-}
-
-async function createPresentation(title, description) {
-    let presentation = await appwrite.database.createDocument("presentations", "unique()", {title, description});
-    return presentation.$id;
-}
-
-async function loadLoginData() {
-    appwrite
-        .setEndpoint("https://appwrite.software-engineering.education/v1")
-        .setProject("6206644928ab8835c77f"); // crity
-
-    // File upload always fails without a session.
-    let alreadyLoggedIn = await checkIfLoggedIn();
-    if (!alreadyLoggedIn) {
-        await logIn("max.mustermann@example.com", "strenggeheim");
-    }
-
-    let account = await appwrite.account.get();
-    console.log(account);
-
-    // Create dummy presentation for testing purposes.
-    if (false) {
-        let presentationId = await createPresentation("MME V15: Workshop", "Die allerletzte MME Präsentation?");
-    
-        let response = await fetch("/resources/test.pdf");
-        let data = await response.blob();
-        console.log(data);
-        let file = new File([data], "test.pdf");
-    
-        await createPresentationVersion(presentationId, "V1", file);
-    }
-}
-
-async function parseUrl() {
-    let urlSearchParams = new URLSearchParams(window.location.search);
-
-    let presentationId = urlSearchParams.get("presentation");
-    console.log(presentationId);
-
-    let presentation = await appwrite.database.getDocument("presentations", presentationId);
-    console.log("loaded presentation", presentation);
-
-    let presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
-        Query.equal("presentation", presentationId)
-    ]);
-
-    let presentationVersion = presentationVersions.documents[presentationVersions.documents.length - 1];
-    let storageFileId = presentationVersion.storageFile;
-
-    let storageFile = await appwrite.storage.getFile(storageFileId);
-    let storageFileUrl = await appwrite.storage.getFileDownload(storageFileId);
-
-    session.loadPdf(storageFileUrl.href);
-
-    console.log("storage file url", storageFileUrl.href);
-
-    console.log("presentation versions", presentationVersions);
-}
-
-new UserInterface();
-
-loadLoginData();
 //loadTestData();
-parseUrl();
