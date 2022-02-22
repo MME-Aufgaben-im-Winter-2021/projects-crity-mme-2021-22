@@ -565,12 +565,3 @@ class UserInterface {
 }
 
 new UserInterface();
-
-// Keep all the artificial testing stuff in one place so we know where to look
-// once we have to replace it.
-function loadTestData() {
-    session.loadPdf("/resources/test.pdf");
-}
-
-
-//loadTestData();
