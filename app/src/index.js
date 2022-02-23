@@ -2,6 +2,7 @@ import {Event, Observable} from "./Observable.js";
 
 // TODO: Chop this up into multiple files.
 // TODO: Address ESlint whining.
+// TODO: A whole bunch of console.log calls that will have to go eventually.
 
 var nextUniqueClientId = 1;
 function generateUniqueClientId() {
@@ -16,6 +17,10 @@ function generateUniqueClientId() {
 // To keep (1) UI-agnostic, the model emits change events that the UI subscribes to.
 // This obfuscates flow-control, but seems to be more inline with classic MVC.
 
+var appwrite = new Appwrite();
+appwrite
+    .setEndpoint("https://appwrite.software-engineering.education/v1")
+    .setProject(/* crity */ "6206644928ab8835c77f");
 
 //
 // Data model.
@@ -32,6 +37,75 @@ class PdfPage {
     }
 }
 
+class Version {
+    constructor(label, pdfUrl, appwriteId) {
+        this.label = label;
+        this.pdfUrl = pdfUrl;
+        this.appwriteId = appwriteId;
+    }
+}
+
+class Comment {
+    constructor(author, text) {
+        this.author = author;
+        this.text = text;
+
+        console.log(this);
+    }
+}
+
+class PageComments {
+    // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
+    static COMMENT_VERSION_COLLECTION_ID = "6214e5ef06bef7005816";
+
+    constructor(version) {
+        this.version = version;
+        this.comments = new ObservableArray();
+        this.pageNo = null;
+    }
+
+    // Fetch comments for the active page.
+    setActivePage(pageNo) {
+        this.pageNo = pageNo;
+        this._fetchComments();
+    }
+
+    async _fetchComments() {
+        this.comments.clear();
+
+        let presentationVersionId = this.version.appwriteId;
+
+        let commentVersions = await appwrite.database.listDocuments(PageComments.COMMENT_VERSION_COLLECTION_ID, [
+            Query.equal("presentationVersion", presentationVersionId),
+            Query.equal("pageNo", this.pageNo)
+        ]);
+
+        for (let i = 0; i < commentVersions.documents.length; i++) {
+            let commentVersion = commentVersions.documents[i];
+
+            let appwriteComment = await appwrite.database.getDocument("comments", commentVersion.comment);
+            let comment = new Comment(appwriteComment.author, appwriteComment.text);
+            this.comments.push(comment);
+        }
+    }
+
+    createComment(comment) {
+        this.comments.push(comment);
+
+        (async () => {
+            let appwriteComment = await appwrite.database.createDocument("comments", "unique()", {text: comment.text, author: comment.author});
+
+            await appwrite.database.createDocument(
+                PageComments.COMMENT_VERSION_COLLECTION_ID, 
+                "unique()", 
+                {presentationVersion: this.version.appwriteId, pageNo: this.pageNo, xOnPage: 0.0, yOnPage: 0.0, comment: appwriteComment.$id});
+        })();
+    }
+}
+
+// TODO: Do we want to merge this with the Version class, seeing as there is a
+// one-to-one correspondence between PDFs and versions?
+//
 // Wraps PDFJS's PDFDocumentProxy.
 //
 // We maintain the notion of an "active" page number.
@@ -49,23 +123,28 @@ class ActivePdf extends Observable {
 
     // }
 
-    constructor(pdfUrl, pdfJsPdf) {
+    constructor(version, pdfJsPdf) {
         super();
 
-        this.pdfUrl = pdfUrl;
+        this.version = version;
         this.pdfJsPdf = pdfJsPdf;
         this.activePageNo = null;
 
-        this.allComments
+        this.activePageComments = new PageComments(version);
+
+        // Not sure how expensive it is to access the # pages, let's store this ourselves to be on the safe side.
+        this.numPages = pdfJsPdf.numPages;
     }
 
-    async setActivePage(pageNo) {
+    setActivePage(pageNo) {
         if (this.activePageNo === pageNo) {
             return;
         }
 
         this.activePageNo = pageNo;
         this.notifyAll(new Event(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, {pageNo}));
+        
+        this.activePageComments.setActivePage(this.activePageNo);
     }
 
     // Asynchronously fetch the PdfPage corresponding to the page number.
@@ -76,16 +155,10 @@ class ActivePdf extends Observable {
     }
 }
 
-class Version {
-    constructor(label, pdfUrl) {
-        this.label = label;
-        this.pdfUrl = pdfUrl;
-    }
-}
-
 // Array + Events.
 class ObservableArray extends Observable {
     static EVENT_ITEM_ADDED = "ITEM_ADDED";
+    static EVENT_CLEARED = "CLEARED";
     
     // TODO: Add those?
     //static EVENT_ITEM_REMOVED = "ITEM_REMOVED";
@@ -99,6 +172,11 @@ class ObservableArray extends Observable {
     push(item) {
         this.items.push(item);
         this.notifyAll(new Event(ObservableArray.EVENT_ITEM_ADDED, {item}));
+    }
+
+    clear() {
+        this.items.length = 0;
+        this.notifyAll(new Event(ObservableArray.EVENT_CLEARED, {}));
     }
 
     getFirst() {
@@ -115,12 +193,6 @@ class ObservableArray extends Observable {
         }
         
         return this.items[this.items.length - 1];
-    }
-}
-
-class Comments extends ObservableArray {
-    constructor() {
-        super();
     }
 }
 
@@ -148,11 +220,12 @@ class Session extends Observable {
         this.versions = new ObservableArray();
     }
 
-    async loadPdf(pdfUrl) {
-        let loadingTask = pdfjsLib.getDocument(pdfUrl);
+    async loadPdf() {
+        let version = this.activeVersion;
+        let loadingTask = pdfjsLib.getDocument(version.pdfUrl);
         let pdfJsPdf = await loadingTask.promise;
-        this.activePdf = new ActivePdf(pdfUrl, pdfJsPdf);
-        this.notifyAll(new Event(Session.EVENT_PDF_LOADED, {pdfUrl}));
+        this.activePdf = new ActivePdf(version, pdfJsPdf);
+        this.notifyAll(new Event(Session.EVENT_PDF_LOADED, {pdfUrl: version.pdfUrl}));
 
         // TODO: Check if the PDF is empty.
         this.activePdf.setActivePage(1);
@@ -185,16 +258,17 @@ class Session extends Observable {
     }
 }
 
+// TODO: Revisit this. Do we want to put all of the session-related DB requests into the
+// session class and have a global DB object instead?
 class DbSession extends Session {
     constructor() {
         super();
+
+        // TODO: Access the global object directly?
+        this.appwrite = appwrite;
+
         let urlSearchParams = new URLSearchParams(window.location.search);
         this.presentationId = urlSearchParams.get("presentation");
-        // WARNING: Keep this synchronous, I guess.
-        this.appwrite = new Appwrite();
-        this.appwrite
-            .setEndpoint("https://appwrite.software-engineering.education/v1")
-            .setProject(/* crity */ "6206644928ab8835c77f");
 
         this.initAsynchronously();
     }
@@ -226,12 +300,12 @@ class DbSession extends Session {
 
         console.log("storageFile", storageFile);
 
-        await this.appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
+        let appwriteVersion = await this.appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
 
         let storageFileId = storageFile.$id;
         let pdfUrl = await this.appwrite.storage.getFileDownload(storageFileId);
 
-        let version = new Version(label, pdfUrl);
+        let version = new Version(label, pdfUrl, appwriteVersion.$id);
 
         this.addVersion(version);
         this.setVersion(this.versions.getLast());
@@ -291,7 +365,7 @@ class DbSession extends Session {
             let storageFileId = presentationVersion.storageFile;
             let pdfUrl = await this.appwrite.storage.getFileDownload(storageFileId);
 
-            let version = new Version(label, pdfUrl);
+            let version = new Version(label, pdfUrl, presentationVersion.$id);
 
             this.addVersion(version);
         }
@@ -312,8 +386,8 @@ var session = new DbSession();
 // this causes subtle issues when working with the fragment that are not
 // very fun to debug. This method has proven more reliable thus far.
 function cloneDomTemplate(id) {
-    let weatherWidgetTemplateEl = document.querySelector(id);
-    return weatherWidgetTemplateEl.content.firstElementChild.cloneNode(true);
+    let templateEl = document.querySelector(id);
+    return templateEl.content.firstElementChild.cloneNode(true);
 }
 
 /// After the function executes, the @p elements will have the CSS-class @p className if and 
@@ -608,29 +682,76 @@ class UiTimeline {
     }
 
     onAddButtonClicked() {
-        session.createPresentationVersion(session.presentationId, "V"+(session.versions.items.length+1), this.fileInputEl.files[0])
+        session.createPresentationVersion(session.presentationId, "V"+(session.versions.items.length+1), this.fileInputEl.files[0]);
     }
 }
 
 class UiRightSidebar {
     constructor() {
         this.rightSidebar = document.querySelector("#sidebar-right");
-        this.comments = new Comments();
-        this.commentInputFields = new UiCommentInputFields(this.comments);
+        this.commentList = new UiCommentList();
+        this.commentInputFields = new UiCommentInputFields();
+    }
+}
+
+class UiComment {
+    constructor(comment) {
+        this.el = cloneDomTemplate("#comment-template");
+
+        this.textEl = this.el.querySelector(".comment-text");
+        this.textEl.textContent = comment.text;
+
+        this.authorEl = this.el.querySelector(".comment-author");
+        this.authorEl.textContent = comment.author;
+    }
+}
+
+class UiCommentList {
+    constructor() {
+        this.el = document.querySelector("#comment-list");
+        session.addEventListener(Session.EVENT_PDF_LOADED, () => this.onPdfLoaded());
+    }
+
+    // We only care about this event to be able to subscribe to the active page event.
+    onPdfLoaded() {
+        session.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onCommentAdded(e.data.item));
+        session.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_CLEARED, e => this.onCommentsCleared());
+    }
+
+    onCommentAdded(comment) {
+        let uiComment = new UiComment(comment);
+        this.el.appendChild(uiComment.el);
+    }
+
+    onCommentsCleared() {
+        this.el.innerHTML = "";
     }
 }
 
 class UiCommentInputFields {
-    constructor(commentList) {
+    constructor() {
         this.nameInputField = document.querySelector("#name-input");
+
         this.commentInputField = document.querySelector("#comment-input");
-        this.commentList = document.querySelector("#comment-template");
-        this.commentInputField.addEventListener("keydown", event => {
-            if(event.keyCode === 13) {
-                event.preventDefault();
-                console.log(this.commentInputField.value);
-            }
-        })
+        this.commentInputField.addEventListener("keydown", e => this.onKeyDown(e));
+    }
+
+    onKeyDown(e) {
+        if(e.keyCode !== 13) {
+            return;
+        }
+
+        // TODO: (Why) do we need this?
+        e.preventDefault();
+
+        let text = this.commentInputField.value;
+        let name = this.nameInputField.value;
+
+        this.commentInputField.value = "";
+
+        let comment = new Comment(name, text);
+
+        session.activePdf.activePageComments.createComment(comment);
     }
 }
 
