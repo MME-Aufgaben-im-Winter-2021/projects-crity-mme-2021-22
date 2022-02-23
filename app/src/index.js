@@ -16,6 +16,11 @@ function generateUniqueClientId() {
 // To keep (1) UI-agnostic, the model emits change events that the UI subscribes to.
 // This obfuscates flow-control, but seems to be more inline with classic MVC.
 
+
+//
+// Data model.
+//
+
 // At the moment, this is just a thin wrapper that sits on PDFJS's PDFPageProxy
 class PdfPage {
     constructor(pdfJsPage) {
@@ -275,6 +280,10 @@ class DbSession extends Session {
 // storing a reference to this in every class.
 var session = new DbSession();
 
+//
+// DOM utils
+//
+
 // IIRC, calling clone on the template directly produces a document fragment;
 // this causes subtle issues when working with the fragment that are not
 // very fun to debug. This method has proven more reliable thus far.
@@ -282,6 +291,23 @@ function cloneDomTemplate(id) {
     let weatherWidgetTemplateEl = document.querySelector(id);
     return weatherWidgetTemplateEl.content.firstElementChild.cloneNode(true);
 }
+
+/// After the function executes, the @p elements will have the CSS-class @p className if and 
+/// only if @p predicate is ´true´.
+function ensureCssClassPresentIff(predicate, className, ...elements) {
+    elements.forEach(element => {
+        if (predicate) {
+            element.classList.add(className);
+        } else {
+            element.classList.remove(className);
+        }
+    });
+}
+
+//
+// UI code
+//
+
 
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
@@ -349,18 +375,6 @@ class UiPageCanvas {
             this.currentRenderTask = null;
         })();
     }
-}
-
-/// After the function executes, the @p elements will have the CSS-class @p className if and 
-/// only if @p predicate is ´true´.
-function ensureCssClassPresentIff(predicate, className, ...elements) {
-    elements.forEach(element => {
-        if (predicate) {
-            element.classList.add(className);
-        } else {
-            element.classList.remove(className);
-        }
-    });
 }
 
 // Represents the widget for a single PDF page in the thumbnail bar.
