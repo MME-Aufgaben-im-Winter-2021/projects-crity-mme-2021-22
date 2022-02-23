@@ -55,6 +55,8 @@ class ActivePdf extends Observable {
         this.pdfUrl = pdfUrl;
         this.pdfJsPdf = pdfJsPdf;
         this.activePageNo = null;
+
+        this.allComments
     }
 
     async setActivePage(pageNo) {
@@ -113,6 +115,12 @@ class ObservableArray extends Observable {
         }
         
         return this.items[this.items.length - 1];
+    }
+}
+
+class Comments extends ObservableArray {
+    constructor() {
+        super();
     }
 }
 
@@ -589,7 +597,6 @@ class UiTimeline {
         this.fileInput.addEventListener("change", () => this.onAddButtonClicked());
     }
 
-    // TODO: This only works if it's called once.
     onVersionAdded(e) {
         let version = e.data.item;
         let uiVersion = new UiTimelineVersion(version);
@@ -601,11 +608,34 @@ class UiTimeline {
     }
 }
 
+class UiRightSidebar {
+    constructor() {
+        this.rightSidebar = document.querySelector("#sidebar-right");
+        this.comments = new Comments();
+        this.commentInputFields = new UiCommentInputFields(this.comments);
+    }
+}
+
+class UiCommentInputFields {
+    constructor(commentList) {
+        this.nameInputField = document.querySelector("#name-input");
+        this.commentInputField = document.querySelector("#comment-input");
+        this.commentList = document.querySelector("#comment-template");
+        this.commentInputField.addEventListener("keydown", event => {
+            if(event.keyCode === 13) {
+                event.preventDefault();
+                console.log(this.commentInputField.value);
+            }
+        })
+    }
+}
+
 class UserInterface {
     constructor() {
         this.thumbnailBar = new UiThumbnailBar();
         this.contentCenter = new UiContentCenter();
         this.timeline = new UiTimeline;
+        this.rightSideBar = new UiRightSidebar();
     }
 }
 
