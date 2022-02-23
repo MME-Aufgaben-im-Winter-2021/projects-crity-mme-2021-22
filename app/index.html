@@ -124,50 +124,20 @@
             </div>
 
             <!-- timeline -->
-            <div class="bottom-0 h-1/5 w-screen flex-none overflow-x-scroll bg-slate-800 text-white" id="bottom-bar">
-                <!-- "hide"-arrow, to be shown when timeline is visible -->
-                <div class="relative top-0 right-0 ml-auto mr-32 h-6 w-6 rounded-b bg-slate-600">
-                    <button class="absolute top-0 right-0">
-                        <svg
-                            class="h-6 w-6 text-white"
-                            id="arrow-"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <!-- "unhide"-arrow, to be shown when timeline is hidden -->
-                <div
-                    class="absolute bottom-0 right-0 ml-auto mr-32 hidden h-6 w-6 overflow-hidden rounded-t bg-slate-600"
-                >
-                    <button class="top-6 right-0">
-                        <svg
-                            class="h-6 w-6 text-white"
-                            id="arrow-"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                transform="scale(1 -1) translate(0 -20)"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
+            <div class="bottom-0 h-1/5 w-screen flex flex-col bg-slate-800 text-white" id="bottom-bar">
+                <div class="w-full flex justify-end">
+                    <button class="rounded-b bg-slate-600">
+                        <!-- "hide"-arrow, to be shown when timeline is visible -->
+                        <svg class="h-6 w-6 text-white" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                        
+                        <!-- "unhide"-arrow, to be shown when timeline is hidden -->
+                        <svg class="h-6 w-6 text-white hidden" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" transform="scale(1 -1) translate(0 -20)" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     </button>
                 </div>
 
                 <!-- TODO: Do we want a canvas for fancy graphics? -->
-                <div class="flex" id="version-list">
-
+                <div class="flex space-x-2 p-2 items-center grow overflow-x-scroll" id="version-list">
+                    <!-- #version-template get instantiated here. -->
                 </div>
             </div>
 
@@ -176,7 +146,7 @@
 
         <template id="thumbnail-template">
             <!-- See also the thumbnail-active component -->
-            <button class="transition p-4 flex flex-col space-y-2 rounded-xl bg-slate-800 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black ">
+            <button class="transition p-4 flex flex-col space-y-2 rounded-xl bg-slate-800 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
                 <div class="flex space-x-2 items-center">
                     <div class="text-sm opacity-80 page-number">12</div>
                     <div class="flex justify-center grow"><canvas></canvas></div>
@@ -217,7 +187,7 @@
         </template>
 
         <template id="version-template">
-            <button>
+            <button class="transition p-4 rounded-xl bg-transparent hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
                 <span class="label">12</span>
             </button>
         </template>

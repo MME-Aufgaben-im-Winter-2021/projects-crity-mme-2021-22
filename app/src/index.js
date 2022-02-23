@@ -124,12 +124,18 @@ class Session extends Observable {
     // >> `pdfUrl`: The (shortened) URL of the PDF that was loaded.
     static EVENT_PDF_LOADED = "PDF_LOADED";
 
+    // Someone set a new active version.
+    // >> `version`: The new active #Version.
+    static EVENT_ACTIVE_VERSION_CHANGED = "ACTIVE_VERSION_CHANGED";
+
     // }
 
     constructor() {
         super();
 
+        // TODO: Having an active PDF and an active version seems redundant, revisit this.
         this.activePdf = null;
+
         this.activeVersion = null;
         this.versions = new ObservableArray();
     }
@@ -150,6 +156,7 @@ class Session extends Observable {
         }
 
         this.activeVersion = version;
+        this.notifyAll(new Event(Session.EVENT_ACTIVE_VERSION_CHANGED, {version}));
 
         (async () => {
             let storageFileId = version.pdfUrl;
@@ -433,6 +440,7 @@ class UiThumbnail {
         return [width, height];
     }
 
+    // TODO(optimize): This is called for every thumbnail, in theory we only need to call this for two thumbnails.
     updateSelectionState() {
         let isSelected = (session.activePdf.activePageNo === this.pageNo);
         ensureCssClassPresentIff(isSelected, "selected", this.el, this.pageNoEl);
@@ -548,10 +556,19 @@ class UiTimelineVersion {
         this.el.addEventListener("click", () => this.onClick());
 
         this.version = version;
+        this.updateSelectionState();
+
+        session.addEventListener(Session.EVENT_ACTIVE_VERSION_CHANGED, () => this.updateSelectionState());
     }
 
     onClick() {
         session.setVersion(this.version);
+    }
+    
+    // TODO(optimize): This is called for every version item, in theory we only need to call this twice.
+    updateSelectionState() {
+        let isSelected = (session.activeVersion === this.version);
+        ensureCssClassPresentIff(isSelected, "selected", this.el);
     }
 }
 
