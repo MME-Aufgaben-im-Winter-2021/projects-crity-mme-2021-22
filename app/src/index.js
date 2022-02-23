@@ -1,13 +1,9 @@
 import {Event, Observable} from "./Observable.js";
+import {ObservableArray, appwrite, cloneDomTemplate, AccountSession} from "./common.js";
 
 // TODO: Chop this up into multiple files.
 // TODO: Address ESlint whining.
 // TODO: A whole bunch of console.log calls that will have to go eventually.
-
-var nextUniqueClientId = 1;
-function generateUniqueClientId() {
-    return nextUniqueClientId++;
-}
 
 // General code layout:
 //
@@ -16,11 +12,6 @@ function generateUniqueClientId() {
 //
 // To keep (1) UI-agnostic, the model emits change events that the UI subscribes to.
 // This obfuscates flow-control, but seems to be more inline with classic MVC.
-
-var appwrite = new Appwrite();
-appwrite
-    .setEndpoint("https://appwrite.software-engineering.education/v1")
-    .setProject(/* crity */ "6206644928ab8835c77f");
 
 //
 // Data model.
@@ -155,47 +146,6 @@ class ActivePdf extends Observable {
     }
 }
 
-// Array + Events.
-class ObservableArray extends Observable {
-    static EVENT_ITEM_ADDED = "ITEM_ADDED";
-    static EVENT_CLEARED = "CLEARED";
-    
-    // TODO: Add those?
-    //static EVENT_ITEM_REMOVED = "ITEM_REMOVED";
-    //static EVENT_FULL_UPDATE = "FULL_UPDATE";
-
-    constructor() {
-        super();
-        this.items = [];
-    }
-
-    push(item) {
-        this.items.push(item);
-        this.notifyAll(new Event(ObservableArray.EVENT_ITEM_ADDED, {item}));
-    }
-
-    clear() {
-        this.items.length = 0;
-        this.notifyAll(new Event(ObservableArray.EVENT_CLEARED, {}));
-    }
-
-    getFirst() {
-        if (this.items.length === 0) {
-            return null;
-        }
-
-        return this.items[0];
-    }
-
-    getLast() {
-        if (this.items.length === 0) {
-            return null;
-        }
-        
-        return this.items[this.items.length - 1];
-    }
-}
-
 // The global object representing all the abstract state of the tab.
 class Session extends Observable {
     // Events {
@@ -270,25 +220,12 @@ class DbSession extends Session {
         let urlSearchParams = new URLSearchParams(window.location.search);
         this.presentationId = urlSearchParams.get("presentation");
 
-        this.initAsynchronously();
+        this.accountSession = new AccountSession();
+        this.accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
     }
 
-    async initAsynchronously() {
-        await this.loadLoginData();
-        await this.fetchVersions();
-    }
-    
-    async logIn(email, password) {
-        let response = await this.appwrite.account.createSession(email, password);
-    }
-
-    async checkIfLoggedIn() {
-        try {
-            let response = await this.appwrite.account.get();
-            return true;
-        } catch (e) {
-            return false;
-        }
+    onLoginStateChanged() {
+        this.fetchVersions();
     }
 
     async createPresentationVersion(presentationId, label, file) {
@@ -311,37 +248,12 @@ class DbSession extends Session {
         this.setVersion(this.versions.getLast());
     }
 
-    async createPresentation(title, description) {
-        let presentation = await this.appwrite.database.createDocument("presentations", "unique()", {title, description});
-        return presentation.$id;
-    }
-
     async loadLoginData() {
         // File upload always fails without a session.
         let alreadyLoggedIn = await this.checkIfLoggedIn();
-        if (!alreadyLoggedIn) {
-            await this.logIn("max.mustermann@example.com", "strenggeheim");
-        }
 
         let account = await this.appwrite.account.get();
         console.log(account);
-
-        // Create dummy presentation for testing purposes.
-        if (false) {
-            let presentationId = await this.createPresentation("MME V15: Workshop", "Die allerletzte MME Präsentation?");
-        
-            let addTestVersion = async (url, label) => {
-                let response = await fetch(url);
-                let data = await response.blob();
-                console.log(data);
-                let file = new File([data], "test.pdf");
-            
-                await this.createPresentationVersion(presentationId, label, file);
-            }
-
-            await addTestVersion("/resources/test.pdf", "V1");
-            await addTestVersion("/resources/test2.pdf", "V2");
-        }
     }
 
     async fetchVersions() {
@@ -382,13 +294,6 @@ var session = new DbSession();
 // DOM utils
 //
 
-// IIRC, calling clone on the template directly produces a document fragment;
-// this causes subtle issues when working with the fragment that are not
-// very fun to debug. This method has proven more reliable thus far.
-function cloneDomTemplate(id) {
-    let templateEl = document.querySelector(id);
-    return templateEl.content.firstElementChild.cloneNode(true);
-}
 
 /// After the function executes, the @p elements will have the CSS-class @p className if and 
 /// only if @p predicate is ´true´.
