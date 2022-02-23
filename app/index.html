@@ -138,6 +138,11 @@
                 <!-- TODO: Do we want a canvas for fancy graphics? -->
                 <div class="flex space-x-2 p-2 items-center grow overflow-x-scroll" id="version-list">
                     <!-- #version-template get instantiated here. -->
+                    <button class="transition p-4 rounded-xl bg-slate-400 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black" id="add-version-button" onclick="document.getElementById('file-input').click();">
+                        <input id="file-input" type="file" name="name" style="display: none;" />
+                        <span class="label font-bold">+</span>
+                    </button>
+                    <!--<button onclick="document.getElementById('file-input').click();">Open</button>-->
                 </div>
             </div>
 

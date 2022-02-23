@@ -180,7 +180,8 @@ class Session extends Observable {
 class DbSession extends Session {
     constructor() {
         super();
-
+        let urlSearchParams = new URLSearchParams(window.location.search);
+        this.presentationId = urlSearchParams.get("presentation");
         // WARNING: Keep this synchronous, I guess.
         this.appwrite = new Appwrite();
         this.appwrite
@@ -218,6 +219,14 @@ class DbSession extends Session {
         console.log("storageFile", storageFile);
 
         await this.appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
+
+        let storageFileId = storageFile.$id;
+        let pdfUrl = await this.appwrite.storage.getFileDownload(storageFileId);
+
+        let version = new Version(label, pdfUrl);
+
+        this.addVersion(version);
+        this.setVersion(this.versions.getLast());
     }
 
     async createPresentation(title, description) {
@@ -256,7 +265,7 @@ class DbSession extends Session {
     async fetchVersions() {
         let urlSearchParams = new URLSearchParams(window.location.search);
 
-        let presentationId = urlSearchParams.get("presentation");
+        let presentationId = this.presentationId;
         console.log(presentationId);
 
         let presentation = await this.appwrite.database.getDocument("presentations", presentationId);
@@ -278,7 +287,7 @@ class DbSession extends Session {
 
             this.addVersion(version);
         }
-
+        
         this.setVersion(this.versions.getLast());
     }
 }
@@ -575,8 +584,9 @@ class UiTimelineVersion {
 class UiTimeline {
     constructor() {
         this.el = document.querySelector("#version-list");
-
+        this.fileInput = document.querySelector("#file-input");
         session.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e));
+        this.fileInput.addEventListener("change", () => this.onAddButtonClicked());
     }
 
     // TODO: This only works if it's called once.
@@ -584,6 +594,10 @@ class UiTimeline {
         let version = e.data.item;
         let uiVersion = new UiTimelineVersion(version);
         this.el.appendChild(uiVersion.el);
+    }
+
+    onAddButtonClicked() {
+        session.createPresentationVersion(session.presentationId, "V"+(session.versions.items.length+1), this.fileInput.files[0])
     }
 }
 
