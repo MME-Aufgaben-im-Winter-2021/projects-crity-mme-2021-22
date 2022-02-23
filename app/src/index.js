@@ -592,19 +592,23 @@ class UiTimelineVersion {
 class UiTimeline {
     constructor() {
         this.el = document.querySelector("#version-list");
-        this.fileInput = document.querySelector("#file-input");
+
+        this.addVersionButtonEl = document.querySelector("#add-version-button");
+
+        this.fileInputEl = document.querySelector("#file-input");
+        this.fileInputEl.addEventListener("change", () => this.onAddButtonClicked());
+
         session.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e));
-        this.fileInput.addEventListener("change", () => this.onAddButtonClicked());
     }
 
     onVersionAdded(e) {
         let version = e.data.item;
         let uiVersion = new UiTimelineVersion(version);
-        this.el.appendChild(uiVersion.el);
+        this.el.insertBefore(uiVersion.el, this.addVersionButtonEl);
     }
 
     onAddButtonClicked() {
-        session.createPresentationVersion(session.presentationId, "V"+(session.versions.items.length+1), this.fileInput.files[0])
+        session.createPresentationVersion(session.presentationId, "V"+(session.versions.items.length+1), this.fileInputEl.files[0])
     }
 }
 
