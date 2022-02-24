@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>crity</title>
+        <link rel="stylesheet" href="./resources/public/style.css" />
+        <link rel="stylesheet" href="./resources/css/text_layer_builder.css" />
+    </head>
+
+    <body>
+        <div class="flex flex-col">
+            <input class="rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Email" id="email-input">
+            <input class="rounded py-2 pr-12 pl-5 focus:outline-none" type="password" placeholder="Password" id="password-input">
+    
+            <button id="log-in-button">Log in</button>
+            <a id="create-account-button" href="/create-account.html">Create Account</button>
+        </div>
+        
+        <script src="./src/third/pdf.js.build/pdf.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/appwrite@6.0.1"></script>
+        <script type="module" src="./src/screens/login/ui/login.js"></script>
+    </body>
+</html>

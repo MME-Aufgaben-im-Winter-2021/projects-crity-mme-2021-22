@@ -1,7 +1,13 @@
+let plugin = require("tailwindcss/plugin");
+
 module.exports = {
     content: ["./app/**/*.{js,html}"],
     theme: {
         extend: {},
     },
-    plugins: [],
+    plugins: [
+        plugin(({addVariant}) => {
+            addVariant("selected", "&.selected");
+        }),
+    ],
 };
