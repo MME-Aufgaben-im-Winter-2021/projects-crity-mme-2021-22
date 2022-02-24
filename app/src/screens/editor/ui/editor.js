@@ -2,6 +2,7 @@ import { EditorData, data } from "../model/data.js";
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../common/ui/dom-utils.js";
 import { ActivePdf } from "../model/ActivePdf.js";
+import { Comment } from "../model/Comment.js";
 
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
