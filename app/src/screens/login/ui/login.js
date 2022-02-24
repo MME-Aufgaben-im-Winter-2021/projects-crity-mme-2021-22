@@ -1,19 +1,4 @@
-import { AccountSession } from "./common.js";
-
-class LoginScreen {
-    constructor() {
-        this.accountSession = new AccountSession();
-        this.accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
-    }
-
-    onLoginStateChanged() {
-        if (this.accountSession.isLoggedIn) {
-            window.location.replace("/dashboard.html");
-        }
-    }
-}
-
-var loginScreen = new LoginScreen();
+import { data, LoginData } from "../model/data.js";
 
 class UiCreateAccountScreen {
     constructor() {
@@ -29,7 +14,7 @@ class UiCreateAccountScreen {
     onLogInButtonClicked() {
         let email = this.emailInputEl.value;
         let password = this.passwordInputEl.value;
-        loginScreen.accountSession.logIn(email, password);
+        data.accountSession.logIn(email, password);
     }
 }
 
