@@ -9,9 +9,14 @@
     </head>
 
     <body>
-        <h1>Authored Presentations</h1>
+        <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
 
-        <div class="flex flex-col" id="presentation-list">
+        <!-- Vorläufiger Button. Kann noch nix -->
+        <button class="mx-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            Add Project
+        </button>
+
+        <div class="grid grid-cols-4 flex flex-col my-5 mx-5" id="presentation-list">
             
         </div>
 
@@ -21,10 +26,16 @@
         
         <template id="presentation-template">
             <button>
-                <h2>Title</h2>
-                <span class="presentation-title"></span>
-                <h2>Description</h2>
-                <span class="presentation-description"></span>
+                <h2>
+                    <span class="presentation-title"></span>
+                </h2>
+                <h2 class="flex justify-center">
+                    <img class="my-2 h-20 w-20" src="./resources/img/slides_icon.svg"/>
+                </h2>
+                <h2>
+                    <span class="presentation-description italic"></span>
+                </h2>
+                
             </button>
         </template>
 
