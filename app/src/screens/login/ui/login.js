@@ -9,12 +9,17 @@ class UiCreateAccountScreen {
         this.logInButtonEl.addEventListener("click", () => this.onLogInButtonClicked());
 
         this.createAccountButtonEl = document.querySelector("#create-account-button");
+        this.createAccountButtonEl.addEventListener("click", () => this.onCreateAccountButtonClicked());
     }
 
     onLogInButtonClicked() {
         let email = this.emailInputEl.value;
         let password = this.passwordInputEl.value;
         data.accountSession.logIn(email, password);
+    }
+
+    onCreateAccountButtonClicked() {
+        window.location.href = "/create-account.html";
     }
 }
 
