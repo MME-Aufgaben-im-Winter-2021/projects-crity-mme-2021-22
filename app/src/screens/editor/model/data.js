@@ -35,33 +35,39 @@ class EditorData extends Observable {
         this.accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
     }
 
+    
+    setVersion(version) {
+        if (this.activeVersion === version) {
+            return;
+        }
+        
+        this.activeVersion = version;
+        this.notifyAll(new Event(EditorData.EVENT_ACTIVE_VERSION_CHANGED, {version}));
+        
+        (async () => {
+            let storageFileId = version.pdfUrl;
+            
+            let storageFile = await appwrite.storage.getFile(storageFileId);
+            let storageFileUrl = await appwrite.storage.getFileDownload(storageFileId);
+            
+            await this.loadPdf(storageFileUrl.href);
+        })();
+    }
+    
     async loadPdf() {
         let version = this.activeVersion;
         let loadingTask = pdfjsLib.getDocument(version.pdfUrl);
         let pdfJsPdf = await loadingTask.promise;
+        
+        // Method to close the CommentUpdate for the old Version
+        if(this.activePdf !== null) {
+            this.activePdf.activePageComments.closeSubscription();
+        }
         this.activePdf = new ActivePdf(version, pdfJsPdf);
         this.notifyAll(new Event(EditorData.EVENT_PDF_LOADED, {pdfUrl: version.pdfUrl}));
 
         // TODO: Check if the PDF is empty.
         this.activePdf.setActivePage(1);
-    }
-
-    setVersion(version) {
-        if (this.activeVersion === version) {
-            return;
-        }
-
-        this.activeVersion = version;
-        this.notifyAll(new Event(EditorData.EVENT_ACTIVE_VERSION_CHANGED, {version}));
-
-        (async () => {
-            let storageFileId = version.pdfUrl;
-
-            let storageFile = await appwrite.storage.getFile(storageFileId);
-            let storageFileUrl = await appwrite.storage.getFileDownload(storageFileId);
-    
-            await this.loadPdf(storageFileUrl.href);
-        })();
     }
 
     addVersion(version) {

@@ -10,6 +10,7 @@ class PageComments {
         this.version = version;
         this.comments = new ObservableArray();
         this.pageNo = null;
+        this.subscribeToCommentsVersionCollections();
     }
 
     // Fetch comments for the active page.
@@ -37,12 +38,40 @@ class PageComments {
         }
     }
 
+    async subscribeToCommentsVersionCollections() {
+        this.unsubscribe = appwrite.subscribe('collections.6214e5ef06bef7005816.documents', response => {
+            console.log("Caallback Recived");
+            this._updateComments(response);
+        });
+    }
+
+    closeSubscription() {
+        console.log("ZU")
+        this.unsubscribe();
+    }
+
+    async _updateComments(response){
+        console.log(response)
+        console.log(response.payload.presentationVersion + " = " + this.version.appwriteId)
+        console.log(response.payload.pageNo  + " = " + this.pageNo)
+        if(response.payload.presentationVersion == this.version.appwriteId && response.payload.pageNo == this.pageNo){
+            let appwriteComment = await appwrite.database.getDocument("comments", response.payload.comment);
+            let comment = new Comment(appwriteComment.author, appwriteComment.text);
+            this.comments.push(comment);
+        }
+    }
+
     createComment(comment) {
-        this.comments.push(comment);
+        // this.comments.push(comment);
 
         (async () => {
-            let appwriteComment = await appwrite.database.createDocument("comments", "unique()", {text: comment.text, author: comment.author});
+            // First creating an entry in commentVersions
+            let appwriteComment = await appwrite.database.createDocument(
+                "comments", 
+                "unique()", 
+                {text: comment.text, author: comment.author});
 
+            // Second creating an entry in comments
             await appwrite.database.createDocument(
                 PageComments.COMMENT_VERSION_COLLECTION_ID, 
                 "unique()", 
