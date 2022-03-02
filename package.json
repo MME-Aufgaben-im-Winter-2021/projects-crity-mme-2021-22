@@ -21,7 +21,8 @@
         "build": "node build_for_deployment.js",
         "build-css": "npx tailwindcss -c ./tailwind.config.cjs -i ./app/resources/css/style.css -o ./app/resources/public/style.css --watch",
         "check": "eslint app/src/",
-        "prebuild": "npm install && npm run check"
+        "prebuild": "npm install && npm run check",
+        "deployUberFunc": "cd server && npm i && cd .. && tar -zcvf code.tar.gz server && node deploy_uber_func.js"
     },
     "author": "",
     "license": "MIT",
@@ -30,6 +31,7 @@
         "eslint": "^8.8.0",
         "express": "^4.17.2",
         "fs-extra": "^10.0.0",
+        "node-appwrite": "^4.0.2",
         "nodemon": "^2.0.15",
         "npm-watch": "^0.11.0",
         "open": "^8.4.0",

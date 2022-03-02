@@ -362,3 +362,14 @@ class UiEditorScreen {
 }
 
 new UiEditorScreen();
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Uber function testing.
+
+import { runUberFunc } from "../../../common/model/runUberFunc.js";
+
+console.time("uberFunctionRoundtripTime");
+var response = await runUberFunc();
+console.timeEnd("uberFunctionRoundtripTime");
+
+console.log("Uber function responded:", response);
