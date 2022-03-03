@@ -7,9 +7,7 @@ After cloning the repository, open the directory in VS Code. Make sure you have 
 Now in the VS Code terminal, run: `> npm install`.
 Make sure [the NPM scripts are showing](https://stackoverflow.com/questions/66943852/npm-scripts-not-shown-in-explorer-sidebar-how-to-shwo-them-again).
 
-Before a development session:
-- Run the `build-css` script. That way, Tailwind will begin to monitor the HTML files and generate the CSS.
-- Run the `runDevelopementServer`[sic] script.
+Before a development session, run the `devSession` script.
 
 ## Model/UI distinction
 

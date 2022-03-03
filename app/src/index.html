@@ -11,11 +11,13 @@
     <!-- content wrapper -->
     <div class="flex h-screen flex-col">
         <%= require("html-loader!./navbar/navbar.html").default %>
-        <%= require("html-loader!./screens/login/ui/login.html").default %>
+        <div class="grow" id="screen-wrapper"></div>
     </div>
 
-
-    <script src="index_bundle.js"></script>
+    <%= require("html-loader!./screens/login/ui/login.html").default %>
+    <%= require("html-loader!./screens/create-account/ui/create-account.html").default %>
+    <%= require("html-loader!./screens/dashboard/ui/dashboard.html").default %>
+    <%= require("html-loader!./screens/editor/ui/editor.html").default %>
 </body>
 
 </html>

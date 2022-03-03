@@ -1,8 +1,9 @@
-import { EditorData, data } from "../model/data.js";
+import { EditorData, data, initData, terminateData } from "../model/data.js";
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../common/ui/dom-utils.js";
 import { ActivePdf } from "../model/ActivePdf.js";
 import { Comment } from "../model/Comment.js";
+import { UiScreen } from "../../../common/ui/UiScreen.js";
 
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
@@ -140,8 +141,8 @@ class UiThumbnail {
 }
 
 class UiThumbnailBar {
-    constructor() {
-        this.el = document.querySelector("#sidebar-left");
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-sidebar-left");
 
         if (data.hasPdf()) {
             this.createThumbnails();
@@ -171,9 +172,9 @@ class UiThumbnailBar {
 // but we make it transparent. A good way to understand how this works is to using element inspection
 // in your web browser.
 class UiContentCenter {
-    constructor() {
-        this.pageCanvas = new UiPageCanvas(document.querySelector("#pdf-canvas"));
-        this.textLayerEl = document.querySelector("#pdf-text-layer");
+    constructor(screen) {
+        this.pageCanvas = new UiPageCanvas(screen.el.querySelector(".id-pdf-canvas"));
+        this.textLayerEl = screen.el.querySelector(".id-pdf-text-layer");
 
         data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded());
     }
@@ -261,12 +262,12 @@ class UiTimelineVersion {
 }
 
 class UiTimeline {
-    constructor() {
-        this.el = document.querySelector("#version-list");
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-version-list");
 
-        this.addVersionButtonEl = document.querySelector("#add-version-button");
+        this.addVersionButtonEl = screen.el.querySelector(".id-add-version-button");
 
-        this.fileInputEl = document.querySelector("#file-input");
+        this.fileInputEl = screen.el.querySelector(".id-file-input");
         this.fileInputEl.addEventListener("change", () => this.onAddButtonClicked());
 
         data.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e));
@@ -284,10 +285,11 @@ class UiTimeline {
 }
 
 class UiRightSidebar {
-    constructor() {
-        this.rightSidebar = document.querySelector("#sidebar-right");
-        this.commentList = new UiCommentList();
-        this.commentInputFields = new UiCommentInputFields();
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-sidebar-right");
+
+        this.commentList = new UiCommentList(screen);
+        this.commentInputFields = new UiCommentInputFields(screen);
     }
 }
 
@@ -304,8 +306,8 @@ class UiComment {
 }
 
 class UiCommentList {
-    constructor() {
-        this.el = document.querySelector("#comment-list");
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-comment-list");
         data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded());
     }
 
@@ -326,10 +328,10 @@ class UiCommentList {
 }
 
 class UiCommentInputFields {
-    constructor() {
-        this.nameInputField = document.querySelector("#name-input");
+    constructor(screen) {
+        this.nameInputField = screen.el.querySelector(".id-name-input");
 
-        this.commentInputField = document.querySelector("#comment-input");
+        this.commentInputField = screen.el.querySelector(".id-comment-input");
         this.commentInputField.addEventListener("keydown", e => this.onKeyDown(e));
     }
 
@@ -352,13 +354,22 @@ class UiCommentInputFields {
     }
 }
 
-class UiEditorScreen {
-    constructor() {
-        this.thumbnailBar = new UiThumbnailBar();
-        this.contentCenter = new UiContentCenter();
-        this.timeline = new UiTimeline;
-        this.rightSideBar = new UiRightSidebar();
+class UiEditorScreen extends UiScreen {
+    constructor(screenParameters) {
+        super("#editor-screen-template");
+
+        initData(screenParameters.presentation);
+
+        this.thumbnailBar = new UiThumbnailBar(this);
+        this.contentCenter = new UiContentCenter(this);
+        this.timeline = new UiTimeline(this);
+        this.rightSideBar = new UiRightSidebar(this);
+    }
+
+    terminate() {
+        super.terminate();
+        terminateData();
     }
 }
 
-new UiEditorScreen();
+export { UiEditorScreen };

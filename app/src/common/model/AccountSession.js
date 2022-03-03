@@ -1,5 +1,14 @@
 import { Observable, Event } from "./Observable.js";
 import { appwrite } from "./appwrite.js";
+import { assert } from "../utils.js";
+
+const LoginState = {
+    // The page just finished loading. Where are asynchronously checking if we have any sessions.
+    UNKNOWN: "UNKNOWN",
+
+    LOGGED_IN: "LOGGED_IN",
+    LOGGED_OUT: "LOGGED_OUT"
+};
 
 class AccountSession extends Observable {
     static EVENT_LOGIN_STATE_CHANGED = "EVENT_LOGIN_STATE_CHANGED";
@@ -7,59 +16,52 @@ class AccountSession extends Observable {
     constructor() {
         super();
 
-        this.loginStateAvailable = false;
-
-        this.isLoggedIn = null;
-        this.accountId = null;
+        this.loginState = LoginState.UNKNOWN;
+        this._accountId = null;
         
-        this._initAsynchronously();
+        (async () => {
+            // Check if already logged in.
+            try { 
+                // TODO: Is there a cleaner way of doing this?
+                let account = await appwrite.account.get();
+                this._accountId = account.$id;
+                this.loginState = LoginState.LOGGED_IN;
+            } catch (e) {
+                this.loginState = LoginState.LOGGED_OUT;
+            }
+
+            this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
+        })();
     }
 
-    emitLoginStateChangedEvent() {
-        this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
+    get accountId() {
+        assert(this.loginState === LoginState.LOGGED_IN);
+        return this._accountId;
     }
 
-    // Does not log in the user!
-    async createAccount(name, email, password) {
-        let account = await appwrite.account.create("unique()", email, password, name);
-        this.fillInAccountData(account);
+    async createAccountAndLogIn(name, email, password) {
+        // FIXME: What should we do in the UNKNOWN state?
+        assert(this.loginState === LoginState.LOGGED_OUT);
 
-        this.loginStateAvailable = true;
-        this.emitLoginStateChangedEvent();
+        // TODO: Handle failure.
+        await appwrite.account.create("unique()", email, password, name);
+        this.logIn(email, password);
     }
 
     async logIn(email, password) {
+        // FIXME: What should we do in the UNKNOWN state?
+        assert(this.loginState === LoginState.LOGGED_OUT);
+
         try {
-            await appwrite.account.createSession(email, password);
-            this.isLoggedIn = true;
-            this.emitLoginStateChangedEvent();
+            let session = await appwrite.account.createSession(email, password);
+            this._accountId = session.userId;
+            this.loginState = LoginState.LOGGED_IN;
+            this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
         } catch (e) {
             // TODO: Error message.
         }
     }
-
-    async _initAsynchronously() {
-        await this._checkIfLoggedIn();
-
-        this.loginStateAvailable = true;
-        this.emitLoginStateChangedEvent();
-    }
-
-    async _checkIfLoggedIn() {
-        // TODO: Is there a cleaner way of doing this?
-
-        try {
-            let account = await appwrite.account.get();
-            this.fillInAccountData(account);
-            this.isLoggedIn = true;
-        } catch (e) {
-            this.isLoggedIn = false;
-        }
-    }
-
-    fillInAccountData(appwriteAccount) {
-        this.accountId = appwriteAccount.$id;
-    }
 }
 
-export { AccountSession };
+var accountSession = new AccountSession();
+export { LoginState, AccountSession, accountSession };

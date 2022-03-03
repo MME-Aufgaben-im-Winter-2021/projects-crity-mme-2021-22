@@ -2,8 +2,20 @@ import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { Observable, Event } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { ActivePdf } from "./ActivePdf.js";
-import { AccountSession } from "../../../common/model/AccountSession.js";
+import { accountSession, AccountSession } from "../../../common/model/AccountSession.js";
 import { Version } from "./Version.js";
+import { Query } from "appwrite";
+
+var data;
+
+function initData(presentationId) {
+    data = new EditorData(presentationId);
+}
+
+function terminateData() {
+    // TODO: Comment-channel unsubscription.
+    data = null;
+}
 
 // The global object representing all the abstract state of the tab.
 class EditorData extends Observable {
@@ -19,23 +31,23 @@ class EditorData extends Observable {
 
     // }
 
-    constructor() {
+    constructor(presentationId) {
         super();
 
         // TODO: Having an active PDF and an active version seems redundant, revisit this.
         this.activePdf = null;
 
         this.activeVersion = null;
+
+        // TODO: Fetching and updating versions should be handled by a class VersionList,
+        // just like we do for PresentationLists.
         this.versions = new ObservableArray();
 
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        this.presentationId = urlSearchParams.get("presentation");
+        this.presentationId = presentationId;
 
-        this.accountSession = new AccountSession();
-        this.accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
+        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
     }
 
-    
     setVersion(version) {
         if (this.activeVersion === version) {
             return;
@@ -115,8 +127,6 @@ class EditorData extends Observable {
     }
 
     async fetchVersions() {
-        let urlSearchParams = new URLSearchParams(window.location.search);
-
         let presentationId = this.presentationId;
         console.log(presentationId);
 
@@ -144,5 +154,4 @@ class EditorData extends Observable {
     }
 }
 
-var data = new EditorData();
-export {EditorData, data};
+export {EditorData, data, initData, terminateData};

@@ -1,8 +1,8 @@
 // IIRC, calling clone on the template directly produces a document fragment;
 // this causes subtle issues when working with the fragment that are not
 // very fun to debug. This method has proven more reliable thus far.
-function cloneDomTemplate(id) {
-    let templateEl = document.querySelector(id);
+function cloneDomTemplate(selector) {
+    let templateEl = document.querySelector(selector);
     return templateEl.content.firstElementChild.cloneNode(true);
 }
 
