@@ -1,5 +1,5 @@
 import { UiScreen } from "../../../common/ui/UiScreen.js";
-import { accountSession, AccountSession } from "../../../common/model/AccountSession.js";
+import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
 
 class UiCreateAccountScreen extends UiScreen {
     constructor() {
@@ -16,7 +16,7 @@ class UiCreateAccountScreen extends UiScreen {
     }
 
     onLoginStateChanged() {
-        if (accountSession.isLoggedIn) {
+        if (accountSession.loginState === LoginState.LOGGED_IN) {
             this.requestScreenChange("dashboard", {});
         }
     }
@@ -27,8 +27,7 @@ class UiCreateAccountScreen extends UiScreen {
         let password = this.passwordInputEl.value;
 
         (async () => {
-            await accountSession.createAccount(name, email, password);
-            await accountSession.logIn(email, password);
+            await accountSession.createAccountAndLogIn(name, email, password);
         })();
     }
 }

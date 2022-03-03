@@ -6,6 +6,8 @@ import { UiCreateAccountScreen } from "./screens/create-account/ui/create-accoun
 import { UiDashboardScreen } from "./screens/dashboard/ui/dashboard.js";
 import { UiEditorScreen } from "./screens/editor/ui/editor.js";
 
+import "/app/resources/css/text_layer_builder.css";
+
 class UiScreenWrapper {
     constructor() {
         this.el = document.querySelector("#screen-wrapper");

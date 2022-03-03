@@ -6,6 +6,8 @@ import { accountSession, AccountSession } from "../../../common/model/AccountSes
 import { Version } from "./Version.js";
 import { Query } from "appwrite";
 
+import * as pdfjsLib from "pdfjs-dist/webpack.js";
+
 var data;
 
 function initData(presentationId) {

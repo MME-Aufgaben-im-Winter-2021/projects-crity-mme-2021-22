@@ -1,9 +1,9 @@
 <template id="editor-screen-template">
-    <div class="flex flex-col">
+    <div class="flex flex-col h-full">
         <!-- main content -->
-        <div class="flex h-3/5 w-screen flex-auto flex-row justify-between overflow-y-hidden" id="main-container">
+        <div class="id-main-container flex grow w-screen flex-auto flex-row justify-between overflow-y-hidden">
             <!-- sidebar left -->
-            <div class="h-full flex flex-col overflow-y-scroll bg-slate-600 gap-2 p-2 shrink-0" id="sidebar-left">
+            <div class="id-sidebar-left h-full flex flex-col overflow-y-scroll bg-slate-600 gap-2 p-2 shrink-0">
                 <!-- #thumbnail-template gets instantiated here. -->
             </div>
             <!-- content center -->
@@ -53,7 +53,7 @@
             <!-- /main content -->
         </div>
         <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 h-1/6 w-screen flex flex-col bg-slate-800 text-white">
+        <div class="id-bottom-bar bottom-0 shrink-0 w-screen flex flex-col bg-slate-800 text-white">
             <div class="w-full flex justify-end">
                 <button class="rounded-b bg-slate-600">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->

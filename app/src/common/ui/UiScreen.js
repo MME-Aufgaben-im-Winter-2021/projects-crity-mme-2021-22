@@ -17,6 +17,9 @@ class UiScreen extends Observable {
     // calling this!
     requestScreenChange(screen, screenParameters) {
         this.notifyAll(new Event(UiScreen.EVENT_REQUEST_SCREEN_CHANGE, {screen, screenParameters}));
+        
+        // HACK: Eventually, we want to be able to change screens without a page refresh.
+        location.reload();
     }
 
     static formatUrl(screen, screenParameters) {

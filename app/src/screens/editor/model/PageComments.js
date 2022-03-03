@@ -1,6 +1,7 @@
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { Comment } from "./Comment.js";
+import { Query } from "appwrite";
 
 class PageComments {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?

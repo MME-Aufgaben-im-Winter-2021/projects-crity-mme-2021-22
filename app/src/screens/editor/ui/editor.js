@@ -4,6 +4,7 @@ import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../common/ui/d
 import { ActivePdf } from "../model/ActivePdf.js";
 import { Comment } from "../model/Comment.js";
 import { UiScreen } from "../../../common/ui/UiScreen.js";
+import pdfjsLib from "pdfjs-dist/webpack.js";
 
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
