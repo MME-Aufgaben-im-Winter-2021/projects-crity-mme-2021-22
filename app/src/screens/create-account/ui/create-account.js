@@ -1,5 +1,6 @@
 import { UiScreen } from "../../../common/ui/UiScreen.js";
 import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { Listener } from "../../../common/model/Observable.js";
 
 class UiCreateAccountScreen extends UiScreen {
     constructor() {
@@ -12,7 +13,14 @@ class UiCreateAccountScreen extends UiScreen {
         this.createButtonEl = this.el.querySelector(".id-create-button");
         this.createButtonEl.addEventListener("click", () => this.onCreateButtonClicked());
 
-        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
+        this.listener = new Listener();
+
+        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+    }
+
+    terminate() {
+        super.terminate();
+        this.listener.terminate();
     }
 
     onLoginStateChanged() {

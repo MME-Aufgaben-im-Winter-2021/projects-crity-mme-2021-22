@@ -17,6 +17,10 @@ class PresentationList {
         this._fetch();
     }
 
+    terminate() {
+        this.presentations.terminate();
+    }
+
     async _fetch() {
         let presentations = await appwrite.database.listDocuments(PresentationList.PRESENTATIONS_COLLECTION_ID, [
             Query.equal("author", accountSession.accountId),

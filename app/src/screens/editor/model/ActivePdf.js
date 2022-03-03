@@ -38,6 +38,11 @@ class ActivePdf extends Observable {
         this.numPages = pdfJsPdf.numPages;
     }
 
+    terminate() {
+        super.terminate();
+        this.activePageComments.terminate();
+    }
+
     setActivePage(pageNo) {
         if (this.activePageNo === pageNo) {
             return;

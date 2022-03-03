@@ -14,6 +14,11 @@ class PageComments {
         this.subscribeToCommentsVersionCollections();
     }
 
+    terminate() {
+        this.comments.terminate();
+        this.closeSubscription();
+    }
+
     // Fetch comments for the active page.
     setActivePage(pageNo) {
         this.pageNo = pageNo;

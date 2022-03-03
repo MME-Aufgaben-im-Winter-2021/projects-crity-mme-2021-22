@@ -1,5 +1,5 @@
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
-import { Observable, Event } from "../../../common/model/Observable.js";
+import { Observable, Event, Listener } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { ActivePdf } from "./ActivePdf.js";
 import { accountSession, AccountSession } from "../../../common/model/AccountSession.js";
@@ -15,7 +15,8 @@ function initData(presentationId) {
 }
 
 function terminateData() {
-    // TODO: Comment-channel unsubscription.
+    // TODO: Comment-channel unsubscription needs to happen here.
+    data.terminate();
     data = null;
 }
 
@@ -47,7 +48,15 @@ class EditorData extends Observable {
 
         this.presentationId = presentationId;
 
-        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
+        this.listener = new Listener();
+        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+    }
+
+    terminate() {
+        super.terminate();
+        this.activePdf?.terminate();
+        this.versions.terminate();
+        this.listener.terminate();
     }
 
     setVersion(version) {
@@ -73,10 +82,7 @@ class EditorData extends Observable {
         let loadingTask = pdfjsLib.getDocument(version.pdfUrl);
         let pdfJsPdf = await loadingTask.promise;
         
-        // Method to close the CommentUpdate for the old Version
-        if(this.activePdf !== null) {
-            this.activePdf.activePageComments.closeSubscription();
-        }
+        this.activePdf?.terminate();
         this.activePdf = new ActivePdf(version, pdfJsPdf);
         this.notifyAll(new Event(EditorData.EVENT_PDF_LOADED, {pdfUrl: version.pdfUrl}));
 

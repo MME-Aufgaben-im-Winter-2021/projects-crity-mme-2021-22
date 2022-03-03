@@ -9,10 +9,6 @@ class UiScreen extends Observable {
         this.el = cloneDomTemplate(templateSelector);
     }
 
-    terminate() {
-        return;
-    }
-
     // WARNING: This will call the terminate function! Best idea is to not do anything after
     // calling this!
     requestScreenChange(screen, screenParameters) {

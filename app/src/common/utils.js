@@ -14,4 +14,10 @@ function assert(predicate) {
     console.assert(!IS_DBG || predicate);
 }
 
-export { unused, assert };
+// Generate a globally unique ID.
+let nextId = 0;
+function generateId() {
+    return nextId++;
+}
+
+export { unused, assert, generateId };

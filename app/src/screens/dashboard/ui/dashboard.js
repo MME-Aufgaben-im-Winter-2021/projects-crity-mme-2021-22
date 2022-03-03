@@ -3,6 +3,7 @@ import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate } from "../../../common/ui/dom-utils.js";
 import { UiScreen } from "../../../common/ui/UiScreen.js";
 import { PresentationList } from "../../../common/model/PresentationList.js";
+import { Listener } from "../../../common/model/Observable.js";
 
 // TODO: Redirect to login screen if no user is logged in?
 
@@ -32,11 +33,17 @@ class UiPresentationList {
         this.screen = screen;
         this.el = this.screen.el.querySelector(".id-presentation-list");
 
-        data.addEventListener(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, () => this.onPresentationListAvailable());
+        this.listener = new Listener();
+
+        data.addEventListener(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, () => this.onPresentationListAvailable(), this.listener);
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     onPresentationListAvailable() {
-        data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onPresentationAdded(e));
+        data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onPresentationAdded(e), this.listener);
     }
 
     onPresentationAdded(e) {
@@ -73,6 +80,9 @@ class UiDashboardScreen extends UiScreen {
 
     terminate() {
         super.terminate();
+
+        this.presentationList.terminate();
+
         terminateData();
     }
 }
