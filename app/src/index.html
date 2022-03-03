@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Crity</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <!-- content wrapper -->
+    <div class="flex h-screen flex-col">
+        <%= require("html-loader!./navbar/navbar.html").default %>
+        <%= require("html-loader!./screens/login/ui/login.html").default %>
+    </div>
+
+
+    <script src="index_bundle.js"></script>
+</body>
+
+</html>
