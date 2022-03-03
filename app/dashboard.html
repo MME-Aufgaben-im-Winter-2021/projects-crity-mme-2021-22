@@ -9,46 +9,146 @@
     </head>
 
     <body>
-        <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
+        <!-- content wrapper -->
+        <div class="flex h-screen flex-col">
+            <!-- navbar -->
+            <nav class="sticky top-0 z-50 flex-grow-0 bg-slate-800" id="navbar">
+                <div class="mx-auto flex justify-between px-6">
+                    <!-- logo -->
+                    <div>
+                        <a href="#" class="flex items-center text-white">
+                            <img
+                                src="./resources/img/logo_white.svg"
+                                class="my-2 mr-3 h-10 w-10"
+                            />
+                            <span>crity</span>
+                        </a>
+                    </div>
+                    <!-- info -->
+                    <div class="flex items-center text-white">
+                        <p>Deine Präsentationen</p>
+                    </div>
+                    <!-- user-icon/login -->
+                    <div class="flex items-center text-white">
+                        <button
+                            class="rounded bg-slate-400 py-2 px-4 hover:bg-slate-600"
+                        >
+                            Login
+                        </button>
+                    </div>
+                </div>
+                <!-- /navbar -->
+            </nav>
 
-        <!-- Vorläufiger Button. Kann noch nix -->
-        <button class="mx-5 bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-full">
-            Add Project
-        </button>
+            <!-- main content -->
+            <div class="relative grow overflow-y-scroll bg-zinc-50">
+                <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
 
-        <div class="grid grid-cols-4 flex flex-col my-5 mx-5" id="presentation-list">
-            
+                <!-- Vorläufiger Button. Kann noch nix -->
+
+                <div
+                    class="my-5 mx-5 grid grid-cols-4 flex-col"
+                    id="presentation-list"
+                ></div>
+
+                <!-- /main content -->
+            </div>
+
+            <!-- presentation creation -->
+            <div
+                class="flex h-16 items-center justify-center gap-4 bg-zinc-200"
+            >
+                <input
+                    class="rounded p-2 focus:outline-none"
+                    type="text"
+                    placeholder="Title"
+                    id="presentation-title-input"
+                />
+                <input
+                    class="rounded p-2 focus:outline-none"
+                    type="text"
+                    placeholder="Description"
+                    id="presentation-description-input"
+                />
+                <button
+                    class="rounded-full bg-slate-500 py-2 px-4 font-bold text-white hover:bg-slate-700"
+                    id="add-presentation-button"
+                >
+                    Add Project
+                </button>
+
+                <!-- /presentation creation -->
+            </div>
+
+            <!-- /content wrapper -->
         </div>
 
-        <input class="rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Title" id="presentation-title-input">
-        <input class="rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Description" id="presentation-description-input">
-        <button class="h-10 w-10" id="add-presentation-button">+</button>
-        
         <template id="presentation-template">
-            <button>
-                <h2>
-                    <span class="presentation-title"></span>
-                </h2>
+            <div
+                class="m-2 max-h-80 min-h-min content-center rounded bg-zinc-200 p-2 hover:cursor-pointer"
+            >
+                <!-- title text -->
+                <div
+                    class="my-auto flex min-h-[3rem] justify-center text-center"
+                >
+                    <h2 class="presentation-title my-auto h-min font-bold">
+                        Project title
+                    </h2>
+                </div>
 
-                <h2 class="flex justify-center">
-                    <div class="relative my-2 h-20 w-20 items-center">
-                        <img class="w-full" src="./resources/img/slides_icon.svg">
-                        <h2 class="absolute bottom-0 right-0 bg-slate-500 text-white p-1 rounded hover:bg-slate-700 m-1 h-6">...</h2>
+                <!-- thumbnail -->
+                <div
+                    class="relative my-2 flex h-20 w-full justify-center"
+                    id="presentation-thumbnail"
+                >
+                    <div
+                        class="relative h-full w-min"
+                        id="thumbnail-placeholder"
+                    >
+                        <!-- Heroicons photograph -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-full w-auto text-gray-800"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                        </svg>
+                        <!-- Heroicons dots -->
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="absolute bottom-0 right-0 h-6 w-7 rounded bg-slate-500 px-1 text-white hover:bg-slate-700"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                            />
+                        </svg>
                     </div>
-                </h2>
-               <!-- altes Layout 
-                    <h2 class="flex justify-center">
-                        <img class="my-2 h-20 w-20" src="./resources/img/slides_icon.svg"/>
-                    </h2> -->
+                    <!-- /thumbnail -->
+                </div>
 
-                <h2>
-                    <span class="presentation-description italic"></span>
-                </h2>
-            </button>
+                <!-- description text -->
+                <div class="text-center">
+                    <h2 class="presentation-description italic">
+                        Project description
+                    </h2>
+                </div>
+            </div>
         </template>
 
         <script src="./src/third/pdf.js.build/pdf.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/appwrite@6.0.1"></script>
-        <script type="module" src="./src/screens/dashboard/ui/dashboard.js"></script>
+        <script
+            type="module"
+            src="./src/screens/dashboard/ui/dashboard.js"
+        ></script>
     </body>
 </html>
