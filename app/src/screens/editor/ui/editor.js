@@ -352,8 +352,23 @@ class UiCommentInputFields {
     }
 }
 
+class UiNavBar {
+    constructor() {
+        this.copyLinkButton = document.querySelector("#copy-link-button");
+        this.copyLinkButton.addEventListener("click", e => this.onCopyLinkButtonClicked(e));
+    }
+
+    onCopyLinkButtonClicked(e) {
+        
+        navigator.clipboard.writeText(window.location.href);
+
+        alert("URL copied to clipboard!!!");
+    }
+}
+
 class UiEditorScreen {
     constructor() {
+        this.navBar = new UiNavBar();
         this.thumbnailBar = new UiThumbnailBar();
         this.contentCenter = new UiContentCenter();
         this.timeline = new UiTimeline;
