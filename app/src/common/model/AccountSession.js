@@ -2,12 +2,14 @@ import { Observable, Event } from "./Observable.js";
 import { appwrite } from "./appwrite.js";
 import { assert } from "../utils.js";
 
+var accountSession;
+
 const LoginState = {
     // The page just finished loading. Where are asynchronously checking if we have any sessions.
     UNKNOWN: "UNKNOWN",
 
     LOGGED_IN: "LOGGED_IN",
-    LOGGED_OUT: "LOGGED_OUT"
+    LOGGED_OUT: "LOGGED_OUT",
 };
 
 class AccountSession extends Observable {
@@ -17,14 +19,14 @@ class AccountSession extends Observable {
         super();
 
         this.loginState = LoginState.UNKNOWN;
-        this._accountId = null;
+        this.p_AccountId = null;
         
         (async () => {
             // Check if already logged in.
             try { 
                 // TODO: Is there a cleaner way of doing this?
                 let account = await appwrite.account.get();
-                this._accountId = account.$id;
+                this.p_AccountId = account.$id;
                 this.loginState = LoginState.LOGGED_IN;
             } catch (e) {
                 this.loginState = LoginState.LOGGED_OUT;
@@ -36,7 +38,7 @@ class AccountSession extends Observable {
 
     get accountId() {
         assert(this.loginState === LoginState.LOGGED_IN);
-        return this._accountId;
+        return this.p_AccountId;
     }
 
     async createAccountAndLogIn(name, email, password) {
@@ -54,7 +56,7 @@ class AccountSession extends Observable {
 
         try {
             let session = await appwrite.account.createSession(email, password);
-            this._accountId = session.userId;
+            this.p_AccountId = session.userId;
             this.loginState = LoginState.LOGGED_IN;
             this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
         } catch (e) {
@@ -75,5 +77,5 @@ class AccountSession extends Observable {
     }
 }
 
-var accountSession = new AccountSession();
+accountSession = new AccountSession();
 export { LoginState, AccountSession, accountSession };

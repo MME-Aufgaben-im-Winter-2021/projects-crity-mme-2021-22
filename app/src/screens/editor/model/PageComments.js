@@ -22,54 +22,45 @@ class PageComments {
     // Fetch comments for the active page.
     setActivePage(pageNo) {
         this.pageNo = pageNo;
-        this._fetchComments();
+        this.p_fetchComments();
     }
 
-    async _fetchComments() {
+    async p_fetchComments() {
         this.comments.clear();
 
-        let presentationVersionId = this.version.appwriteId;
-
-        let commentVersions = await appwrite.database.listDocuments(PageComments.COMMENT_VERSION_COLLECTION_ID, [
+        let presentationVersionId = this.version.appwriteId,
+            commentVersions = await appwrite.database.listDocuments(PageComments.COMMENT_VERSION_COLLECTION_ID, [
             Query.equal("presentationVersion", presentationVersionId),
-            Query.equal("pageNo", this.pageNo)
+            Query.equal("pageNo", this.pageNo),
         ]);
 
         for (let i = 0; i < commentVersions.documents.length; i++) {
-            let commentVersion = commentVersions.documents[i];
-
-            let appwriteComment = await appwrite.database.getDocument("comments", commentVersion.comment);
-            let comment = new Comment(appwriteComment.author, appwriteComment.text);
+            let commentVersion = commentVersions.documents[i],
+                appwriteComment = await appwrite.database.getDocument("comments", commentVersion.comment),
+                comment = new Comment(appwriteComment.author, appwriteComment.text);
             this.comments.push(comment);
         }
     }
 
     async subscribeToCommentsVersionCollections() {
         this.unsubscribe = appwrite.subscribe('collections.6214e5ef06bef7005816.documents', response => {
-            console.log("Caallback Recived");
-            this._updateComments(response);
+            this.p_updateComments(response);
         });
     }
 
     closeSubscription() {
-        console.log("ZU")
         this.unsubscribe();
     }
 
-    async _updateComments(response){
-        console.log(response)
-        console.log(response.payload.presentationVersion + " = " + this.version.appwriteId)
-        console.log(response.payload.pageNo  + " = " + this.pageNo)
-        if(response.payload.presentationVersion == this.version.appwriteId && response.payload.pageNo == this.pageNo){
-            let appwriteComment = await appwrite.database.getDocument("comments", response.payload.comment);
-            let comment = new Comment(appwriteComment.author, appwriteComment.text);
+    async p_updateComments(response){
+        if(response.payload.presentationVersion === this.version.appwriteId && response.payload.pageNo === this.pageNo){
+            let appwriteComment = await appwrite.database.getDocument("comments", response.payload.comment),
+                comment = new Comment(appwriteComment.author, appwriteComment.text);
             this.comments.push(comment);
         }
     }
 
     createComment(comment) {
-        // this.comments.push(comment);
-
         (async () => {
             // First creating an entry in commentVersions
             let appwriteComment = await appwrite.database.createDocument(

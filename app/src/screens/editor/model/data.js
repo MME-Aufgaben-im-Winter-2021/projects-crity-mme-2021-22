@@ -2,7 +2,7 @@ import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { Observable, Event, Listener } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { ActivePdf } from "./ActivePdf.js";
-import { accountSession, AccountSession } from "../../../common/model/AccountSession.js";
+import { accountSession } from "../../../common/model/AccountSession.js";
 import { Version } from "./Version.js";
 import { Query } from "appwrite";
 
@@ -67,19 +67,17 @@ class EditorData extends Observable {
         this.notifyAll(new Event(EditorData.EVENT_ACTIVE_VERSION_CHANGED, {version}));
         
         (async () => {
-            let storageFileId = version.pdfUrl;
-            
-            let storageFile = await appwrite.storage.getFile(storageFileId);
-            let storageFileUrl = await appwrite.storage.getFileDownload(storageFileId);
+            let storageFileId = version.pdfUrl,
+                storageFileUrl = appwrite.storage.getFileDownload(storageFileId);
             
             await this.loadPdf(storageFileUrl.href);
         })();
     }
     
     async loadPdf() {
-        let version = this.activeVersion;
-        let loadingTask = pdfjsLib.getDocument(version.pdfUrl);
-        let pdfJsPdf = await loadingTask.promise;
+        let version = this.activeVersion,
+        loadingTask = pdfjsLib.getDocument(version.pdfUrl),
+        pdfJsPdf = await loadingTask.promise;
         
         this.activePdf?.terminate();
         this.activePdf = new ActivePdf(version, pdfJsPdf);
@@ -106,49 +104,28 @@ class EditorData extends Observable {
             "unique()",
             file, 
             ["role:all"], 
-            ["role:all"]);
-
-        console.log("storageFile", storageFile);
-
-        let appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId});
-
-        let storageFileId = storageFile.$id;
-        let pdfUrl = await appwrite.storage.getFileDownload(storageFileId);
-
-        let version = new Version(label, pdfUrl, appwriteVersion.$id);
+            ["role:all"]),
+        appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId}),
+        storageFileId = storageFile.$id,
+        pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
+        version = new Version(label, pdfUrl, appwriteVersion.$id);
 
         this.addVersion(version);
         this.setVersion(this.versions.getLast());
     }
 
-    async loadLoginData() {
-        // File upload always fails without a session.
-        let alreadyLoggedIn = await this.checkIfLoggedIn();
-
-        let account = await appwrite.account.get();
-        console.log(account);
-    }
-
     async fetchVersions() {
-        let presentationId = this.presentationId;
-        console.log(presentationId);
-
-        let presentation = await appwrite.database.getDocument("presentations", presentationId);
-        console.log("loaded presentation", presentation);
-
-        let presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
-            Query.equal("presentation", presentationId)
+        let presentationId = this.presentationId,
+            presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
+            Query.equal("presentation", presentationId),
         ]);
 
         for (let i = 0; i < presentationVersions.documents.length; i++) {
-            let presentationVersion = presentationVersions.documents[i];
-
-            let label = presentationVersion.label;
-
-            let storageFileId = presentationVersion.storageFile;
-            let pdfUrl = await appwrite.storage.getFileDownload(storageFileId);
-
-            let version = new Version(label, pdfUrl, presentationVersion.$id);
+            let presentationVersion = presentationVersions.documents[i],
+                label = presentationVersion.label,
+                storageFileId = presentationVersion.storageFile,
+                pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
+                version = new Version(label, pdfUrl, presentationVersion.$id);
 
             this.addVersion(version);
         }

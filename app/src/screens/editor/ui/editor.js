@@ -7,6 +7,8 @@ import { UiScreen } from "../../../common/ui/UiScreen.js";
 import pdfjsLib from "pdfjs-dist/webpack.js";
 import { Listener } from "../../../common/model/Observable.js";
 
+// IMPORTANT!!! Split this file!
+
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
 class UiPageCanvas {
@@ -45,15 +47,13 @@ class UiPageCanvas {
             this.currentRenderTask = null;
         }
 
-        let viewport = pdfPage.viewport;
-
+        let viewport = pdfPage.viewport,
         // Without any transform, PDFJS will try to render in the coordinate system
         // given by the viewport. Apply a scale to make the PDF fit into the canvas.
         // An alternative solution might be to create a new viewport, but this seems nicest.
-        let scaleX = this.canvasEl.width / viewport.width;
-        let scaleY = this.canvasEl.height / viewport.height;
-
-        let renderTask = pdfPage.pdfJsPage.render({
+            scaleX = this.canvasEl.width / viewport.width,
+            scaleY = this.canvasEl.height / viewport.height,
+            renderTask = pdfPage.pdfJsPage.render({
             canvasContext: this.canvasCtx,
 
             // I think this encodes the first two rows of the 3x3 homogeneous transform in column-major
@@ -94,7 +94,7 @@ class UiThumbnail {
         data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
         
         this.updateSelectionState();
-        this._fetchPage();
+        this.p_fetchPage();
     }
 
     terminate() {
@@ -102,10 +102,9 @@ class UiThumbnail {
     }
 
     // Asynchronously fill the canvas with our page.
-    async _fetchPage() {
-        let activePdfPage = await data.activePdf.fetchPage(this.pageNo);
-
-        let [width, height] = this.computeDimensions(activePdfPage);
+    async p_fetchPage() {
+        let activePdfPage = await data.activePdf.fetchPage(this.pageNo),
+            [width, height] = this.computeDimensions(activePdfPage);
         this.pageCanvas.setDimensions(width, height);
         this.pageCanvas.renderPage(activePdfPage);
     }
@@ -117,14 +116,12 @@ class UiThumbnail {
         // There are probably more elegant ways to do this, but hopefully this is correct ;)
         // Note that at the end, width/height=asp as expected.
 
-        let viewport = activePdfPage.viewport;
-
-        let asp = viewport.width / viewport.height;
+        let viewport = activePdfPage.viewport,
+            width, height,
+            asp = viewport.width / viewport.height;
         if (typeof UiThumbnail.DBG_FORCE_ASP !== "undefined") {
             asp = UiThumbnail.DBG_FORCE_ASP;
         }
-
-        let width, height;
         if (asp > 1) {
             width = UiThumbnail.TARGET_SIZE;
             height = width / asp;
@@ -162,14 +159,14 @@ class UiThumbnailBar {
     }
 
     terminate() {
-        this._clearUiThumbnails();
+        this.p_clearUiThumbnails();
         this.listener.terminate();
     }
 
     // Responsible for creating all the little thumbnails.
     // TODO: Remove old thumbnails once a new PDF is loaded?
     createThumbnails() {
-        this._clearUiThumbnails();
+        this.p_clearUiThumbnails();
 
         let numPages = data.activePdf.pdfJsPdf.numPages;
         for (let i = 0; i < numPages; i++) {
@@ -180,7 +177,7 @@ class UiThumbnailBar {
         }
     }
 
-    _clearUiThumbnails() {
+    p_clearUiThumbnails() {
         this.el.innerHTML = "";
         this.uiThumbnails.forEach(uiThumbnail => {
             uiThumbnail.terminate();
@@ -214,10 +211,9 @@ class UiContentCenter {
     }
 
     async onActivePageChanged() {
-        let activePdfPage = await data.activePdf.fetchPage(data.activePdf.activePageNo);
-        
-        let pdfJsPage = activePdfPage.pdfJsPage;
-        let viewport = activePdfPage.viewport;
+        let activePdfPage = await data.activePdf.fetchPage(data.activePdf.activePageNo),
+            pdfJsPage = activePdfPage.pdfJsPage,
+            viewport = activePdfPage.viewport;
 
         this.pageCanvas.setDimensions(viewport.width, viewport.height);
         this.pageCanvas.renderPage(activePdfPage);
@@ -228,17 +224,14 @@ class UiContentCenter {
             this.textLayerEl.style.width = Math.floor(viewport.width) + "px";
             this.textLayerEl.style.height = Math.floor(viewport.height) + "px";
     
-            let textContent = await pdfJsPage.getTextContent();
-            console.log(textContent);
-    
+            let textContent = await pdfJsPage.getTextContent(),
             // These two arrays will be populated by #renderTextLayer.
             // There seems to be a one-to-one correspondence between the elements
             // in the textDivs array and the textContentItemsStr array.
             // TODO: Does this also hold for textContent.items?
-            let textDivs = [];
-            let textContentItemsStr = [];
-    
-            let textLayerFrag = document.createDocumentFragment();
+                textDivs = [],
+                textContentItemsStr = [],
+                textLayerFrag = document.createDocumentFragment();
             await pdfjsLib.renderTextLayer({
                 textContent: textContent,
                 // TODO: Could we be benefit from a stream-based approach?
@@ -315,8 +308,8 @@ class UiTimeline {
     }
 
     onVersionAdded(e) {
-        let version = e.data.item;
-        let uiVersion = new UiTimelineVersion(version);
+        let version = e.data.item,
+            uiVersion = new UiTimelineVersion(version);
         this.el.insertBefore(uiVersion.el, this.addVersionButtonEl);
     }
 
@@ -398,12 +391,12 @@ class UiCommentInputFields {
         // TODO: (Why) do we need this?
         e.preventDefault();
 
-        let text = this.commentInputField.value;
-        let name = this.nameInputField.value;
+        let text = this.commentInputField.value,
+            name = this.nameInputField.value,
+            comment = new Comment(name, text);
 
         this.commentInputField.value = "";
 
-        let comment = new Comment(name, text);
 
         data.activePdf.activePageComments.createComment(comment);
     }

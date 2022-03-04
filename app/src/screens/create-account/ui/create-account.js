@@ -30,9 +30,9 @@ class UiCreateAccountScreen extends UiScreen {
     }
 
     onCreateButtonClicked() {
-        let name = this.nameInputEl.value;
-        let email = this.emailInputEl.value;
-        let password = this.passwordInputEl.value;
+        let name = this.nameInputEl.value,
+            email = this.emailInputEl.value,
+            password = this.passwordInputEl.value;
 
         (async () => {
             await accountSession.createAccountAndLogIn(name, email, password);

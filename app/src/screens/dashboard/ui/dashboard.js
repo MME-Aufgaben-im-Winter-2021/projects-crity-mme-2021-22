@@ -61,8 +61,8 @@ class UiPresentationCreation {
     }
 
     onAddButtonClicked() {
-        let title = this.titleInputEl.value;
-        let description = this.descriptionInputEl.value;
+        let title = this.titleInputEl.value,
+            description = this.descriptionInputEl.value;
 
         data.presentationList.createPresentation(title, description);
     }

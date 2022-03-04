@@ -32,8 +32,8 @@ class UiLoginScreen extends UiScreen {
     }
 
     onLogInButtonClicked() {
-        let email = this.emailInputEl.value;
-        let password = this.passwordInputEl.value;
+        let email = this.emailInputEl.value,
+            password = this.passwordInputEl.value;
         accountSession.logIn(email, password);
     }
 

@@ -16,8 +16,8 @@ class UiScreen extends Observable {
     }
 
     static formatUrl(screen, screenParameters) {
-        let urlSearchParams = new URLSearchParams(screenParameters);
-        let paramsString = urlSearchParams.toString();
+        let urlSearchParams = new URLSearchParams(screenParameters),
+            paramsString = urlSearchParams.toString();
 
         if (paramsString.length > 0) {
             paramsString = "?" + paramsString;

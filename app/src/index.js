@@ -49,23 +49,16 @@ class Ui {
         this.screenWrapper = new UiScreenSwapper();
 
         // TODO: This is probably not the best place for URL parsing ...
-
-        let screen = "login";
-        if (window.location.hash) {
-            // Hash will also include the # sign.
-            screen = location.hash.substring(1);
-        }
-
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        let screenParameters = this.urlSearchParamsToObject(urlSearchParams);
+        let screen = (window.location.hash ? location.hash.substring(1) : "login"),
+            urlSearchParams = new URLSearchParams(window.location.search),
+            screenParameters = this.urlSearchParamsToObject(urlSearchParams);
 
         this.screenWrapper.loadScreen(screen, screenParameters);
     }
 
     urlSearchParamsToObject(urlSearchParams) {
-        let result = {};
-
-        let entries = urlSearchParams.entries();
+        let result = {},
+            entries = urlSearchParams.entries();
         for (let [key, value] of entries) {
             result[key] = value;
         }
