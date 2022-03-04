@@ -13,6 +13,9 @@ class UiScreen extends Observable {
     // calling this!
     requestScreenChange(screen, screenParameters) {
         this.notifyAll(new Event(UiScreen.EVENT_REQUEST_SCREEN_CHANGE, {screen, screenParameters}));
+        
+        // HACK: Dashboard doesn't load if we change pages, fixing this needs some thought regarding event handling.
+        location.reload();
     }
 
     static formatUrl(screen, screenParameters) {
