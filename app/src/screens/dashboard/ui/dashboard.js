@@ -1,8 +1,9 @@
 import { DashboardData, data, initData, terminateData } from "../model/data.js";
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate } from "../../../common/ui/dom-utils.js";
-import { UiScreen } from "../../../common/ui/UiScreen.js";
+import { UiRestrictedScreen, UiScreen } from "../../../common/ui/UiScreen.js";
 import { Listener } from "../../../common/model/Observable.js";
+import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
 
 // TODO: Redirect to login screen if no user is logged in?
 
@@ -34,15 +35,11 @@ class UiPresentationList {
 
         this.listener = new Listener();
 
-        data.addEventListener(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, () => this.onPresentationListAvailable(), this.listener);
+        data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onPresentationAdded(e), this.listener);
     }
 
     terminate() {
         this.listener.terminate();
-    }
-
-    onPresentationListAvailable() {
-        data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onPresentationAdded(e), this.listener);
     }
 
     onPresentationAdded(e) {
@@ -68,20 +65,19 @@ class UiPresentationCreation {
     }
 }
 
-class UiDashboardScreen extends UiScreen {
+class UiDashboardScreen extends UiRestrictedScreen {
     constructor() {
         super("#dashboard-screen-template");
-        initData();
+    }
 
+    initRestricted() {
+        initData();
         this.presentationList = new UiPresentationList(this);
         this.presentationCreation = new UiPresentationCreation(this);
     }
 
-    terminate() {
-        super.terminate();
-
+    terminateRestricted() {
         this.presentationList.terminate();
-
         terminateData();
     }
 }

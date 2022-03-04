@@ -47,15 +47,13 @@ class EditorData extends Observable {
 
         this.presentationId = presentationId;
 
-        this.listener = new Listener();
-        accountSession.onceLoggedInDo(() => this.fetchVersions(), this.listener);
+        this.fetchVersions();
     }
 
     terminate() {
         super.terminate();
         this.activePdf?.terminate();
         this.versions.terminate();
-        this.listener.terminate();
     }
 
     setVersion(version) {

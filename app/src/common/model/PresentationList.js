@@ -36,10 +36,10 @@ class PresentationList {
 
     async createPresentation(title, description) {
         let appwritePresentation = await appwrite.database.createDocument(
-            PresentationList.PRESENTATIONS_COLLECTION_ID, 
-            "unique()", 
-            {author: accountSession.accountId, title, description},
-        ),
+                PresentationList.PRESENTATIONS_COLLECTION_ID, 
+                "unique()", 
+                {author: accountSession.accountId, title, description},
+            ),
             presentation = Presentation.fromAppwritePresentation(appwritePresentation);
 
         this.presentations.push(presentation);

@@ -3,7 +3,7 @@ import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../common/ui/dom-utils.js";
 import { ActivePdf } from "../model/ActivePdf.js";
 import { Comment } from "../model/Comment.js";
-import { UiScreen } from "../../../common/ui/UiScreen.js";
+import { UiRestrictedScreen, UiScreen } from "../../../common/ui/UiScreen.js";
 import pdfjsLib from "pdfjs-dist/webpack.js";
 import { Listener } from "../../../common/model/Observable.js";
 
@@ -397,16 +397,20 @@ class UiCommentInputFields {
 
         this.commentInputField.value = "";
 
-
         data.activePdf.activePageComments.createComment(comment);
     }
 }
 
-class UiEditorScreen extends UiScreen {
+// TODO: We probably won't want to inherit from restricted screen, since people
+// should be able to add comments without an account? That doesn't work at the
+// moment, so for now this is probably okay.
+class UiEditorScreen extends UiRestrictedScreen {
     constructor(screenParameters) {
-        super("#editor-screen-template");
+        super("#editor-screen-template", screenParameters);
+    }
 
-        initData(screenParameters.presentation);
+    initRestricted() {
+        initData(this.screenParameters.presentation);
 
         this.thumbnailBar = new UiThumbnailBar(this);
         this.contentCenter = new UiContentCenter(this);
@@ -414,9 +418,7 @@ class UiEditorScreen extends UiScreen {
         this.rightSideBar = new UiRightSidebar(this);
     }
 
-    terminate() {
-        super.terminate();
-
+    terminateRestricted() {
         this.rightSideBar.terminate();
         this.timeline.terminate();
         this.contentCenter.terminate();
