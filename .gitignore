@@ -5,5 +5,6 @@ node_modules
 .vscode
 .idea
 
-# Build output
+# Build/deployment output
 dist
+deploy
