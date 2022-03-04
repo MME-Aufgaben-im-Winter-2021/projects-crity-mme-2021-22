@@ -4,3 +4,7 @@ node_modules
 # Local IDE files
 .vscode
 .idea
+
+# Build/deployment output
+dist
+deploy
