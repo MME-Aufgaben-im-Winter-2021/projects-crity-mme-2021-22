@@ -1,28 +1,24 @@
-// Use this for custom permission management.
-//let userId = process.env.APPWRITE_FUNCTION_USER_ID;
+import * as appwriteSdk from "node-appwrite";
+import * as fs from "fs";
+import path from "path";
 
-//let response = { "foo": "bar", userId };
-//console.log(JSON.stringify(response));
+let appwrite = new appwriteSdk.Client();
 
-const sdk = require('node-appwrite');
-
-// Init SDK
-let client = new sdk.Client();
-
-let database = new sdk.Database(client);
-
-client
-    .setEndpoint(process.env.APPWRITE_ENDPOINT) // Your API Endpoint
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID) // Your project ID
-    .setKey(process.env.APPWRITE_API_KEY) // Your secret API key
+appwrite
+    .setEndpoint("https://appwrite.software-engineering.education/v1")
+    .setProject(/* crity */ "6206644928ab8835c77f")
+    .setKey("9c53639badcd8a4d4ec701c35e90fb21eeae4d2fe1bbf5469fd1126f4d41e96c06421eef598b60f831a7b976d3a2e0c7654eb652f8c1a73d18d9a483a07383e679b093020bdcb17606eeac05c43a7373c4374eb2f310076edd471e5be37688e761e3c4c4ab9cefa00219d00ff5f7ff6fb619845f3f990821d7fcf7041bc7969e")
 ;
 
-let promise = database.createDocument('comments', 'unique()', {
-    text, author
-});
+const payload = JSON.parse(process.env.APPWRITE_FUNCTION_DATA);
+const [text, author] = payload;
 
-promise.then(function (response) {
+let database = new appwriteSdk.Database(appwrite);
+let promise = database.createDocument('comments', 'unique()', {author: author, text: text});
+
+promise.then(function(response) {
     console.log(response);
-}, function (error) {
+}, function(error) {
     console.log(error);
 });
+

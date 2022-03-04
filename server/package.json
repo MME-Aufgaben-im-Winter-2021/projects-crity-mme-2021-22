@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "Function that handles client request. Idea: Having a megafunc with switch-case is easier to deploy than lots of micro-functions.",
     "main": "index.js",
+    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -10,6 +11,6 @@
     "license": "MIT",
 
     "dependencies": {
-        "node-appwrite": "^2.5.0"
+        "node-appwrite": "^4.0.2"
     }
 }

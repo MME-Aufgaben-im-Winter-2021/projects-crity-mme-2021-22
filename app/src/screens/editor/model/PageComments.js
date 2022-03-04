@@ -68,8 +68,7 @@ class PageComments {
     }
 
     createComment(comment) {
-        // this.comments.push(comment);
-
+        /*
         (async () => {
             // First creating an entry in commentVersions
             let appwriteComment = await appwrite.database.createDocument(
@@ -83,8 +82,11 @@ class PageComments {
                 "unique()", 
                 {presentationVersion: this.version.appwriteId, pageNo: this.pageNo, xOnPage: 0.0, yOnPage: 0.0, comment: appwriteComment.$id});
         })();
+        */
 
-        let promise = appwrite.functions.createExecution('uberFunc', comment.text);
+        let json = JSON.stringify([comment.text, comment.author]);
+        let promise = appwrite.functions.createExecution('uberFunc', json);
+        
         promise.then(function (response) {
             console.log(response); // Success
         }, function (error) {
