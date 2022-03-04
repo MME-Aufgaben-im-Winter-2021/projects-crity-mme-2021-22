@@ -1,3 +1,5 @@
+import { Appwrite } from "appwrite";
+
 var appwrite = new Appwrite();
 appwrite
     .setEndpoint("https://appwrite.software-engineering.education/v1")

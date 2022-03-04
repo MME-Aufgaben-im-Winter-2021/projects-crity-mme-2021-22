@@ -1,8 +1,11 @@
-import { EditorData, data } from "../model/data.js";
+import { EditorData, data, initData, terminateData } from "../model/data.js";
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../common/ui/dom-utils.js";
 import { ActivePdf } from "../model/ActivePdf.js";
 import { Comment } from "../model/Comment.js";
+import { UiScreen } from "../../../common/ui/UiScreen.js";
+import pdfjsLib from "pdfjs-dist/webpack.js";
+import { Listener } from "../../../common/model/Observable.js";
 
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
@@ -87,10 +90,15 @@ class UiThumbnail {
         let pageCanvasEl = this.el.querySelector("canvas");
         this.pageCanvas = new UiPageCanvas(pageCanvasEl);
 
-        data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState());
+        this.listener = new Listener();
+        data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
         
         this.updateSelectionState();
         this._fetchPage();
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     // Asynchronously fill the canvas with our page.
@@ -140,27 +148,44 @@ class UiThumbnail {
 }
 
 class UiThumbnailBar {
-    constructor() {
-        this.el = document.querySelector("#sidebar-left");
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-sidebar-left");
 
         if (data.hasPdf()) {
             this.createThumbnails();
         }
 
-        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.createThumbnails());
+        this.listener = new Listener();
+        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.createThumbnails(), this.listener);
+
+        this.uiThumbnails = [];
+    }
+
+    terminate() {
+        this._clearUiThumbnails();
+        this.listener.terminate();
     }
 
     // Responsible for creating all the little thumbnails.
     // TODO: Remove old thumbnails once a new PDF is loaded?
     createThumbnails() {
-        this.el.innerHTML = "";
+        this._clearUiThumbnails();
 
         let numPages = data.activePdf.pdfJsPdf.numPages;
-
         for (let i = 0; i < numPages; i++) {
             let uiThumbnail = new UiThumbnail(i + 1);
+
+            this.uiThumbnails.push(uiThumbnail);
             this.el.appendChild(uiThumbnail.el);
         }
+    }
+
+    _clearUiThumbnails() {
+        this.el.innerHTML = "";
+        this.uiThumbnails.forEach(uiThumbnail => {
+            uiThumbnail.terminate();
+        });
+        this.uiThumbnails.length = 0;
     }
 }
 
@@ -171,16 +196,21 @@ class UiThumbnailBar {
 // but we make it transparent. A good way to understand how this works is to using element inspection
 // in your web browser.
 class UiContentCenter {
-    constructor() {
-        this.pageCanvas = new UiPageCanvas(document.querySelector("#pdf-canvas"));
-        this.textLayerEl = document.querySelector("#pdf-text-layer");
+    constructor(screen) {
+        this.pageCanvas = new UiPageCanvas(screen.el.querySelector(".id-pdf-canvas"));
+        this.textLayerEl = screen.el.querySelector(".id-pdf-text-layer");
 
-        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded());
+        this.listener = new Listener();
+        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded(), this.listener);
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     // We only care about this event to be able to subscribe to the active page event.
     onPdfLoaded() {
-        data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.onActivePageChanged());
+        data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.onActivePageChanged(), this.listener);
     }
 
     async onActivePageChanged() {
@@ -246,7 +276,12 @@ class UiTimelineVersion {
         this.version = version;
         this.updateSelectionState();
 
-        data.addEventListener(EditorData.EVENT_ACTIVE_VERSION_CHANGED, () => this.updateSelectionState());
+        this.listener = new Listener();
+        data.addEventListener(EditorData.EVENT_ACTIVE_VERSION_CHANGED, () => this.updateSelectionState(), this.listener);
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     onClick() {
@@ -261,15 +296,22 @@ class UiTimelineVersion {
 }
 
 class UiTimeline {
-    constructor() {
-        this.el = document.querySelector("#version-list");
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-version-list");
 
-        this.addVersionButtonEl = document.querySelector("#add-version-button");
+        this.addVersionButtonEl = screen.el.querySelector(".id-add-version-button");
+        this.addVersionButtonEl.addEventListener("click", () => this.onAddButtonClicked());
 
-        this.fileInputEl = document.querySelector("#file-input");
-        this.fileInputEl.addEventListener("change", () => this.onAddButtonClicked());
+        // Hidden file input element, we only use this to open a file dialog box.
+        this.fileInputEl = screen.el.querySelector(".id-file-input");
+        this.fileInputEl.addEventListener("change", () => this.onFileSelectorConcluded());
 
-        data.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e));
+        this.listener = new Listener();
+        data.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     onVersionAdded(e) {
@@ -279,15 +321,25 @@ class UiTimeline {
     }
 
     onAddButtonClicked() {
+        // Open a file dialog.
+        this.fileInputEl.click();
+    }
+
+    onFileSelectorConcluded() {
         data.createPresentationVersion(data.presentationId, "V"+(data.versions.items.length+1), this.fileInputEl.files[0]);
     }
 }
 
 class UiRightSidebar {
-    constructor() {
-        this.rightSidebar = document.querySelector("#sidebar-right");
-        this.commentList = new UiCommentList();
-        this.commentInputFields = new UiCommentInputFields();
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-sidebar-right");
+
+        this.commentList = new UiCommentList(screen);
+        this.commentInputFields = new UiCommentInputFields(screen);
+    }
+
+    terminate() {
+        this.commentList.terminate();
     }
 }
 
@@ -304,15 +356,20 @@ class UiComment {
 }
 
 class UiCommentList {
-    constructor() {
-        this.el = document.querySelector("#comment-list");
-        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded());
+    constructor(screen) {
+        this.el = screen.el.querySelector(".id-comment-list");
+        this.listener = new Listener();
+        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded(), this.listener);
+    }
+
+    terminate() {
+        this.listener.terminate();
     }
 
     // We only care about this event to be able to subscribe to the active page event.
     onPdfLoaded() {
-        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onCommentAdded(e.data.item));
-        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_CLEARED, e => this.onCommentsCleared());
+        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onCommentAdded(e.data.item), this.listener);
+        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_CLEARED, () => this.onCommentsCleared(), this.listener);
     }
 
     onCommentAdded(comment) {
@@ -326,10 +383,10 @@ class UiCommentList {
 }
 
 class UiCommentInputFields {
-    constructor() {
-        this.nameInputField = document.querySelector("#name-input");
+    constructor(screen) {
+        this.nameInputField = screen.el.querySelector(".id-name-input");
 
-        this.commentInputField = document.querySelector("#comment-input");
+        this.commentInputField = screen.el.querySelector(".id-comment-input");
         this.commentInputField.addEventListener("keydown", e => this.onKeyDown(e));
     }
 
@@ -352,24 +409,41 @@ class UiCommentInputFields {
     }
 }
 
-class UiEditorScreen {
-    constructor() {
-        this.thumbnailBar = new UiThumbnailBar();
-        this.contentCenter = new UiContentCenter();
-        this.timeline = new UiTimeline;
-        this.rightSideBar = new UiRightSidebar();
+class UiEditorScreen extends UiScreen {
+    constructor(screenParameters) {
+        super("#editor-screen-template");
+
+        initData(screenParameters.presentation);
+
+        this.thumbnailBar = new UiThumbnailBar(this);
+        this.contentCenter = new UiContentCenter(this);
+        this.timeline = new UiTimeline(this);
+        this.rightSideBar = new UiRightSidebar(this);
+    }
+
+    terminate() {
+        super.terminate();
+
+        this.rightSideBar.terminate();
+        this.timeline.terminate();
+        this.contentCenter.terminate();
+        this.thumbnailBar.terminate();
+
+        terminateData();
     }
 }
-
-new UiEditorScreen();
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Uber function testing.
 
 import { runUberFunc } from "../../../common/model/runUberFunc.js";
 
-console.time("uberFunctionRoundtripTime");
-var response = await runUberFunc();
-console.timeEnd("uberFunctionRoundtripTime");
+(async () => {
+    console.time("uberFunctionRoundtripTime");
+    var response = await runUberFunc();
+    console.timeEnd("uberFunctionRoundtripTime");
+    
+    console.log("Uber function responded:", response);
+})();
 
-console.log("Uber function responded:", response);
+export { UiEditorScreen };

@@ -1,4 +1,6 @@
+import { accountSession } from "./AccountSession.js";
 import { appwrite } from "./appwrite.js";
+import { Listener } from "./Observable.js";
 
 const UBERFUNC_ID = "uberFunc";
 
@@ -15,20 +17,23 @@ const UBERFUNC_ID = "uberFunc";
 var promiseResolversByExecutionId = [];
 var responsesByExecutionId = [];
 
-appwrite.subscribe(`functions.${UBERFUNC_ID}`, response => {
-    if (response.event === "functions.executions.update") {
-        let executionId = response.payload.$id;
+let listener = new Listener();
+accountSession.onceLoggedInDo(() => {
+    appwrite.subscribe(`functions.${UBERFUNC_ID}`, response => {
+        if (response.event === "functions.executions.update") {
+            let executionId = response.payload.$id;
 
-        responsesByExecutionId[executionId] = response;
-        let resolver = promiseResolversByExecutionId[executionId];
-        if (typeof resolver !== "undefined") {
-            resolver(response);
-            delete responsesByExecutionId[executionId];
+            responsesByExecutionId[executionId] = response;
+            let resolver = promiseResolversByExecutionId[executionId];
+            if (typeof resolver !== "undefined") {
+                resolver(response);
+                delete responsesByExecutionId[executionId];
 
-            delete promiseResolversByExecutionId[executionId];
+                delete promiseResolversByExecutionId[executionId];
+            }
         }
-    }
-});
+    });
+}, listener);
 
 async function runUberFunc() {
     // Note that we give up execution in here, single-threaded though we might be.

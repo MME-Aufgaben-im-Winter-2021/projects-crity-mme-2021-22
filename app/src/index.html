@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Crity</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="flex flex-col h-screen">
+        <%= require("html-loader!./navbar/navbar.html").default %>
+        <div class="grow h-0" id="screen-swapper"></div>
+    </div>
+
+    <%= require("html-loader!./screens/login/ui/login.html").default %>
+    <%= require("html-loader!./screens/create-account/ui/create-account.html").default %>
+    <%= require("html-loader!./screens/dashboard/ui/dashboard.html").default %>
+    <%= require("html-loader!./screens/editor/ui/editor.html").default %>
+</body>
+
+</html>

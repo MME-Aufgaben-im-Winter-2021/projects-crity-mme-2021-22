@@ -1,26 +1,45 @@
-import { data, LoginData } from "../model/data.js";
+import { UiScreen } from "../../../common/ui/UiScreen.js";
+import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { Listener } from "../../../common/model/Observable.js";
 
-class UiCreateAccountScreen {
+class UiLoginScreen extends UiScreen {
     constructor() {
-        this.emailInputEl = document.querySelector("#email-input");
-        this.passwordInputEl = document.querySelector("#password-input");
+        super("#login-screen-template");
 
-        this.logInButtonEl = document.querySelector("#log-in-button");
+        this.listener = new Listener();
+
+        this.emailInputEl = this.el.querySelector(".id-email-input");
+        this.passwordInputEl = this.el.querySelector(".id-password-input");
+
+        this.logInButtonEl = this.el.querySelector(".id-log-in-button");
         this.logInButtonEl.addEventListener("click", () => this.onLogInButtonClicked());
 
-        this.createAccountButtonEl = document.querySelector("#create-account-button");
+        this.createAccountButtonEl = this.el.querySelector(".id-create-account-button");
         this.createAccountButtonEl.addEventListener("click", () => this.onCreateAccountButtonClicked());
+
+        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+    }
+
+    terminate() {
+        super.terminate();
+        this.listener.terminate();
+    }
+
+    onLoginStateChanged() {
+        if (accountSession.loginState === LoginState.LOGGED_IN) {
+            this.requestScreenChange("dashboard", {});
+        }
     }
 
     onLogInButtonClicked() {
         let email = this.emailInputEl.value;
         let password = this.passwordInputEl.value;
-        data.accountSession.logIn(email, password);
+        accountSession.logIn(email, password);
     }
 
     onCreateAccountButtonClicked() {
-        window.location.href = "/create-account.html";
+        this.requestScreenChange("create-account", {});
     }
 }
 
-new UiCreateAccountScreen();
+export { UiLoginScreen };

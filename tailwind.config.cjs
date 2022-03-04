@@ -1,7 +1,7 @@
 let plugin = require("tailwindcss/plugin");
 
 module.exports = {
-    content: ["./app/**/*.{js,html}"],
+    content: ["./dist/**/*.html"],
     theme: {
         extend: {},
     },

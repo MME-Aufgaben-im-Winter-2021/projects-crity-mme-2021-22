@@ -1,9 +1,23 @@
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
-import { Observable, Event } from "../../../common/model/Observable.js";
+import { Observable, Event, Listener } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { ActivePdf } from "./ActivePdf.js";
-import { AccountSession } from "../../../common/model/AccountSession.js";
+import { accountSession, AccountSession } from "../../../common/model/AccountSession.js";
 import { Version } from "./Version.js";
+import { Query } from "appwrite";
+
+import * as pdfjsLib from "pdfjs-dist/webpack.js";
+
+var data;
+
+function initData(presentationId) {
+    data = new EditorData(presentationId);
+}
+
+function terminateData() {
+    data.terminate();
+    data = null;
+}
 
 // The global object representing all the abstract state of the tab.
 class EditorData extends Observable {
@@ -19,23 +33,31 @@ class EditorData extends Observable {
 
     // }
 
-    constructor() {
+    constructor(presentationId) {
         super();
 
         // TODO: Having an active PDF and an active version seems redundant, revisit this.
         this.activePdf = null;
 
         this.activeVersion = null;
+
+        // TODO: Fetching and updating versions should be handled by a class VersionList,
+        // just like we do for PresentationLists.
         this.versions = new ObservableArray();
 
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        this.presentationId = urlSearchParams.get("presentation");
+        this.presentationId = presentationId;
 
-        this.accountSession = new AccountSession();
-        this.accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged());
+        this.listener = new Listener();
+        accountSession.onceLoggedInDo(() => this.fetchVersions(), this.listener);
     }
 
-    
+    terminate() {
+        super.terminate();
+        this.activePdf?.terminate();
+        this.versions.terminate();
+        this.listener.terminate();
+    }
+
     setVersion(version) {
         if (this.activeVersion === version) {
             return;
@@ -59,10 +81,7 @@ class EditorData extends Observable {
         let loadingTask = pdfjsLib.getDocument(version.pdfUrl);
         let pdfJsPdf = await loadingTask.promise;
         
-        // Method to close the CommentUpdate for the old Version
-        if(this.activePdf !== null) {
-            this.activePdf.activePageComments.closeSubscription();
-        }
+        this.activePdf?.terminate();
         this.activePdf = new ActivePdf(version, pdfJsPdf);
         this.notifyAll(new Event(EditorData.EVENT_PDF_LOADED, {pdfUrl: version.pdfUrl}));
 
@@ -82,10 +101,6 @@ class EditorData extends Observable {
     // DB-related stuff
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    onLoginStateChanged() {
-        this.fetchVersions();
-    }
-
     async createPresentationVersion(presentationId, label, file) {
         let storageFile = await appwrite.storage.createFile(
             "unique()",
@@ -115,8 +130,6 @@ class EditorData extends Observable {
     }
 
     async fetchVersions() {
-        let urlSearchParams = new URLSearchParams(window.location.search);
-
         let presentationId = this.presentationId;
         console.log(presentationId);
 
@@ -144,5 +157,4 @@ class EditorData extends Observable {
     }
 }
 
-var data = new EditorData();
-export {EditorData, data};
+export {EditorData, data, initData, terminateData};

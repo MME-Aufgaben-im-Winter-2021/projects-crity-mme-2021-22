@@ -1,13 +1,32 @@
-import { data, CreateAccountData } from "../model/data.js";
+import { UiScreen } from "../../../common/ui/UiScreen.js";
+import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { Listener } from "../../../common/model/Observable.js";
 
-class UiLoginScreen {
+class UiCreateAccountScreen extends UiScreen {
     constructor() {
-        this.nameInputEl = document.querySelector("#name-input");
-        this.emailInputEl = document.querySelector("#email-input");
-        this.passwordInputEl = document.querySelector("#password-input");
+        super("#create-account-screen-template");
 
-        this.createButtonEl = document.querySelector("#create-button");
+        this.nameInputEl = this.el.querySelector(".id-name-input");
+        this.emailInputEl = this.el.querySelector(".id-email-input");
+        this.passwordInputEl = this.el.querySelector(".id-password-input");
+
+        this.createButtonEl = this.el.querySelector(".id-create-button");
         this.createButtonEl.addEventListener("click", () => this.onCreateButtonClicked());
+
+        this.listener = new Listener();
+
+        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+    }
+
+    terminate() {
+        super.terminate();
+        this.listener.terminate();
+    }
+
+    onLoginStateChanged() {
+        if (accountSession.loginState === LoginState.LOGGED_IN) {
+            this.requestScreenChange("dashboard", {});
+        }
     }
 
     onCreateButtonClicked() {
@@ -16,10 +35,9 @@ class UiLoginScreen {
         let password = this.passwordInputEl.value;
 
         (async () => {
-            await data.accountSession.createAccount(name, email, password);
-            await data.accountSession.logIn(email, password);
+            await accountSession.createAccountAndLogIn(name, email, password);
         })();
     }
 }
 
-new UiLoginScreen();
+export { UiCreateAccountScreen };
