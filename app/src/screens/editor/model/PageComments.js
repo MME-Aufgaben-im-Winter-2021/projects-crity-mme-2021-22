@@ -83,6 +83,13 @@ class PageComments {
                 "unique()", 
                 {presentationVersion: this.version.appwriteId, pageNo: this.pageNo, xOnPage: 0.0, yOnPage: 0.0, comment: appwriteComment.$id});
         })();
+
+        let promise = appwrite.functions.createExecution('uberFunc', comment.text);
+        promise.then(function (response) {
+            console.log(response); // Success
+        }, function (error) {
+            console.log(error); // Failure
+        });
     }
 }
 

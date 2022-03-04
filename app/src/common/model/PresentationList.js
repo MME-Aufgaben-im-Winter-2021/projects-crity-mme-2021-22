@@ -40,7 +40,7 @@ class PresentationList {
             "unique()", 
             {author: accountSession.accountId, title, description}
         );
-
+        
         let presentation = Presentation.fromAppwritePresentation(appwritePresentation);
 
         this.presentations.push(presentation);
