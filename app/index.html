@@ -10,7 +10,7 @@
 
     <body>
         <!-- content wrapper -->
-        <div class="flex h-screen flex-col">
+        <div class="flex h-screen flex-col" id="main-screen">
             <!-- navbar -->
             <nav class="sticky top-0 z-50 flex-grow-0 bg-slate-800" id="navbar">
                 <div class="mx-auto flex justify-between px-6">
@@ -132,8 +132,8 @@
 
             <!-- timeline -->
             <div class="bottom-0 h-1/6 w-screen flex flex-col bg-slate-800 text-white" id="bottom-bar">
-                <div class="w-full flex justify-end">
-                    <button class="rounded-b bg-slate-600">
+                <div class="w-full flex justify-end" id="timeline-header">
+                    <button class="rounded-b bg-slate-600" id="timeline-hide-button">
                         <!-- "hide"-arrow, to be shown when timeline is visible -->
                         <svg class="h-6 w-6 text-white" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                         
@@ -143,7 +143,7 @@
                 </div>
 
                 <!-- TODO: Do we want a canvas for fancy graphics? -->
-                <div class="flex space-x-2 p-2 items-center grow overflow-x-scroll" id="version-list">
+                <div class="flex space-x-2 p-2 items-center grow" id="version-list">
                     <!-- #version-template get instantiated here. -->
                     <button class="transition p-4 rounded-xl bg-slate-400 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black" id="add-version-button" onclick="document.getElementById('file-input').click();">
                         <input id="file-input" type="file" name="name" style="display: none;" />

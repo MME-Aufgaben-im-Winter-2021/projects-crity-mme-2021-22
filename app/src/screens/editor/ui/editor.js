@@ -266,6 +266,12 @@ class UiTimeline {
 
         this.addVersionButtonEl = document.querySelector("#add-version-button");
 
+        this.timelineWindow = document.querySelector("#bottom-bar");
+        this.timelineHideButton = document.querySelector("#timeline-hide-button");
+        this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
+        this.timelineHeader = document.querySelector("#timeline-header");
+        this.mainScreen = document.querySelector("#main-screen");
+
         this.fileInputEl = document.querySelector("#file-input");
         this.fileInputEl.addEventListener("change", () => this.onAddButtonClicked());
 
@@ -280,6 +286,16 @@ class UiTimeline {
 
     onAddButtonClicked() {
         data.createPresentationVersion(data.presentationId, "V"+(data.versions.items.length+1), this.fileInputEl.files[0]);
+    }
+
+    timelineHideButtonClicked() {
+        if(this.timelineWindow.style.display === "none") {
+            this.timelineWindow.style.display = "block";
+            this.timelineWindow.insertBefore(this.timelineHeader, this.el);
+        }else{
+            this.timelineWindow.style.display = "none";
+            this.mainScreen.appendChild(this.timelineHeader);
+        }
     }
 }
 
