@@ -61,6 +61,18 @@ class AccountSession extends Observable {
             // TODO: Error message.
         }
     }
+
+    onceLoggedInDo(doWhat, listener) {
+        if (this.loginState === LoginState.LOGGED_IN) {
+            doWhat();
+        }
+
+        this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
+            if (this.loginState === LoginState.LOGGED_IN) {
+                doWhat();
+            }
+        }, listener);
+    }
 }
 
 var accountSession = new AccountSession();

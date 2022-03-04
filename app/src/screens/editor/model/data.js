@@ -49,7 +49,7 @@ class EditorData extends Observable {
         this.presentationId = presentationId;
 
         this.listener = new Listener();
-        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+        accountSession.onceLoggedInDo(() => this.fetchVersions(), this.listener);
     }
 
     terminate() {
@@ -102,10 +102,6 @@ class EditorData extends Observable {
     // DB-related stuff
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    onLoginStateChanged() {
-        this.fetchVersions();
-    }
-
     async createPresentationVersion(presentationId, label, file) {
         let storageFile = await appwrite.storage.createFile(
             "unique()",

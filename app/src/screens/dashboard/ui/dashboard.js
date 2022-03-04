@@ -2,7 +2,6 @@ import { DashboardData, data, initData, terminateData } from "../model/data.js";
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { cloneDomTemplate } from "../../../common/ui/dom-utils.js";
 import { UiScreen } from "../../../common/ui/UiScreen.js";
-import { PresentationList } from "../../../common/model/PresentationList.js";
 import { Listener } from "../../../common/model/Observable.js";
 
 // TODO: Redirect to login screen if no user is logged in?

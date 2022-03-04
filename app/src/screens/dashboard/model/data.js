@@ -1,4 +1,4 @@
-import { AccountSession, accountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { accountSession } from "../../../common/model/AccountSession.js";
 import { Observable, Event, Listener } from "../../../common/model/Observable.js";
 import { PresentationList } from "../../../common/model/PresentationList.js";
 
@@ -11,20 +11,18 @@ class DashboardData extends Observable {
         super();
         this.presentationList = null;
         this.listener = new Listener();
-        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+        accountSession.onceLoggedInDo(() => this.onLogin(), this.listener);
+    }
+
+    onLogin() {
+        this.presentationList = new PresentationList();
+        this.notifyAll(new Event(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, {}));
     }
 
     terminate() {
         super.terminate();
         this.presentationList.terminate();
         this.listener.terminate();
-    }
-
-    onLoginStateChanged() {
-        if (accountSession.loginState === LoginState.LOGGED_IN) {
-            this.presentationList = new PresentationList();
-            this.notifyAll(new Event(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, {}));
-        }
     }
 }
 
