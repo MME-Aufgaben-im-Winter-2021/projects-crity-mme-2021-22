@@ -51,11 +51,13 @@ class GlobalSubscriptionTable {
 
     static removeSubscription(subscription) {
         GlobalSubscriptionTable._forEachIndex(subscription, (index, key) => {
-            if (index[key] === undefined) {
-                index[key] = new Set();
+            if (index[key] !== undefined) {
+                index[key].delete(subscription);
+                if (index[key].size === 0) {
+                    delete index[key];
+                }
             }
 
-            index[key].delete(subscription);
         });
     }
 

@@ -15,7 +15,6 @@ function initData(presentationId) {
 }
 
 function terminateData() {
-    // TODO: Comment-channel unsubscription needs to happen here.
     data.terminate();
     data = null;
 }
