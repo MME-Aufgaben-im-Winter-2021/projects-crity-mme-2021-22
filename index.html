@@ -1,195 +1,270 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>crity</title>
-        <link rel="stylesheet" href="./resources/public/style.css" />
-    </head>
 
-    <body>
-        <!-- content wrapper -->
-        <div class="flex h-screen flex-col">
-            <!-- navbar -->
-            <nav class="sticky top-0 z-50 flex-grow-0 bg-slate-800" id="navbar">
-                <div class="mx-auto flex justify-between px-6">
-                    <!-- logo -->
-                    <div>
-                        <a href="#" class="flex items-center text-white">
-                            <img src="./resources/img/logo_white.svg" class="my-2 mr-3 h-10 w-10" />
-                            <span>crity</span>
-                        </a>
-                    </div>
-                    <!-- info -->
-                    <div class="flex items-center text-white">
-                        <ul class="flex items-center">
-                            <li class="">file-name.pdf</li>
-                            <li class="mx-12">-</li>
-                            <li class="">version</li>
-                        </ul>
-                    </div>
-                    <!-- user-icon/login -->
-                    <div class="flex items-center text-white">
-                        <button class="rounded bg-slate-400 py-2 px-4 hover:bg-slate-600">Login</button>
-                    </div>
-                </div>
-                <!-- /navbar -->
-            </nav>
+<head>
+    <meta charset="utf-8" />
+    <title>Crity</title>
+    <link rel="stylesheet" href="style.css" />
+<script defer src="index_bundle.js"></script><link href="text_layer_builder.css" rel="stylesheet"></head>
 
-            <!-- main content -->
-            <div class="flex h-3/5 w-screen flex-auto flex-row justify-between overflow-y-hidden" id="main-container">
-                <!-- sidebar left -->
-                <div class="mr-auto flex h-full w-1/4 flex-col overflow-y-scroll bg-zinc-100" id="sidebar-left">
-                    <div class="flex w-auto flex-col gap-2 p-2" id="thumbnail-list">
-                        <!-- Thumbnails einzelner Seiten können hier mittels des Thumbnail-Templates eingefügt werden -->
-                    </div>
-                </div>
-
-                <!-- content center -->
-                <div class="w-full overflow-y-scroll bg-zinc-50" id="content-center">
-                    <canvas>
-                        <!-- TODO: Implementierung von PDF.js zur Darstellung der Folien -->
-                    </canvas>
-                </div>
-
-                <!-- sidebar right -->
-                <div class="ml-auto flex h-full w-2/5 flex-col" id="sidebar-right">
-                    <!-- search/sort/filter bar -->
-                    <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
-                        <!-- search bar -->
-                        <div class="relative flex-grow p-1">
-                            <input
-                                type="text"
-                                class="z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
-                                placeholder="Search..."
-                            />
-                            <button class="absolute top-3 right-3">
-                                <svg
-                                    class="h-6 w-6 text-gray-600"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                        <!-- sort/filter btn -->
-                        <div class="flex items-center">
-                            <button class="px-1" id="sort-btn">
-                                <svg
-                                    class="h-6 w-6 text-gray-600"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-                            <button class="px-1" id="filter-btn">
-                                <svg
-                                    class="h-6 w-6 text-gray-600"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
-                                        d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
-                                        clip-rule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                        <!-- /search/sort/filter bar -->
-                    </div>
-
-                    <!-- comment list -->
-                    <div class="flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2" id="comment-list">
-                        <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
-                    </div>
-
-                    <!-- /sidebar right-->
-                </div>
-
-                <!-- /main content -->
-            </div>
-
-            <!-- timeline -->
-            <div class="bottom-0 h-1/5 w-screen flex-none overflow-x-scroll bg-slate-800 text-white" id="bottom-bar">
-                <!-- "hide"-arrow, to be shown when timeline is visible -->
-                <div class="relative top-0 right-0 ml-auto mr-32 h-6 w-6 rounded-b bg-slate-600">
-                    <button class="absolute top-0 right-0">
-                        <svg
-                            class="h-6 w-6 text-white"
-                            id="arrow-"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <!-- "unhide"-arrow, to be shown when timeline is hidden -->
-                <div
-                    class="absolute bottom-0 right-0 ml-auto mr-32 hidden h-6 w-6 overflow-hidden rounded-t bg-slate-600"
-                >
-                    <button class="top-6 right-0">
-                        <svg
-                            class="h-6 w-6 text-white"
-                            id="arrow-"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                transform="scale(1 -1) translate(0 -20)"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <canvas>
-                    <!-- TODO: Darstellung der Iterationen via Canvas?? -->
-                </canvas>
-            </div>
-
-            <!-- /content wrapper -->
+<body>
+    <div class="flex flex-col h-screen">
+        <nav class="shrink-0 bg-slate-800" id="navbar">
+    <div class="mx-auto flex justify-between px-6">
+        <!-- logo -->
+        <div>
+            <a href="#" class="flex items-center text-white">
+                <img src="293c17f1d9a86efcc8f4.svg" class="my-2 mr-3 h-10 w-10" />
+                <span>crity</span>
+            </a>
         </div>
+        <!-- info -->
+        <div class="flex items-center text-white">
+            <p>Deine Präsentationen</p>
+        </div>
+        <!-- user-icon/login -->
+        <div class="flex items-center text-white">
+            <button class="rounded bg-slate-400 py-2 px-4 hover:bg-slate-600">
+                Login
+            </button>
+        </div>
+    </div>
+    <!-- /navbar -->
+</nav>
+        <div class="grow h-0" id="screen-swapper"></div>
+    </div>
 
-        <!-- TODO: Tumbnail-Templates fertigstellen -->
-        <template id="thumbnail">
-            <!-- Folien-Thumbnail-Templates -->
-            <div class="h-40 w-full flex-none items-center justify-start bg-black opacity-50"></div>
-        </template>
+    
+<template id="login-screen-template">
+    <div class="flex flex-col items-center justify-center">
+        <input class="id-email-input rounded py-2 pr-12 pl-5 focus:outline-none m-3" type="text" placeholder="Email">
+        <input class="id-password-input rounded py-2 pr-12 pl-5 focus:outline-none m-3" type="password" placeholder="Password">
+    
+        <button class="id-log-in-button bg-slate-600 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-full m-3">Sign In</button>
+        <button class="id-create-account-button bg-slate-600 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-full m-2">Create Account</button>
+    </div>
+</template>
 
-        <!-- TODO: Thread-Template fertigstellen -->
-        <template id="thread">
-            <!-- thread container -->
-            <div class="h-60 w-full flex-none items-center justify-start bg-black opacity-50">
-                <!-- TODO: erstellen eines Thread-Haupt-Kommentar-Templates -->
-                <div></div>
-                <!-- TODO: erstellen eines Thread-Antwort-Kommentar-Templates -->
-                <div></div>
+    <template id="create-account-screen-template">
+    <div class="flex flex-col items-center justify-center">
+        <input class="id-name-input rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Name">
+        <input class="id-email-input rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Email">
+        <input class="id-password-input rounded py-2 pr-12 pl-5 focus:outline-none" type="password" placeholder="Password">
+
+        <button class="id-create-button bg-slate-600 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-full m-3">
+            Create
+        </button>
+    </div>
+</template>
+
+    <template id="dashboard-screen-template">
+    <div>
+        <div class="relative grow overflow-y-scroll bg-zinc-50">
+            <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
+            <div class="id-presentation-list my-5 mx-5 grid grid-cols-4 flex-col">
+                <!-- #presentation-template gets instantiated here. -->
             </div>
-        </template>
+        </div>
+    
+        <!-- presentation creation -->
+        <div class="flex h-16 items-center justify-center gap-4 bg-zinc-200">
+            <input class="id-presentation-title-input rounded p-2 focus:outline-none" type="text" placeholder="Title" />
+            <input class="id-presentation-description-input rounded p-2 focus:outline-none" type="text" placeholder="Description" />
+            <button class="id-add-presentation-button rounded-full bg-slate-500 py-2 px-4 font-bold text-white hover:bg-slate-700">
+                Add Project
+            </button>
+            <!-- /presentation creation -->
+        </div>
+    </div>
+</template>
 
-        <script type="module" src="./src/index.js"></script>
-    </body>
+<template id="presentation-template">
+    <div
+        class="m-2 max-h-80 min-h-min content-center rounded bg-zinc-200 p-2 hover:cursor-pointer"
+    >
+        <!-- title text -->
+        <div
+            class="my-auto flex min-h-[3rem] justify-center text-center"
+        >
+            <h2 class="presentation-title my-auto h-min font-bold">
+                Project title
+            </h2>
+        </div>
+        <!-- thumbnail -->
+        <div
+            class="relative my-2 flex h-20 w-full justify-center"
+            id="presentation-thumbnail"
+        >
+            <div
+                class="relative h-full w-min"
+                id="thumbnail-placeholder"
+            >
+                <!-- Heroicons photograph -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-full w-auto text-gray-800"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                </svg>
+                <!-- Heroicons dots -->
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="absolute bottom-0 right-0 h-6 w-7 rounded bg-slate-500 px-1 text-white hover:bg-slate-700"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path
+                        d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
+                    />
+                </svg>
+            </div>
+            <!-- /thumbnail -->
+        </div>
+        <!-- description text -->
+        <div class="text-center">
+            <h2 class="presentation-description italic">
+                Project description
+            </h2>
+        </div>
+    </div>
+</template>
+    <template id="editor-screen-template">
+    <div class="flex flex-col h-full">
+        <!-- main content -->
+        <div class="id-main-container flex grow w-screen flex-auto flex-row justify-between overflow-y-hidden">
+            <!-- sidebar left -->
+            <div class="id-sidebar-left h-full flex flex-col overflow-y-scroll bg-slate-600 gap-2 p-2 shrink-0">
+                <!-- #thumbnail-template gets instantiated here. -->
+            </div>
+            <!-- content center -->
+            <div class="id-content-center grow overflow-scroll bg-zinc-50 relative">
+                <canvas class="id-pdf-canvas"></canvas>
+                <div class="id-pdf-text-layer textLayer"></div>
+            </div>
+            <!-- sidebar right -->
+            <div class="id-sidebar-right ml-auto flex h-full grow w-1/4 flex-col">
+                <!-- search/sort/filter bar -->
+                <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
+                    <!-- search bar -->
+                    <div class="relative flex-grow p-1">
+                        <input
+                            type="text"
+                            class="z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
+                            placeholder="Search..."
+                        />
+                        <button class="absolute top-3 right-3">
+                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"/></svg>
+                        </button>
+                    </div>
+                    <!-- sort/filter btn -->
+                    <div class="flex items-center">
+                        <button class="id-sort-btn px-1">
+                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z" clipRule="evenodd"/></svg>
+                        </button>
+                        <button class="id-filter-btn px-1">
+                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
+                    <!-- /search/sort/filter bar -->
+                </div>
+                <!-- comment list -->
+                <div class="id-comment-list flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
+                    <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
+                    
+                </div>
+                <div class="p-2">
+                    <input class="id-name-input z-0 float-right w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Add Name">
+                </div>
+                <div class="p-2">
+                    <input class="id-comment-input z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Add Comment">
+                </div>
+                <!-- /sidebar right-->
+            </div>
+            <!-- /main content -->
+        </div>
+        <!-- timeline -->
+        <div class="id-bottom-bar bottom-0 shrink-0 w-screen flex flex-col bg-slate-800 text-white">
+            <div class="w-full flex justify-end">
+                <button class="rounded-b bg-slate-600">
+                    <!-- "hide"-arrow, to be shown when timeline is visible -->
+                    <svg class="h-6 w-6 text-white" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    
+                    <!-- "unhide"-arrow, to be shown when timeline is hidden -->
+                    <svg class="h-6 w-6 text-white hidden" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" transform="scale(1 -1) translate(0 -20)" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+            <!-- TODO: Do we want a canvas for fancy graphics? -->
+            <div class="id-version-list flex space-x-2 p-2 items-center grow overflow-x-scroll">
+                <!-- #version-template get instantiated here. -->
+
+                <button class="id-add-version-button transition p-4 rounded-xl bg-slate-400 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
+                    <input class="id-file-input" type="file" name="name" style="display: none;" />
+                    <span class="label font-bold">+</span>
+                </button>
+            </div>
+        </div>
+        <!-- /content wrapper -->
+    </div>
+</template>
+
+<template id="thumbnail-template">
+    <button class="transition p-4 flex flex-col space-y-2 rounded-xl bg-slate-800 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
+        <div class="flex space-x-2 items-center">
+            <div class="text-sm opacity-80 page-number">12</div>
+            <div class="flex justify-center grow"><canvas></canvas></div>
+        </div>
+        <div class="flex space-x-3 items-center justify-center">
+            <!-- heroicons: chat -->
+            <span class="flex items-center space-x-1" title="Total number of comments">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                <span class="num-comments">7</span>
+            </span>
+            <!-- heroicons: exclamation-circle -->
+            <span class="flex items-center space-x-1" title="Number of unresolved threads">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="num-unresolved-threads">2</span>
+            </span>
+            <!-- TODO: Do we want to keep this? Tracking unread items seems a bit painful to implement ... -->
+            <!-- heroicons: sparkles -->
+            <span class="flex items-center space-x-1" title="Number of unread comments">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+                <span class="num-unread-comments">1</span>
+            </span>
+        </div>
+    </button>
+</template>
+
+<!-- TODO: Thread-Template fertigstellen -->
+<template id="thread-template">
+    <!-- thread container -->
+    <div class="h-60 w-full flex-none items-center justify-start bg-black opacity-50">
+        <!-- TODO: erstellen eines Thread-Haupt-Kommentar-Templates -->
+        <div></div>
+        <!-- TODO: erstellen eines Thread-Antwort-Kommentar-Templates -->
+        <div></div>
+    </div>
+</template>
+
+<template id="comment-template">
+    <div class="h-auto w-full bg-slate-400 p-2">
+        <span class="font-bold text-orange-600 comment-author"></span>
+        <span class="comment-text"></span>
+    </div>
+</template>
+
+<template id="version-template">
+    <button class="transition p-4 rounded-xl bg-transparent hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
+        <span class="label">12</span>
+    </button>
+</template>
+</body>
+
 </html>
