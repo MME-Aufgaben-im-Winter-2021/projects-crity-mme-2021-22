@@ -271,6 +271,8 @@ class UiTimeline {
         this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
         this.timelineHeader = document.querySelector("#timeline-header");
         this.mainScreen = document.querySelector("#main-screen");
+        this.arrowUp = document.querySelector("#arrow-up");
+        this.arrowDown = document.querySelector("#arrow-down");
 
         this.fileInputEl = document.querySelector("#file-input");
         this.fileInputEl.addEventListener("change", () => this.onAddButtonClicked());
@@ -292,9 +294,13 @@ class UiTimeline {
         if(this.timelineWindow.style.display === "none") {
             this.timelineWindow.style.display = "block";
             this.timelineWindow.insertBefore(this.timelineHeader, this.el);
+            this.arrowDown.classList.remove('hidden');
+            this.arrowUp.classList.add('hidden');
         }else{
             this.timelineWindow.style.display = "none";
             this.mainScreen.appendChild(this.timelineHeader);
+            this.arrowDown.classList.add('hidden');
+            this.arrowUp.classList.remove('hidden');
         }
     }
 }
