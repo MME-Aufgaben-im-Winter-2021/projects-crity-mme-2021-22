@@ -56,8 +56,8 @@ class ActivePdf extends Observable {
 
     // Asynchronously fetch the PdfPage corresponding to the page number.
     async fetchPage(pageNo) {
-        let page = await this.pdfJsPdf.getPage(pageNo);
-        let activePdfPage = new PdfPage(page);
+        let page = await this.pdfJsPdf.getPage(pageNo),
+            activePdfPage = new PdfPage(page);
         return activePdfPage;
     }
 }

@@ -1,0 +1,38 @@
+<nav class="shrink-0 bg-slate-800" id="navbar">
+    <div class="mx-auto flex justify-between px-6">
+        <!-- logo -->
+        <div>
+            <a href="#" class="flex items-center text-white">
+                <img src="/app/resources/img/logo_white.svg" class="my-2 mr-3 h-10 w-10" />
+                <span>crity</span>
+            </a>
+        </div>
+        <!-- info -->
+        <div class="flex items-center text-white">
+            <p class="id-info">Deine Präsentationen</p>
+        </div>
+
+        <!-- user-icon+login / logout -->
+        <div class="id-account-panel flex items-center text-white">
+        </div>
+    </div>
+    <!-- /navbar -->
+</nav>
+
+<template id="logged-in-template">
+    <div>
+        <span>User Name</span>
+
+        <button class="id-log-out-button rounded bg-slate-400 py-2 px-4 hover:bg-slate-600">
+            Log out
+        </button>
+    </div>
+</template>
+
+<template id="logged-out-template">
+    <div>
+        <button class="id-log-in-button rounded bg-slate-400 py-2 px-4 hover:bg-slate-600">
+            Log in
+        </button>
+    </div>
+</template>

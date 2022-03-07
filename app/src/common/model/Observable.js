@@ -40,7 +40,7 @@ class GlobalSubscriptionTable {
     static addSubscription(subscription) {
         assert(!subscription.eventType.includes(","));
 
-        GlobalSubscriptionTable._forEachIndex(subscription, (index, key) => {
+        GlobalSubscriptionTable.p_forEachIndex(subscription, (index, key) => {
             if (index[key] === undefined) {
                 index[key] = new Set();
             }
@@ -50,7 +50,7 @@ class GlobalSubscriptionTable {
     }
 
     static removeSubscription(subscription) {
-        GlobalSubscriptionTable._forEachIndex(subscription, (index, key) => {
+        GlobalSubscriptionTable.p_forEachIndex(subscription, (index, key) => {
             if (index[key] !== undefined) {
                 index[key].delete(subscription);
                 if (index[key].size === 0) {
@@ -65,7 +65,7 @@ class GlobalSubscriptionTable {
         subscriptions.forEach(subscription => GlobalSubscriptionTable.removeSubscription(subscription));
     }
 
-    static _forEachIndex(subscription, doWhat) {
+    static p_forEachIndex(subscription, doWhat) {
         doWhat(GlobalSubscriptionTable.observableAndEventTypeIndex, `${subscription.observableId},${subscription.eventType}`);
         doWhat(GlobalSubscriptionTable.observableIndex, `${subscription.observableId}`);
         doWhat(GlobalSubscriptionTable.listenerIndex, `${subscription.listenerId}`);
@@ -77,21 +77,21 @@ class GlobalSubscriptionTable {
 
     /// @return Set.
     static querySubscriptionsByObservableAndEventType(observableId, eventType) {
-        return GlobalSubscriptionTable._queryIndex(GlobalSubscriptionTable.observableAndEventTypeIndex, `${observableId},${eventType}`);
+        return GlobalSubscriptionTable.p_queryIndex(GlobalSubscriptionTable.observableAndEventTypeIndex, `${observableId},${eventType}`);
     }
 
     /// @return Set.
     static querySubscriptionsByObservable(observableId) {
-        return GlobalSubscriptionTable._queryIndex(GlobalSubscriptionTable.observableIndex, `${observableId}`);
+        return GlobalSubscriptionTable.p_queryIndex(GlobalSubscriptionTable.observableIndex, `${observableId}`);
     }
 
     /// @return Set.
     static querySubscriptionsByListener(listenerId) {
-        return GlobalSubscriptionTable._queryIndex(GlobalSubscriptionTable.listenerIndex, `${listenerId}`);
+        return GlobalSubscriptionTable.p_queryIndex(GlobalSubscriptionTable.listenerIndex, `${listenerId}`);
     }
     
     /// @return Set.
-    static _queryIndex(index, key) {
+    static p_queryIndex(index, key) {
         let result = index[key];
         if (result === undefined) {
             result = new Set();

@@ -1,5 +1,5 @@
 import { ObservableArray } from "./ObservableArray.js";
-import { AccountSession, LoginState } from "./AccountSession.js";
+import { LoginState } from "./AccountSession.js";
 import { appwrite } from "./appwrite.js";
 import { Presentation } from "./Presentation.js";
 import { Query } from "appwrite";
@@ -14,21 +14,21 @@ class PresentationList {
 
         this.presentations = new ObservableArray();
 
-        this._fetch();
+        this.p_fetch();
     }
 
     terminate() {
         this.presentations.terminate();
     }
 
-    async _fetch() {
+    async p_fetch() {
         let presentations = await appwrite.database.listDocuments(PresentationList.PRESENTATIONS_COLLECTION_ID, [
             Query.equal("author", accountSession.accountId),
         ]);
 
         for (let i = 0; i < presentations.documents.length; i++) {
-            let appwritePresentation = presentations.documents[i];
-            let presentation = Presentation.fromAppwritePresentation(appwritePresentation);
+            let appwritePresentation = presentations.documents[i],
+                presentation = Presentation.fromAppwritePresentation(appwritePresentation);
 
             this.presentations.push(presentation);
         }
@@ -36,12 +36,20 @@ class PresentationList {
 
     async createPresentation(title, description) {
         let appwritePresentation = await appwrite.database.createDocument(
+<<<<<<< HEAD
             PresentationList.PRESENTATIONS_COLLECTION_ID, 
             "unique()", 
             {author: accountSession.accountId, title, description}
         );
         
         let presentation = Presentation.fromAppwritePresentation(appwritePresentation);
+=======
+                PresentationList.PRESENTATIONS_COLLECTION_ID, 
+                "unique()", 
+                {author: accountSession.accountId, title, description},
+            ),
+            presentation = Presentation.fromAppwritePresentation(appwritePresentation);
+>>>>>>> logout
 
         this.presentations.push(presentation);
     }
