@@ -26,7 +26,7 @@
         "startDevServer": "node start_dev_server.js",
 
         "build": "npm run webpackOneShot && npm run tailwindOneShot && node build_for_deployment.js",
-        "devSession": "concurrently --kill-others \"npm run tailwindWatch\" \"npm run webpackWatch\" \"npm run startDevServer\"",
+        "devSession": "npm run webpackOneShot && concurrently --kill-others \"npm run webpackWatch\" \"npm run tailwindWatch\" \"npm run startDevServer\"",
 
         "check": "eslint app/src/",
         
