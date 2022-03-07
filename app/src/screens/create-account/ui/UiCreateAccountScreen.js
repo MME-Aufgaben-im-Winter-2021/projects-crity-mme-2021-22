@@ -1,8 +1,12 @@
-import { UiScreen } from "../../../common/ui/UiScreen.js";
+import { UiScreen } from "../../UiScreen.js";
 import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
 import { Listener } from "../../../common/model/Observable.js";
+import { uiScreenRegistry } from "../../uiScreenRegistry.js";
+import { uiScreenSwapper } from "../../uiScreenSwapper.js";
 
 class UiCreateAccountScreen extends UiScreen {
+    static NAME = "create-account";
+
     constructor() {
         super("#create-account-screen-template");
 
@@ -25,7 +29,7 @@ class UiCreateAccountScreen extends UiScreen {
 
     onLoginStateChanged() {
         if (accountSession.loginState === LoginState.LOGGED_IN) {
-            this.requestScreenChange("dashboard", {});
+            uiScreenSwapper.loadScreen("dashboard", {});
         }
     }
 
@@ -39,5 +43,7 @@ class UiCreateAccountScreen extends UiScreen {
         })();
     }
 }
+
+uiScreenRegistry.add(UiCreateAccountScreen);
 
 export { UiCreateAccountScreen };

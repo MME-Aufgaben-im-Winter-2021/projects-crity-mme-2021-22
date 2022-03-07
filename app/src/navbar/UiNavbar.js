@@ -1,6 +1,9 @@
 import { AccountSession, accountSession, LoginState } from "../common/model/AccountSession.js";
 import { Listener } from "../common/model/Observable.js";
 import { cloneDomTemplate } from "../common/ui/dom-utils.js";
+import { uiScreenSwapper } from "../screens/uiScreenSwapper.js";
+
+var uiNavbar;
 
 class UiLoggedInAccountPanel {
     constructor() {
@@ -20,17 +23,15 @@ class UiLoggedInAccountPanel {
 }
 
 class UiLoggedOutAccountPanel {
-    constructor(uglyScreenSwapper) {
+    constructor() {
         this.el = cloneDomTemplate("#logged-out-template");
 
         this.logInButtonEl = this.el.querySelector(".id-log-in-button");
         this.logInButtonEl.addEventListener("click", () => this.onLogInButtonClicked());
-
-        this.uglyScreenSwapper = uglyScreenSwapper;
     }
 
     onLogInButtonClicked() {
-        this.uglyScreenSwapper.loadScreen("login", {});
+        uiScreenSwapper.loadScreen("login", {});
     }
 
     terminate() {
@@ -39,13 +40,11 @@ class UiLoggedOutAccountPanel {
 }
 
 class UiAccountPanel {
-    constructor(uglyScreenSwapper) {
+    constructor() {
         this.el = document.querySelector(".id-account-panel");
         this.listener = new Listener();
 
         this.currentPanel = null;
-
-        this.uglyScreenSwapper = uglyScreenSwapper;
 
         accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
     }
@@ -60,7 +59,7 @@ class UiAccountPanel {
 
         switch (accountSession.loginState) {
             case LoginState.LOGGED_IN: this.currentPanel = new UiLoggedInAccountPanel(); break;
-            case LoginState.LOGGED_OUT: this.currentPanel = new UiLoggedOutAccountPanel(this.uglyScreenSwapper); break;
+            case LoginState.LOGGED_OUT: this.currentPanel = new UiLoggedOutAccountPanel(); break;
 
             default: break;
         }
@@ -70,13 +69,9 @@ class UiAccountPanel {
 }
 
 class UiNavbar {
-    // TODO: Passing the screen swapper here seems like a bad a idea due to the
-    // circularity of the design. Probably the best solution is to have a global
-    // observable tracking the screen state, and then have the screen swapper react
-    // to that state?
-    constructor(uglyScreenSwapper) {
+    constructor() {
         this.el = document.querySelector("#navbar");
-        this.accountPanel = new UiAccountPanel(uglyScreenSwapper);
+        this.accountPanel = new UiAccountPanel();
     }
 
     terminate() {
@@ -84,4 +79,6 @@ class UiNavbar {
     }
 }
 
-export { UiNavbar };
+uiNavbar = new UiNavbar();
+
+export { UiNavbar, uiNavbar };

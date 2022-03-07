@@ -1,0 +1,20 @@
+<template id="dashboard-screen-template">
+    <div>
+        <div class="relative grow overflow-y-scroll bg-zinc-50">
+            <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
+            <div class="id-presentation-list my-5 mx-5 grid grid-cols-4 flex-col">
+                <!-- #presentation-template gets instantiated here. -->
+            </div>
+        </div>
+    
+        <!-- presentation creation -->
+        <div class="flex h-16 items-center justify-center gap-4 bg-zinc-200">
+            <input class="id-presentation-title-input rounded p-2 focus:outline-none" type="text" placeholder="Title" />
+            <input class="id-presentation-description-input rounded p-2 focus:outline-none" type="text" placeholder="Description" />
+            <button class="id-add-presentation-button rounded-full bg-slate-500 py-2 px-4 font-bold text-white hover:bg-slate-700">
+                Add Project
+            </button>
+            <!-- /presentation creation -->
+        </div>
+    </div>
+</template>

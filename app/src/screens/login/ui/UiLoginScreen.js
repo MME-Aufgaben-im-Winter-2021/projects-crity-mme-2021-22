@@ -1,8 +1,12 @@
-import { UiScreen } from "../../../common/ui/UiScreen.js";
 import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
 import { Listener } from "../../../common/model/Observable.js";
+import { UiScreen } from "../../UiScreen.js";
+import { uiScreenRegistry } from "../../uiScreenRegistry.js";
+import { uiScreenSwapper } from "../../uiScreenSwapper.js";
 
 class UiLoginScreen extends UiScreen {
+    static NAME = "login";
+
     constructor() {
         super("#login-screen-template");
 
@@ -27,7 +31,7 @@ class UiLoginScreen extends UiScreen {
 
     onLoginStateChanged() {
         if (accountSession.loginState === LoginState.LOGGED_IN) {
-            this.requestScreenChange("dashboard", {});
+            uiScreenSwapper.loadScreen("dashboard", {});
         }
     }
 
@@ -38,8 +42,10 @@ class UiLoginScreen extends UiScreen {
     }
 
     onCreateAccountButtonClicked() {
-        this.requestScreenChange("create-account", {});
+        uiScreenSwapper.loadScreen("create-account", {});
     }
 }
+
+uiScreenRegistry.add(UiLoginScreen);
 
 export { UiLoginScreen };
