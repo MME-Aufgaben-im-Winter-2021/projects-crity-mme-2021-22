@@ -43,7 +43,7 @@ class PageComments {
     }
 
     async subscribeToCommentsVersionCollections() {
-        this.unsubscribe = appwrite.subscribe('collections.6214e5ef06bef7005816.documents', response => {
+        this.unsubscribe = appwrite.subscribe("collections.6214e5ef06bef7005816.documents", response => {
             this.p_updateComments(response);
         });
     }
