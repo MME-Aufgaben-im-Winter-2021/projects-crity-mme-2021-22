@@ -10,16 +10,29 @@ class UiCreateAccountScreen extends UiScreen {
     constructor() {
         super("#create-account-screen-template");
 
+        this.listener = new Listener();
+
         this.nameInputEl = this.el.querySelector(".id-name-input");
         this.emailInputEl = this.el.querySelector(".id-email-input");
         this.passwordInputEl = this.el.querySelector(".id-password-input");
+        this.registerFormEl = this.el.querySelector(".id-register-form");
 
-        this.createButtonEl = this.el.querySelector(".id-create-button");
-        this.createButtonEl.addEventListener("click", () => this.onCreateButtonClicked());
+        this.registerFormEl.addEventListener("submit", (e) => {
+            e.preventDefault();
+            this.onCreateButtonClicked();
+        });
 
-        this.listener = new Listener();
+        // FIXME: exactly the same two lines of code already exist in UiNavbar.js.
+        //          Maybe there's a way to refactor so the clicklistener for elements
+        //          with class ".id-log-in-button" is only registered once?
+        this.logInButtonEl = this.el.querySelector(".id-log-in-button");
+        this.logInButtonEl.addEventListener("click", () => this.onLogInButtonClicked());
 
-        accountSession.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => this.onLoginStateChanged(), this.listener);
+        accountSession.addEventListener(
+            AccountSession.EVENT_LOGIN_STATE_CHANGED,
+            () => this.onLoginStateChanged(),
+            this.listener,
+        );
     }
 
     terminate() {
@@ -41,6 +54,10 @@ class UiCreateAccountScreen extends UiScreen {
         (async () => {
             await accountSession.createAccountAndLogIn(name, email, password);
         })();
+    }
+
+    onLogInButtonClicked() {
+        uiScreenSwapper.loadScreen("login", {});
     }
 }
 

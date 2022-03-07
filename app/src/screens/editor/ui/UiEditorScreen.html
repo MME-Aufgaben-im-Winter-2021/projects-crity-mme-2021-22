@@ -1,18 +1,18 @@
 <template id="editor-screen-template">
-    <div class="flex flex-col h-full">
+    <div class="flex h-full flex-col">
         <!-- main content -->
-        <div class="id-main-container flex grow w-screen flex-auto flex-row justify-between overflow-y-hidden">
+        <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden">
             <!-- sidebar left -->
-            <div class="id-sidebar-left h-full flex flex-col overflow-y-scroll bg-slate-600 gap-2 p-2 shrink-0">
+            <div class="id-sidebar-left flex h-full shrink-0 flex-col gap-2 overflow-y-scroll bg-slate-600 p-2">
                 <!-- #thumbnail-template gets instantiated here. -->
             </div>
             <!-- content center -->
-            <div class="id-content-center grow overflow-scroll bg-zinc-50 relative">
+            <div class="id-content-center relative grow overflow-scroll bg-zinc-50">
                 <canvas class="id-pdf-canvas"></canvas>
                 <div class="id-pdf-text-layer textLayer"></div>
             </div>
             <!-- sidebar right -->
-            <div class="id-sidebar-right ml-auto flex h-full grow w-1/4 flex-col">
+            <div class="id-sidebar-right ml-auto flex h-full w-1/4 grow flex-col">
                 <!-- search/sort/filter bar -->
                 <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
                     <!-- search bar -->
@@ -23,16 +23,50 @@
                             placeholder="Search..."
                         />
                         <button class="absolute top-3 right-3">
-                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"/></svg>
+                            <svg
+                                class="h-6 w-6 text-gray-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
                         </button>
                     </div>
                     <!-- sort/filter btn -->
                     <div class="flex items-center">
                         <button class="id-sort-btn px-1">
-                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z" clipRule="evenodd"/></svg>
+                            <svg
+                                class="h-6 w-6 text-gray-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="m 3.2281244,3.8437503 c -1.641666,0 -1.641666,2.4625 0,2.4625 H 16.771875 c 1.641667,0 1.641667,-2.4625 0,-2.4625 z m 0,4.925 c -1.641666,0 -1.641666,2.4624997 0,2.4624997 h 8.6187506 c 1.641667,0 1.641667,-2.4624997 0,-2.4624997 z m 0,4.9249997 c -1.641666,0 -1.641666,2.4625 0,2.4625 h 4.925 c 1.641666,0 1.641666,-2.4625 0,-2.4625 z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
                         </button>
                         <button class="id-filter-btn px-1">
-                            <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" /></svg>
+                            <svg
+                                class="h-6 w-6 text-gray-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
                         </button>
                     </div>
                     <!-- /search/sort/filter bar -->
@@ -40,35 +74,69 @@
                 <!-- comment list -->
                 <div class="id-comment-list flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
                     <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
-                    
                 </div>
                 <div class="p-2">
-                    <input class="id-name-input z-0 float-right w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Add Name">
+                    <input
+                        class="id-name-input z-0 float-right w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none"
+                        type="text"
+                        placeholder="Add Name"
+                    />
                 </div>
                 <div class="p-2">
-                    <input class="id-comment-input z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none" type="text" placeholder="Add Comment">
+                    <input
+                        class="id-comment-input z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
+                        type="text"
+                        placeholder="Add Comment"
+                    />
                 </div>
                 <!-- /sidebar right-->
             </div>
             <!-- /main content -->
         </div>
         <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 shrink-0 w-screen flex flex-col bg-slate-800 text-white">
-            <div class="w-full flex justify-end">
-                <button class="rounded-b bg-slate-600">
+        <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col bg-slate-800 text-white">
+            <div class="flex w-full justify-end">
+                <button class="rounded-b bg-slate-400 hover:bg-slate-600">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
-                    <svg class="h-6 w-6 text-white" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                    
+                    <svg
+                        class="h-6 w-6 text-white"
+                        id="arrow-"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+
                     <!-- "unhide"-arrow, to be shown when timeline is hidden -->
-                    <svg class="h-6 w-6 text-white hidden" id="arrow-" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" transform="scale(1 -1) translate(0 -20)" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    <svg
+                        class="hidden h-6 w-6 text-white"
+                        id="arrow-"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            transform="scale(1 -1) translate(0 -20)"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="id-version-list flex space-x-2 p-2 items-center grow overflow-x-scroll">
+            <div class="id-version-list flex grow items-center space-x-2 overflow-x-scroll p-2">
                 <!-- #version-template get instantiated here. -->
 
-                <button class="id-add-version-button transition p-4 rounded-xl bg-slate-400 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
-                    <input class="id-file-input" type="file" name="name" style="display: none;" />
+                <button
+                    class="id-add-version-button selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
+                >
+                    <input class="id-file-input" type="file" name="name" style="display: none" />
                     <span class="label font-bold">+</span>
                 </button>
             </div>
