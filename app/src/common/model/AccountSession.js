@@ -19,26 +19,24 @@ class AccountSession extends Observable {
         super();
 
         this.loginState = LoginState.UNKNOWN;
-        this.p_AccountId = null;
+        this.p_accountId = null;
         
         (async () => {
             // Check if already logged in.
             try { 
                 // TODO: Is there a cleaner way of doing this?
                 let account = await appwrite.account.get();
-                this.p_AccountId = account.$id;
-                this.loginState = LoginState.LOGGED_IN;
+                this.p_accountId = account.$id;
+                this.p_changeLoginState(LoginState.LOGGED_IN);
             } catch (e) {
-                this.loginState = LoginState.LOGGED_OUT;
+                this.p_changeLoginState(LoginState.LOGGED_OUT);
             }
-
-            this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
         })();
     }
 
     get accountId() {
         assert(this.loginState === LoginState.LOGGED_IN);
-        return this.p_AccountId;
+        return this.p_accountId;
     }
 
     async createAccountAndLogIn(name, email, password) {
@@ -56,24 +54,56 @@ class AccountSession extends Observable {
 
         try {
             let session = await appwrite.account.createSession(email, password);
-            this.p_AccountId = session.userId;
-            this.loginState = LoginState.LOGGED_IN;
-            this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
+            this.p_accountId = session.userId;
+            this.p_changeLoginState(LoginState.LOGGED_IN);
         } catch (e) {
             // TODO: Error message.
+        }
+    }
+
+    async logOut() {
+        assert(this.loginState === LoginState.LOGGED_IN);
+
+        // Do this first I guess, to prevent people from using the account while
+        // we're waiting for the server response.
+        this.p_changeLoginState(LoginState.UNKNOWN);
+
+        await appwrite.account.deleteSession("current");
+        
+        this.p_changeLoginState(LoginState.LOGGED_OUT);
+    }
+
+    onceLoginStateIsKnownDo(doWhat, listener) {
+        if (this.loginState !== LoginState.UNKNOWN) {
+            doWhat();
+        } else {
+            let alreadyCalled = false;
+            this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
+                if (!alreadyCalled && this.loginState !== LoginState.UNKNOWN) {
+                    alreadyCalled = true;
+                    doWhat();
+                }
+            }, listener);
         }
     }
 
     onceLoggedInDo(doWhat, listener) {
         if (this.loginState === LoginState.LOGGED_IN) {
             doWhat();
+        } else {
+            let alreadyCalled = false;
+            this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
+                if (!alreadyCalled && this.loginState === LoginState.LOGGED_IN) {
+                    alreadyCalled = true;
+                    doWhat();
+                }
+            }, listener);
         }
+    }
 
-        this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
-            if (this.loginState === LoginState.LOGGED_IN) {
-                doWhat();
-            }
-        }, listener);
+    p_changeLoginState(loginState) {
+        this.loginState = loginState;
+        this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
     }
 }
 

@@ -1,28 +1,23 @@
-import { accountSession } from "../../../common/model/AccountSession.js";
-import { Observable, Event, Listener } from "../../../common/model/Observable.js";
+import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { Observable } from "../../../common/model/Observable.js";
 import { PresentationList } from "../../../common/model/PresentationList.js";
+import { assert } from "../../../common/utils.js";
 
 var data;
 
 class DashboardData extends Observable {
-    static EVENT_PRESENTATION_LIST_AVAILABLE = "PRESENTATION_LIST_AVAILABLE";
-
     constructor() {
         super();
-        this.presentationList = null;
-        this.listener = new Listener();
-        accountSession.onceLoggedInDo(() => this.onLogin(), this.listener);
-    }
 
-    onLogin() {
+        assert(accountSession.loginState === LoginState.LOGGED_IN);
+
+        this.presentationList = null;
         this.presentationList = new PresentationList();
-        this.notifyAll(new Event(DashboardData.EVENT_PRESENTATION_LIST_AVAILABLE, {}));
     }
 
     terminate() {
         super.terminate();
         this.presentationList.terminate();
-        this.listener.terminate();
     }
 }
 

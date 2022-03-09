@@ -1,8 +1,7 @@
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
-import { Observable, Event, Listener } from "../../../common/model/Observable.js";
+import { Observable, Event } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { ActivePdf } from "./ActivePdf.js";
-import { accountSession } from "../../../common/model/AccountSession.js";
 import { Version } from "./Version.js";
 import { Query } from "appwrite";
 
@@ -47,15 +46,13 @@ class EditorData extends Observable {
 
         this.presentationId = presentationId;
 
-        this.listener = new Listener();
-        accountSession.onceLoggedInDo(() => this.fetchVersions(), this.listener);
+        this.fetchVersions();
     }
 
     terminate() {
         super.terminate();
         this.activePdf?.terminate();
         this.versions.terminate();
-        this.listener.terminate();
     }
 
     setVersion(version) {

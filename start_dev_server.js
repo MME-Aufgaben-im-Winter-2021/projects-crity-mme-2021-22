@@ -13,4 +13,5 @@ function init() {
     });
 }
 
-init();
+// Wait for the build process to finish.
+setTimeout(() => init(), 1000);
