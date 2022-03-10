@@ -1,11 +1,8 @@
-import { ObservableArray } from "../../../common/model/ObservableArray.js";
-import { Observable, Event } from "../../../common/model/Observable.js";
+import { Observable, Event, Listener } from "../../../common/model/Observable.js";
 import { appwrite } from "../../../common/model/appwrite.js";
-import { ActivePdf } from "./ActivePdf.js";
-import { Version } from "./Version.js";
-import { Query } from "appwrite";
-
-import * as pdfjsLib from "pdfjs-dist/webpack.js";
+import { VersionList } from "../../../common/model/VersionList.js";
+import { EditorSelTracker } from "./EditorSelTracker.js";
+import { VersionCommentQuery } from "../../../common/model/VersionCommentQuery.js";
 
 var data;
 
@@ -18,116 +15,103 @@ function terminateData() {
     data = null;
 }
 
-// The global object representing all the abstract state of the tab.
+// We have the following hierarchy of selection states:
+// Presentation > Version > Page
+
+// The global object representing all the abstract state of the screen.
 class EditorData extends Observable {
     // Events {
 
-    // Someone set a new active PDF and it is ready.
-    // >> `pdfUrl`: The (shortened) URL of the PDF that was loaded.
-    static EVENT_PDF_LOADED = "PDF_LOADED";
+    static EVENT_VERSION_COMMENT_QUERY_CHANGED = "VERSION_COMMENT_QUERY_CHANGED";
 
-    // Someone set a new active version.
-    // >> `version`: The new active #Version.
-    static EVENT_ACTIVE_VERSION_CHANGED = "ACTIVE_VERSION_CHANGED";
+    static EVENT_COMMENT_EDITING_STARTED = "COMMENT_EDITING_STARTED";
+    static EVENT_COMMENT_EDITING_FINISHED = "COMMENT_EDITING_FINISHED";
 
     // }
 
     constructor(presentationId) {
         super();
 
-        // TODO: Having an active PDF and an active version seems redundant, revisit this.
-        this.activePdf = null;
-
-        this.activeVersion = null;
-
-        // TODO: Fetching and updating versions should be handled by a class VersionList,
-        // just like we do for PresentationLists.
-        this.versions = new ObservableArray();
+        this.listener = new Listener();
 
         this.presentationId = presentationId;
+        this.selTracker = new EditorSelTracker();
+        this.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.onActivePageChanged(), this.listener);
 
-        this.fetchVersions();
+        this.versionCommentQuery = null;
+        this.editedVersionComment = null;
+
+        this.versionList = new VersionList(this.presentationId);
+        this.versionList.addEventListener(VersionList.EVENT_INITIAL_FETCH_CONCLUDED, () => {
+            this.selTracker.activateVersion(this.versionList.versions.getLast());
+        }, this.listener);
     }
 
     terminate() {
         super.terminate();
-        this.activePdf?.terminate();
-        this.versions.terminate();
+        this.listener.terminate();
+        this.selTracker.terminate();
+        this.versionList.terminate();
+        this.versionCommentQuery?.terminate();
     }
 
-    setVersion(version) {
-        if (this.activeVersion === version) {
-            return;
+    onActivePageChanged() {
+        // TODO: Support querying for comments on _all_ the pages. This could be exposed in the UI as a filter option?
+
+        if (this.editedVersionComment !== null) {
+            this.finishEditingComment(false);
         }
-        
-        this.activeVersion = version;
-        this.notifyAll(new Event(EditorData.EVENT_ACTIVE_VERSION_CHANGED, {version}));
-        
-        (async () => {
-            let storageFileId = version.pdfUrl,
-                storageFileUrl = appwrite.storage.getFileDownload(storageFileId);
-            
-            await this.loadPdf(storageFileUrl.href);
-        })();
-    }
-    
-    async loadPdf() {
-        let version = this.activeVersion,
-        loadingTask = pdfjsLib.getDocument(version.pdfUrl),
-        pdfJsPdf = await loadingTask.promise;
-        
-        this.activePdf?.terminate();
-        this.activePdf = new ActivePdf(version, pdfJsPdf);
-        this.notifyAll(new Event(EditorData.EVENT_PDF_LOADED, {pdfUrl: version.pdfUrl}));
 
-        // TODO: Check if the PDF is empty.
-        this.activePdf.setActivePage(1);
+        this.versionCommentQuery?.terminate();
+        this.versionCommentQuery = new VersionCommentQuery(this.selTracker.version, this.selTracker.activePageNo);
+
+        this.notifyAll(new Event(EditorData.EVENT_VERSION_COMMENT_QUERY_CHANGED, {}));
     }
 
-    addVersion(version) {
-        this.versions.push(version);
+    //
+    // Comment editing (modal state tracking).
+    // TODO: Extract this out into a separate class so we can keep our data.js lean and mean?
+    //
+
+    startEditingComment(versionComment) {
+        this.editedVersionComment = versionComment;
+        this.notifyAll(new Event(EditorData.EVENT_COMMENT_EDITING_STARTED, {}));
     }
 
-    hasPdf() {
-        return this.activePdf !== null;
-    }
+    finishEditingComment(submit) {
+        if (submit) {
+            // TODO: Put this code somewhere more reasonable.
+            (async () => {
+                let versionComment = this.editedVersionComment,
+                    comment = versionComment.comment,
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // DB-related stuff
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    async createPresentationVersion(presentationId, label, file) {
-        let storageFile = await appwrite.storage.createFile(
-            "unique()",
-            file, 
-            ["role:all"], 
-            ["role:all"]),
-        appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId}),
-        storageFileId = storageFile.$id,
-        pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
-        version = new Version(label, pdfUrl, appwriteVersion.$id);
+                // Create an entry in the comments collection.
+                // This data is supposed to be shared across all versions that contain this comment.
+                    appwriteComment = await appwrite.database.createDocument(
+                    "comments", 
+                    "unique()", 
+                    {text: comment.text, author: comment.author});
 
-        this.addVersion(version);
-        this.setVersion(this.versions.getLast());
-    }
-
-    async fetchVersions() {
-        let presentationId = this.presentationId,
-            presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
-            Query.equal("presentation", presentationId),
-        ]);
-
-        for (let i = 0; i < presentationVersions.documents.length; i++) {
-            let presentationVersion = presentationVersions.documents[i],
-                label = presentationVersion.label,
-                storageFileId = presentationVersion.storageFile,
-                pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
-                version = new Version(label, pdfUrl, presentationVersion.$id);
-
-            this.addVersion(version);
+                // Create an entry in the comment-version collection.
+                // This is supposed to contain version-specific data related to a given comment.
+                await appwrite.database.createDocument(
+                    VersionCommentQuery.VERSION_COMMENT_COLLECTION_ID,
+                    "unique()", 
+                    {
+                        presentationVersion: this.selTracker.version.appwriteId,
+                        pageNo: this.selTracker.activePageNo,
+                        xOnPage: versionComment.pageX,
+                        yOnPage: versionComment.pageY,
+                        comment: appwriteComment.$id,
+                    },
+                );
+            })();
         }
-        
-        this.setVersion(this.versions.getLast());
+
+        this.editedVersionComment.terminate();
+        this.editedVersionComment = null;
+
+        this.notifyAll(new Event(EditorData.EVENT_COMMENT_EDITING_FINISHED, {submitted: submit}));
     }
 }
 

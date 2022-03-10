@@ -1,7 +1,7 @@
 import { initData, terminateData } from "../model/data.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 import { UiThumbnailBar } from "./thumbnail-sidebar/UiThumbnailBar.js";
-import { UiContentCenter } from "./UiContentCenter.js";
+import { UiContentCenter } from "./content-center/UiContentCenter.js";
 import { UiTimeline } from "./timeline/UiTimeline.js";
 import { UiRightSidebar } from "./comment-sidebar/UiRightSidebar.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";

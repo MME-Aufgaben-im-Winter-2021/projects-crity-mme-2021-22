@@ -15,7 +15,7 @@ class UiTimeline {
         this.fileInputEl.addEventListener("change", () => this.onFileSelectorConcluded());
 
         this.listener = new Listener();
-        data.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
+        data.versionList.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
     }
 
     terminate() {
@@ -33,8 +33,9 @@ class UiTimeline {
         this.fileInputEl.click();
     }
 
-    onFileSelectorConcluded() {
-        data.createPresentationVersion(data.presentationId, "V"+(data.versions.items.length+1), this.fileInputEl.files[0]);
+    async onFileSelectorConcluded() {
+        let version = await data.versionList.createVersion(data.presentationId, "V"+(data.versionList.versions.items.length+1), this.fileInputEl.files[0]);
+        data.selTracker.activateVersion(version);
     }
 }
 

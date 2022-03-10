@@ -5,8 +5,10 @@ class Comment {
     constructor(author, text) {
         this.author = author;
         this.text = text;
+    }
 
-        console.log(this);
+    static fromAppwriteDocument(appwriteComment) {
+        return new Comment(appwriteComment.author, appwriteComment.text);
     }
 }
 

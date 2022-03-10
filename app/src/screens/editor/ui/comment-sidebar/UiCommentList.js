@@ -7,25 +7,32 @@ class UiCommentList {
     constructor(screen) {
         this.el = screen.el.querySelector(".id-comment-list");
         this.listener = new Listener();
-        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded(), this.listener);
+
+        this.uiComments = [];
+
+        data.addEventListener(EditorData.EVENT_VERSION_COMMENT_QUERY_CHANGED, () => this.onVersionCommentQueryChanged(), this.listener);
     }
 
     terminate() {
         this.listener.terminate();
     }
 
-    // We only care about this event to be able to subscribe to the active page event.
-    onPdfLoaded() {
-        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onCommentAdded(e.data.item), this.listener);
-        data.activePdf.activePageComments.comments.addEventListener(ObservableArray.EVENT_CLEARED, () => this.onCommentsCleared(), this.listener);
+    onVersionCommentQueryChanged() {
+        this.clearUiComments();
+        
+        data.versionCommentQuery.versionComments.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionCommentAdded(e.data.item), this.listener);
+        data.versionCommentQuery.versionComments.addEventListener(ObservableArray.EVENT_CLEARED, () => this.clearUiComments(), this.listener);
     }
 
-    onCommentAdded(comment) {
-        let uiComment = new UiComment(comment);
+    onVersionCommentAdded(versionComment) {
+        let uiComment = new UiComment(versionComment.comment);
         this.el.appendChild(uiComment.el);
     }
 
-    onCommentsCleared() {
+    clearUiComments() {
+        this.uiComments.forEach(uiComment => {
+            uiComment.terminate();
+        });
         this.el.innerHTML = "";
     }
 }

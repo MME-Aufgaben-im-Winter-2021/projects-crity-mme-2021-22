@@ -2,7 +2,7 @@ import { Listener } from "../../../../common/model/Observable.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../../common/ui/dom-utils.js";
 import { UiPageCanvas } from "../UiPageCanvas.js";
 import { data } from "../../model/data.js";
-import { ActivePdf } from "../../model/ActivePdf.js";
+import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 
 // Represents the widget for a single PDF page in the thumbnail bar.
 // Instantiates the DOM template for the thumbnail. The user of the class
@@ -20,7 +20,7 @@ class UiThumbnail {
         this.pageCanvas = new UiPageCanvas(pageCanvasEl);
 
         this.listener = new Listener();
-        data.activePdf.addEventListener(ActivePdf.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
+        data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
         
         this.updateSelectionState();
         this.p_fetchPage();
@@ -30,9 +30,10 @@ class UiThumbnail {
         this.listener.terminate();
     }
 
+    // TODO(optimize): Lazy thumbnail loading, or at least prioritize rendering thumbnails that are in view.
     // Asynchronously fill the canvas with our page.
     async p_fetchPage() {
-        let activePdfPage = await data.activePdf.fetchPage(this.pageNo),
+        let activePdfPage = await data.selTracker.pdf.fetchPage(this.pageNo),
             [width, height] = this.computeDimensions(activePdfPage);
         this.pageCanvas.setDimensions(width, height);
         this.pageCanvas.renderPage(activePdfPage);
@@ -64,12 +65,12 @@ class UiThumbnail {
 
     // TODO(optimize): This is called for every thumbnail, in theory we only need to call this for two thumbnails.
     updateSelectionState() {
-        let isSelected = (data.activePdf.activePageNo === this.pageNo);
+        let isSelected = (data.selTracker.activePageNo === this.pageNo);
         ensureCssClassPresentIff(isSelected, "selected", this.el, this.pageNoEl);
     }
 
     onClick() {
-        data.activePdf.setActivePage(this.pageNo);
+        data.selTracker.activatePage(this.pageNo);
     }
 }
 

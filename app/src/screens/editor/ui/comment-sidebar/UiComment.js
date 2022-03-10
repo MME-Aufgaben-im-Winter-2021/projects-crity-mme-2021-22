@@ -10,6 +10,10 @@ class UiComment {
         this.authorEl = this.el.querySelector(".comment-author");
         this.authorEl.textContent = comment.author;
     }
+
+    terminate() {
+        return;
+    }
 }
 
 export { UiComment };

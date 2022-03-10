@@ -1,4 +1,4 @@
-import { UiCommentInputFields } from "./UiCommentInputFields.js";
+import { UiCommentEditor } from "./UiCommentEditor.js";
 import { UiCommentList } from "./UiCommentList.js";
 
 class UiRightSidebar {
@@ -6,11 +6,12 @@ class UiRightSidebar {
         this.el = screen.el.querySelector(".id-sidebar-right");
 
         this.commentList = new UiCommentList(screen);
-        this.commentInputFields = new UiCommentInputFields(screen);
+        this.commentEditor = new UiCommentEditor(screen);
     }
 
     terminate() {
         this.commentList.terminate();
+        this.commentEditor.terminate();
     }
 }
 
