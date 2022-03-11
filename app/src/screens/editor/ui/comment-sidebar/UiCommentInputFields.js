@@ -23,7 +23,9 @@ class UiCommentInputFields {
 
         this.commentInputField.value = "";
 
-        data.activePdf.activePageComments.createComment(comment);
+        // TODO: If Check bezüglich Mode
+        //data.activePdf.activePageComments.createComment(comment);
+        data.activePdf.activePageComments.createThread(comment);
     }
 }
 

@@ -6,9 +6,12 @@ import { Query } from "appwrite";
 class PageComments {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
     static COMMENT_VERSION_COLLECTION_ID = "6214e5ef06bef7005816";
+    static THREADS_COLLECTION_ID = "6214e528bca5bb1da956";
 
     constructor(version) {
         this.version = version;
+
+        this.threads = new ObservableArray();
         this.comments = new ObservableArray();
         this.pageNo = null;
         this.subscribeToCommentsVersionCollections();
@@ -23,6 +26,27 @@ class PageComments {
     setActivePage(pageNo) {
         this.pageNo = pageNo;
         this.p_fetchComments();
+        //this.p_fetchThreads();
+    }
+
+    async p_fetchThreads() {
+        this.threads.clear();
+
+        
+        let presentationVersionId = this.version.appwriteId;
+        console.log(presentationVersionId);
+        console.log(this.pageNo);
+        let threads = await appwrite.database.listDocuments(PageComments.THREADS_COLLECTION_ID, [
+            Query.equal("presentationVersion", presentationVersionId),
+            Query.equal("pageNo", this.pageNo),
+        ]);
+
+        console.log(threads.documents.length);
+        for (let i = 0; i < threads.documents.length; i++) {
+            let thread = threads.documents[i];
+            let comment = new Comment(thread.author, thread.text);
+            this.comments.push(comment);
+        }
     }
 
     async p_fetchComments() {
@@ -58,6 +82,17 @@ class PageComments {
                 comment = new Comment(appwriteComment.author, appwriteComment.text);
             this.comments.push(comment);
         }
+    }
+
+    createThread(comment) {
+        (async () => {
+            //New Thread-Collection Document
+            let appwriteThread = await appwrite.database.createDocument(
+                "6214e528bca5bb1da956",
+                "unique()",
+                {title: comment.text, author: comment.author, presentationVersion: this.version.appwriteId, pageNo: this.pageNo}
+            );
+        })();
     }
 
     createComment(comment) {
