@@ -48,7 +48,7 @@ class AccountSession extends Observable {
         this.logIn(email, password);
     }
 
-    async logIn(email, password) {
+    async logIn(email, password, message) {
         // FIXME: What should we do in the UNKNOWN state?
         assert(this.loginState === LoginState.LOGGED_OUT);
 
@@ -57,7 +57,7 @@ class AccountSession extends Observable {
             this.p_accountId = session.userId;
             this.p_changeLoginState(LoginState.LOGGED_IN);
         } catch (e) {
-            // TODO: Error message.
+            message.textContent = "Wrong e-mail or password";
         }
     }
 
