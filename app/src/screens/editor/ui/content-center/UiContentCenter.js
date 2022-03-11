@@ -7,6 +7,7 @@ import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { Comment } from "../../../../common/model/Comment.js";
 import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 import { VersionComment } from "../../../../common/model/VersionComment.js";
+import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 
 // The PDF-viewer proper. We only display a single page for now.
 // PDFJS renders into a canvas, however this alone does not allow for selecting
@@ -28,8 +29,8 @@ class UiContentCenter {
         // Does not include the editing marker.
         this.commentMarkers = [];
 
-        data.addEventListener(EditorData.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
-        data.addEventListener(EditorData.EVENT_COMMENT_EDITING_FINISHED, () => this.onCommentEditingFinished(), this.listener);
+        data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
+        data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_FINISHED, () => this.onCommentEditingFinished(), this.listener);
 
         data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.onActivePageChanged(), this.listener);
 
@@ -41,14 +42,14 @@ class UiContentCenter {
     }
 
     async onCommentEditingStarted() {
-        this.commentEditingMarkerEl = await this.createCommentMarker(data.editedVersionComment);
-        data.editedVersionComment.addEventListener(VersionComment.EVENT_PAGE_POS_CHANGED, () => this.onEditedVersionCommentPosChanged(), this.listener);
+        this.commentEditingMarkerEl = await this.createCommentMarker(data.commentEditing.editedVersionComment);
+        data.commentEditing.editedVersionComment.addEventListener(VersionComment.EVENT_PAGE_POS_CHANGED, () => this.onEditedVersionCommentPosChanged(), this.listener);
     }
 
     async onEditedVersionCommentPosChanged() {
         // Kill and replace, kind of ugly.
         this.commentEditingMarkerEl?.remove();
-        this.commentEditingMarkerEl = await this.createCommentMarker(data.editedVersionComment);
+        this.commentEditingMarkerEl = await this.createCommentMarker(data.commentEditing.editedVersionComment);
     }
 
     onVersionCommentQueryChanged() {
@@ -71,11 +72,11 @@ class UiContentCenter {
             pageX = textLayerX / this.textLayerEl.offsetWidth,
             pageY = textLayerY / this.textLayerEl.offsetHeight;
 
-        if (data.editedVersionComment === null) {
-            let comment = new VersionComment(new Comment("", ""), pageX, pageY);
-            data.startEditingComment(comment);
+        if (data.commentEditing.isEditing()) {
+            data.commentEditing.editedVersionComment.setPagePos(pageX, pageY);
         } else {
-            data.editedVersionComment.setPagePos(pageX, pageY);
+            let comment = new VersionComment(data.selTracker.version, data.selTracker.activePageNo, new Comment("", ""), pageX, pageY);
+            data.commentEditing.startEditingComment(comment);
         }
     }
 

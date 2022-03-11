@@ -2,12 +2,6 @@ import { Observable, Event } from "./Observable.js";
 import { PdfPage } from "./PdfPage.js";
 import * as pdfjsLib from "pdfjs-dist/webpack.js";
 
-// TODO: Do we want to merge this with the Version class, seeing as there is a
-// one-to-one correspondence between PDFs and versions? On the other hand,
-// a version should probably not always have the PDF locked and loaded ...
-// TODO: Make this something more generic and put it into common, e.g.
-// LoadedPDF?
-//
 // Wraps PDFJS's PDFDocumentProxy.
 //
 // We maintain the notion of an "active" page number.

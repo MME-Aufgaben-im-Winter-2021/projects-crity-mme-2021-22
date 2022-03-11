@@ -1,5 +1,6 @@
-import { data, EditorData } from "../../model/data.js";
+import { data } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
+import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 
 class UiCommentEditor {
     constructor(screen) {
@@ -16,8 +17,8 @@ class UiCommentEditor {
 
         this.setVisible(false);
 
-        data.addEventListener(EditorData.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
-        data.addEventListener(EditorData.EVENT_COMMENT_EDITING_FINISHED, () => this.onCommentEditingFinished(), this.listener);
+        data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
+        data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_FINISHED, () => this.onCommentEditingFinished(), this.listener);
     }
 
     terminate() {
@@ -40,15 +41,15 @@ class UiCommentEditor {
         // TODO: (Why) do we need this?
         e.preventDefault();
         
-        data.editedVersionComment.comment.author = this.nameInputFieldEl.value;
-        data.editedVersionComment.comment.text = this.commentInputFieldEl.value;
+        data.commentEditing.editedVersionComment.comment.author = this.nameInputFieldEl.value;
+        data.commentEditing.editedVersionComment.comment.text = this.commentInputFieldEl.value;
         this.commentInputFieldEl.value = "";
 
-        data.finishEditingComment(true);
+        data.commentEditing.finishEditingComment(true);
     }
 
     onQuitEditingButtonClicked() {
-        data.finishEditingComment(false);
+        data.commentEditing.finishEditingComment(false);
     }
 
     onCommentEditingStarted() {
