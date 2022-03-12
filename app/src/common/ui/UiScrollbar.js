@@ -23,18 +23,20 @@ class UiScrollbar extends Observable {
     }
 
     reconfigure(contentStart, contentEnd, visibleStart, visibleEnd) {
+        let contentSize, visibleSize, visibleProportion, elSize;
+
         this.contentStart = contentStart;
         this.contentEnd = contentEnd;
         this.visibleStart = visibleStart;
         this.visibleEnd = visibleEnd;
 
-        let contentSize = contentEnd - contentStart;
-        let visibleSize = visibleEnd - visibleStart;
-        let visibleProportion = visibleSize / contentSize;
+        contentSize = contentEnd - contentStart;
+        visibleSize = visibleEnd - visibleStart;
+        visibleProportion = visibleSize / contentSize;
 
         this.setFakeContentSize(`${100*visibleProportion}%`);
 
-        let elSize = this.getElSize();
+        elSize = this.getElSize();
         this.scrollTo(elSize * (contentStart - visibleStart) / contentSize);
     }
 
@@ -52,18 +54,19 @@ class UiScrollbar extends Observable {
     }
 
     onThrottledScroll() {
+        let elSize, visibleSize, contentSize, scrollPos;
+
         console.log("Executing throttled scroll.");
-        let scrollPos;
         if (this.axis === "x") {
             scrollPos = this.el.scrollLeft;
         } else {
             scrollPos = this.el.scrollTop;
         }
 
-        let elSize = this.getElSize();
+        elSize = this.getElSize();
 
-        let visibleSize = this.visibleEnd - this.visibleStart;
-        let contentSize = this.contentEnd - this.contentStart;
+        visibleSize = this.visibleEnd - this.visibleStart;
+        contentSize = this.contentEnd - this.contentStart;
         this.visibleStart = -scrollPos * contentSize / elSize - this.contentStart;
         this.visibleEnd = this.visibleStart + visibleSize;
 
@@ -84,11 +87,13 @@ class UiScrollbar extends Observable {
     }
 
     getElSize() {
+        let result;
         if (this.axis === "x") {
-            return this.el.offsetWidth;
+            result = this.el.offsetWidth;
         } else {
-            return this.el.offsetHeight;
+            result = this.el.offsetHeight;
         }
+        return result;
     }
 
     setFakeContentSize(size) {

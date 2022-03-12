@@ -1,7 +1,5 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { ObservableArray } from "../../../../common/model/ObservableArray.js";
-import { VersionComment } from "../../../../common/model/VersionComment.js";
-import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { EditorData, data } from "../../model/data.js";
 import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 import { UiCommentMarker } from "./UiCommentMarker.js";

@@ -29,10 +29,12 @@ class UiCanvasLayer {
     }
 
     updateTransform() {
-        let pageRect = this.pageRectTracker.computePageRect();
+        let pageRect, scale;
+
+        pageRect = this.pageRectTracker.computePageRect();
         this.pageCanvas.canvasEl.style.transformOrigin = "left top";
 
-        let scale = (pageRect.right - pageRect.left) / data.selTracker.activePage.viewport.width;
+        scale = (pageRect.right - pageRect.left) / data.selTracker.activePage.viewport.width;
         this.pageCanvas.canvasEl.style.transform = `matrix(${scale}, 0, 0, ${scale}, ${pageRect.left}, ${pageRect.top})`;
     }
 }

@@ -25,12 +25,13 @@ class EditorViewingArea extends Observable {
     }
 
     computePageRect(asp, containerWidth, containerHeight) {
-        let pageRect = {};
+        let pageRect, pageCenterX, pageCenterY, pageWidth, pageHeight;
 
-        let pageCenterX = containerWidth * this.centeredX;
-        let pageCenterY = containerHeight * this.centeredY;
+        pageRect = {};
 
-        let pageWidth, pageHeight;
+        pageCenterX = containerWidth * this.centeredX;
+        pageCenterY = containerHeight * this.centeredY;
+
         if (asp > 1) {
             // longerAxis = x
             pageWidth = this.zoom * containerWidth;
@@ -50,10 +51,12 @@ class EditorViewingArea extends Observable {
     }
 
     setPageRect(asp, containerWidth, containerHeight, pageRect) {
-        let pageWidth = pageRect.right - pageRect.left;
-        let pageHeight = pageRect.top - pageRect.bottom;
-        let pageCenterX = 0.5 * (pageRect.left + pageRect.right);
-        let pageCenterY = 0.5 * (pageRect.top + pageRect.bottom);
+        let pageWidth, pageHeight, pageCenterX, pageCenterY;
+
+        pageWidth = pageRect.right - pageRect.left;
+        pageHeight = pageRect.top - pageRect.bottom;
+        pageCenterX = 0.5 * (pageRect.left + pageRect.right);
+        pageCenterY = 0.5 * (pageRect.top + pageRect.bottom);
 
         if (asp > 1) {
             // longerAxis = x

@@ -45,20 +45,24 @@ class UiPageRectTracker extends Observable {
     }
 
     clientToViewportCoords(clientX, clientY) {
-        let boundingRect = this.viewportEl.getBoundingClientRect();
+        let boundingRect, viewportX, viewportY;
+
+        boundingRect = this.viewportEl.getBoundingClientRect();
         
-        let viewportX = clientX - boundingRect.left;
-        let viewportY = clientY - boundingRect.top;
+        viewportX = clientX - boundingRect.left;
+        viewportY = clientY - boundingRect.top;
 
         return [viewportX, viewportY];
     }
 
     computePageRect() {
-        let asp = 1;
+        let asp, pageRect;
+
+        asp = 1;
         if (data.selTracker.activePage !== null) {
             asp = data.selTracker.activePage.asp;
         }
-        let pageRect = data.viewingArea.computePageRect(asp, this.viewportEl.offsetWidth, this.viewportEl.offsetHeight);
+        pageRect = data.viewingArea.computePageRect(asp, this.viewportEl.offsetWidth, this.viewportEl.offsetHeight);
         return pageRect;
     }
 

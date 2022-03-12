@@ -2,7 +2,6 @@ import { Listener } from "../../../../common/model/Observable.js";
 import { VersionComment } from "../../../../common/model/VersionComment.js";
 import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { lerp } from "../../../../common/utils.js";
-import { data } from "../../model/data.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
 class UiCommentMarker {
@@ -24,10 +23,12 @@ class UiCommentMarker {
     }
 
     updatePosition() {
-        let pageRect = this.pageRectTracker.computePageRect();
+        let pageRect, x, y;
 
-        let x = lerp(pageRect.left, pageRect.right, this.versionComment.pageX);
-        let y = lerp(pageRect.top, pageRect.bottom, this.versionComment.pageY);
+        pageRect = this.pageRectTracker.computePageRect();
+
+        x = lerp(pageRect.left, pageRect.right, this.versionComment.pageX);
+        y = lerp(pageRect.top, pageRect.bottom, this.versionComment.pageY);
 
         this.el.style.left = `${x}px`;
         this.el.style.top = `${y}px`;

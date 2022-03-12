@@ -1,20 +1,14 @@
 import { Listener } from "../../../../common/model/Observable.js";
-import { data, EditorData } from "../../model/data.js";
-import { UiPageCanvas } from "../UiPageCanvas.js";
-import { ObservableArray } from "../../../../common/model/ObservableArray.js";
-import { cloneDomTemplate, MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
+import { data } from "../../model/data.js";
 import { Comment } from "../../../../common/model/Comment.js";
-import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 import { VersionComment } from "../../../../common/model/VersionComment.js";
-import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
-import { UiScrollbar } from "../../../../common/ui/UiScrollbar.js";
 import { UiTextLayer } from "./UiTextLayer.js";
 import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
 import { UiViewportScrollbar } from "./UiViewportScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 import { unused } from "../../../../common/utils.js";
-import { EditorViewingArea } from "../../model/ViewingArea.js";
+import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiContentCenterState {
     constructor(pageRectTracker) {
@@ -82,11 +76,13 @@ class UiContentCenterMainState extends UiContentCenterState {
 
             // Add a comment marker.
             case MouseButtonCodes.LEFT: {
-                let [viewportX, viewportY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
-                let pageRect = this.pageRectTracker.computePageRect();
+                let viewportX, viewportY, pageRect, pageX, pageY;
 
-                let pageX = (viewportX - pageRect.left) / (pageRect.right - pageRect.left);
-                let pageY = (viewportY - pageRect.top) / (pageRect.bottom - pageRect.top);
+                [viewportX, viewportY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
+                pageRect = this.pageRectTracker.computePageRect();
+
+                pageX = (viewportX - pageRect.left) / (pageRect.right - pageRect.left);
+                pageY = (viewportY - pageRect.top) / (pageRect.bottom - pageRect.top);
 
                 if (data.commentEditing.isEditing()) {
                     data.commentEditing.editedVersionComment.setPagePos(pageX, pageY);
@@ -102,22 +98,20 @@ class UiContentCenterMainState extends UiContentCenterState {
 
     onWheel(e) {
         if (e.ctrlKey) {
+            let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
+
             // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
             // TODO: Does this depend on the OS?
-            let normalizedDelta = e.deltaY / 102;
-            let factor = Math.pow(1.3, -normalizedDelta);
+            normalizedDelta = e.deltaY / 102;
+            factor = Math.pow(1.3, -normalizedDelta);
 
-            let pageRect = this.pageRectTracker.computePageRect();
-            let [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
+            pageRect = this.pageRectTracker.computePageRect();
+            [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
 
             translateRect(pageRect, -viewportMouseX, -viewportMouseY);
             scaleRect(pageRect, factor);
             translateRect(pageRect, viewportMouseX, viewportMouseY);
             this.pageRectTracker.setPageRect(pageRect);
-
-            let zoom = data.viewingArea.zoom;
-
-            data.viewingArea.setZoom(zoom);
         }
 
         // Prevent the browser from resizing the page when Ctrl is pressed.
@@ -148,7 +142,6 @@ class UiContentCenter {
         this.viewportEl.addEventListener("mousedown", e => this.onMouseDown(e));
         this.viewportEl.addEventListener("mouseup", e => this.onMouseUp(e));
         this.viewportEl.addEventListener("wheel", e => this.onWheel(e));
-        this.viewportEl.addEventListener("click", e => this.onPageCanvasClicked(e));
         this.viewportEl.addEventListener("mousemove", e => this.onMouseMotion(e));
 
         this.state = new UiContentCenterMainState(this.pageRectTracker);
@@ -187,9 +180,6 @@ class UiContentCenter {
     onMouseMotion(e) {
         this.state.onMouseMotion(e);
         this.pollStateChange();
-    }
-
-    onPageCanvasClicked(e) {
     }
 }
 

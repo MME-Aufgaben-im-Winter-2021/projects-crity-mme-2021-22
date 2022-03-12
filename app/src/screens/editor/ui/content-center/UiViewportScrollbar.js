@@ -1,7 +1,5 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { UiScrollbar } from "../../../../common/ui/UiScrollbar.js";
-import { data } from "../../model/data.js";
-import { EditorViewingArea } from "../../model/ViewingArea.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
 class UiViewportScrollbar extends UiScrollbar {
@@ -17,9 +15,10 @@ class UiViewportScrollbar extends UiScrollbar {
     }
 
     reconfigure() {
-        let pageRect = this.pageRectTracker.computePageRect();
+        let pageRect, pageStart, pageEnd;
 
-        let pageStart, pageEnd;
+        pageRect = this.pageRectTracker.computePageRect();
+
         if (this.axis === "x") {
             pageStart = pageRect.left;
             pageEnd = pageRect.right;
@@ -46,11 +45,13 @@ class UiViewportScrollbar extends UiScrollbar {
     }
 
     getViewportSize() {
+        let result;
         if (this.axis === "x") {
-            return this.pageRectTracker.getViewportWidth();
+            result = this.pageRectTracker.getViewportWidth();
         } else {
-            return this.pageRectTracker.getViewportHeight();
+            result = this.pageRectTracker.getViewportHeight();
         }
+        return result;
     }
 
     terminate() {
