@@ -25,8 +25,27 @@ class VersionCommentQuery {
     subscribeToCommentsVersionCollections() {
         this.unsubscribeFunc = appwrite.subscribe(
             `collections.${VersionComment.VERSION_COMMENT_COLLECTION_ID}.documents`, 
-            response => this.p_fetch(response),
+            response => this.onVersionCommentCollectionChanged(response),
         );
+    }
+
+    appwriteVersionCommentMatchesQuery(appwriteVersionComment) {
+        if (appwriteVersionComment.presentationVersion !== this.version.appwriteId) {
+            return false;
+        }
+
+        if (this.pageNo !== VersionCommentQuery.PAGE_NO_ANY && appwriteVersionComment.pageNo !== this.pageNo) {
+            return false;
+        }
+
+        return true;
+    }
+
+    async onVersionCommentCollectionChanged(response) {
+        if (this.appwriteVersionCommentMatchesQuery(response.payload)) {
+            let versionComment = await VersionComment.fromAppwriteDocument(this.version, response.payload);
+            this.versionComments.push(versionComment);
+        }
     }
 
     terminate() {
@@ -53,11 +72,11 @@ class VersionCommentQuery {
             // Without the asynchronous function, every comment HTTP request would have to wait for its
             // predecessor's roundtrip to finish, which slows comment loading down severely.
             // FIXME: This messes up the order of the comments.
-            (async () => {
+            //(async () => {
                 let appwriteVersionComment = appwriteVersionComments.documents[i],
                     versionComment = await VersionComment.fromAppwriteDocument(this.version, appwriteVersionComment);
                 this.versionComments.push(versionComment);
-            })();
+            //})();
         }
     }
 }
