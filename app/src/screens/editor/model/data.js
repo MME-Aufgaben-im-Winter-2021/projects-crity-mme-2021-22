@@ -3,6 +3,7 @@ import { VersionList } from "../../../common/model/VersionList.js";
 import { EditorSelTracker } from "./EditorSelTracker.js";
 import { VersionCommentQuery } from "../../../common/model/VersionCommentQuery.js";
 import { EditorCommentEditing } from "./EditorCommentEditing.js";
+import { EditorViewingArea } from "./ViewingArea.js";
 
 var data;
 
@@ -37,6 +38,8 @@ class EditorData extends Observable {
         this.versionList.addEventListener(VersionList.EVENT_INITIAL_FETCH_CONCLUDED, () => {
             this.selTracker.activateVersion(this.versionList.versions.getLast());
         }, this.listener);
+
+        this.viewingArea = new EditorViewingArea();
     }
 
     terminate() {
@@ -46,6 +49,7 @@ class EditorData extends Observable {
         this.selTracker.terminate();
         this.versionList.terminate();
         this.versionCommentQuery?.terminate();
+        this.viewingArea.terminate();
     }
 
     onActivePageChanged() {

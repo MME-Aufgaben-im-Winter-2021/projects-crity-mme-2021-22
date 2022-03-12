@@ -7,15 +7,20 @@
                 <!-- #thumbnail-template gets instantiated here. -->
             </div>
             <!-- content center -->
-            <div class="id-content-center relative grow overflow-auto bg-slate-600">
-                <div class="inline-block relative">
-                    <canvas class="id-pdf-canvas"></canvas>
-                    <div class="id-marker-container absolute top-0 left-0 w-10 h-10"></div>
-                    <div class="id-pdf-text-layer textLayer"></div>
+            <div class="id-content-center flex flex-col grow bg-slate-600">
+                <div class="flex grow">
+                    <div class="id-viewport grow relative overflow-hidden">
+                        <canvas class="id-pdf-canvas absolute top-0 left-0"></canvas>
+                        <div class="id-marker-container absolute top-0 left-0 w-10 h-10"></div>
+                        <div class="id-pdf-text-layer textLayer"></div>
+                    </div>
+                    <div class="id-scrollbar-y-container flex"></div>
                 </div>
+
+                <div class="id-scrollbar-x-container"></div>
             </div>
             <!-- sidebar right -->
-            <div class="id-sidebar-right ml-auto flex h-full w-1/4 grow flex-col">
+            <div class="id-sidebar-right ml-auto flex h-full w-1/4 flex-col">
                 <!-- search/sort/filter bar -->
                 <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
                     <!-- search bar -->

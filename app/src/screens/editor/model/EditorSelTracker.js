@@ -21,6 +21,7 @@ class EditorSelTracker extends Observable {
         this.pdf = null;
         // TODO: Should this be tracked by a separate class?
         this.activePageNo = null;
+        this.activePage = null;
     }
 
     terminate() {
@@ -50,12 +51,13 @@ class EditorSelTracker extends Observable {
         return this.pdf !== null;
     }
 
-    activatePage(pageNo) {
+    async activatePage(pageNo) {
         if (this.activePageNo === pageNo) {
             return;
         }
 
         this.activePageNo = pageNo;
+        this.activePage = await this.pdf.fetchPage(pageNo);
         this.notifyAll(new Event(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, {pageNo}));
     }
 }
