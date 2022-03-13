@@ -1,6 +1,7 @@
 import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { Comment } from "./Comment.js";
+import { Thread } from "../ui/threads/Thread.js";
 import { Query } from "appwrite";
 
 class PageComments {
@@ -25,8 +26,8 @@ class PageComments {
     // Fetch comments for the active page.
     setActivePage(pageNo) {
         this.pageNo = pageNo;
-        this.p_fetchComments();
-        //this.p_fetchThreads();
+        this.p_fetchThreads();
+        //this.p_fetchComments();
     }
 
     async p_fetchThreads() {
@@ -43,9 +44,9 @@ class PageComments {
 
         console.log(threads.documents.length);
         for (let i = 0; i < threads.documents.length; i++) {
-            let thread = threads.documents[i];
-            let comment = new Comment(thread.author, thread.text);
-            this.comments.push(comment);
+            let appwriteThread = threads.documents[i];
+            let thread = new Thread(appwriteThread.author, appwriteThread.title);
+            this.threads.push(thread);
         }
     }
 
