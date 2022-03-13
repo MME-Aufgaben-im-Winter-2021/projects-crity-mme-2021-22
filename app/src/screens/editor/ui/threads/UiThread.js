@@ -1,7 +1,9 @@
 import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 
 class UiThread {
-    constructor(thread) {
+    constructor(thread, parent) {
+        this.parent = parent;
+
         this.el = cloneDomTemplate("#thread-template");
 
         this.titleEl = this.el.querySelector(".thread-title");
@@ -12,9 +14,14 @@ class UiThread {
 
         this.comments = this.el.querySelector(".thread-comments");
         this.header = this.el.querySelector(".thread-header");
-        this.header.addEventListener("click", () => this.toggle());
+        this.header.addEventListener("click", () => this.clicked());
 
         this.comments.style.display = "none";
+    }
+
+    clicked() {
+        this.parent.shutDownLastOpen(this);
+        this.toggle();
     }
 
     toggle() {

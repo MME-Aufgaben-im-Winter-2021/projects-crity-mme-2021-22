@@ -1,5 +1,6 @@
 import { data } from "../../model/data.js";
 import { Comment } from "../../model/Comment.js";
+import { UiCommentList } from "./UiCommentList.js";
 
 class UiCommentInputFields {
     constructor(screen) {
@@ -25,7 +26,9 @@ class UiCommentInputFields {
 
         // TODO: If Check bezüglich Mode
         //data.activePdf.activePageComments.createComment(comment);
-        data.activePdf.activePageComments.createThread(comment);
+        if(UiCommentList.lastOpen == null) {
+            data.activePdf.activePageComments.createThread(comment);
+        }
     }
 }
 

@@ -6,6 +6,9 @@ import { Listener } from "../../../../common/model/Observable.js";
 
 class UiCommentList {
     constructor(screen) {
+        this.threads = [];
+        this.lastOpen = null;
+
         this.el = screen.el.querySelector(".id-comment-list");
         this.listener = new Listener();
         data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.onPdfLoaded(), this.listener);
@@ -34,11 +37,25 @@ class UiCommentList {
     }
 
     onThreadAdded(thread) {
-        let uiThread = new UiThread(thread);
+        let uiThread = new UiThread(thread, this);
+        this.threads.push(uiThread);
         this.el.appendChild(uiThread.el);
     }
     onThreadsCleared() {
         this.el.innerHTML = "";
+    }
+
+    shutDownLastOpen(elem) {
+        if(this.lastOpen == null) {
+            this.lastOpen = elem;
+            return;
+        }
+        if(this.lastOpen == elem) {
+            this.lastOpen = null;
+            return;
+        }
+        this.lastOpen.toggle();
+        this.lastOpen = elem;
     }
 }
 
