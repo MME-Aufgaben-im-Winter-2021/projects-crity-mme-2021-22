@@ -56,6 +56,8 @@ class UiCreateAccountScreen extends UiScreen {
 
         if (password !== confPassword) {
             this.message.textContent = "Passwords do not match";
+            this.confPasswordInputEl.classList.remove("border-none");
+            this.passwordInputEl.classList.remove("border-none");
         } else {
             this.message.textContent = "";
             (async () => {
