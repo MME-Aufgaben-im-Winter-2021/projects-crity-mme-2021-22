@@ -18,6 +18,22 @@ class UiComment {
 
         this.comments = this.el.querySelector(".thread-comments");
         this.comments.style.display = "none";
+
+    }
+
+    addComments(comment) {
+        this.comments.innerHTML = "";
+        for(let i = 0; i < comment.authors.length; i++) {
+            let commentElement = cloneDomTemplate("#thread-comment-template");
+
+            let commentElementText = commentElement.querySelector(".comment-text");
+            commentElementText.textContent = comment.messages[i];
+
+            let commentElementAuthor = commentElement.querySelector(".comment-author");
+            commentElementAuthor.textContent = comment.authors[i];
+
+            this.comments.appendChild(commentElement);
+        }
     }
 
     clicked() {
@@ -28,8 +44,11 @@ class UiComment {
     toggle() {
         if (this.comments.style.display === "none") {
             this.comments.style.display = "block";
+            this.versionComment.subscribeToCommentDocument(this);
+            this.versionComment.loadNewestComments(this);
         } else {
             this.comments.style.display = "none";
+            this.versionComment.unsubscribeFunc();
         }
     }
 
@@ -37,7 +56,7 @@ class UiComment {
         return;
     }
 
-    addComment(author, text) {
+    addComment(author, text, fromAppwrite) {
         let commentElement = cloneDomTemplate("#thread-comment-template");
 
         let commentElementText = commentElement.querySelector(".comment-text");
@@ -47,7 +66,10 @@ class UiComment {
         commentElementAuthor.textContent = author;
 
         this.comments.appendChild(commentElement);
-        this.versionComment.submitComment(author, text);
+
+        if(!fromAppwrite) {
+            this.versionComment.submitComment(author, text);
+        }
     }
 }
 

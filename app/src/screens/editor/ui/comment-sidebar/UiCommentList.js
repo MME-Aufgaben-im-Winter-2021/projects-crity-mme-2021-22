@@ -97,7 +97,7 @@ class UiCommentList {
         if(e.keyCode !== /* enter */ 13) {
             return;
         }
-        this.lastOpen.addComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
+        this.lastOpen.addComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value, false);
     }
 
 }

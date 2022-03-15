@@ -66,6 +66,29 @@ class VersionComment extends Observable {
             messages: this.comment.messages,
         })
     }
+
+    subscribeToCommentDocument(uiComment) {  
+        let id = 'documents.'+this.id;  
+        this.unsubscribeFunc = appwrite.subscribe(
+            id,
+            response => this.onDocumentChanged(response, uiComment),
+        );   
+    }
+
+    async onDocumentChanged(response, uiComment) {
+        if(this.comment.authors.length != response.payload.authors.length){
+            this.comment.authors = response.payload.authors;
+            this.comment.messages = response.payload.messages;
+            uiComment.addComment(this.comment.authors[this.comment.authors.length-1], this.comment.messages[this.comment.messages.length-1], true);
+
+        }
+    }
+
+    async loadNewestComments(uiComment) {
+        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
+            comment = Comment.fromAppwriteDocument(appwriteComment);
+        uiComment.addComments(comment);
+    }
 }
 
 export { VersionComment };
