@@ -2,6 +2,7 @@ import { ObservableArray } from "../../../../common/model/ObservableArray.js";
 import { UiComment } from "./UiComment.js";
 import { data, EditorData } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
+import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 
 class UiCommentList {
     constructor(screen) {
@@ -9,9 +10,24 @@ class UiCommentList {
         this.listener = new Listener();
 
         this.uiComments = [];
+        this.lastOpen = null;
 
         data.addEventListener(EditorData.EVENT_VERSION_COMMENT_QUERY_CHANGED, () => this.onVersionCommentQueryChanged(), this.listener);
+        data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
+
+        this.el2 = screen.el.querySelector(".id-comment-editor");
+
+        this.nameInputFieldEl = screen.el.querySelector(".id-name-input");
+
+        this.quitEditingButtonEl = screen.el.querySelector(".id-quit-editing-button");
+
+        this.commentInputFieldEl = screen.el.querySelector(".id-comment-input");
+        this.commentInputFieldEl.addEventListener("keydown", e => this.onKeyDown(e));
+
+        this.commentEditorText = screen.el.querySelector(".comment-editor-text");
     }
+
+
 
     terminate() {
         this.listener.terminate();
@@ -25,8 +41,9 @@ class UiCommentList {
     }
 
     onVersionCommentAdded(versionComment) {
-        let uiComment = new UiComment(versionComment.comment);
+        let uiComment = new UiComment(versionComment.comment, this, versionComment);
         this.el.appendChild(uiComment.el);
+        this.uiComments.push(uiComment);
     }
 
     clearUiComments() {
@@ -35,6 +52,54 @@ class UiCommentList {
         });
         this.el.innerHTML = "";
     }
+
+    onCommentEditingStarted() {
+        if(this.lastOpen != null) {
+            this.lastOpen.toggle();
+            this.lastOpen = null;
+        }
+    }
+
+    toggleCommentEditor(visible) {
+        if (visible) {
+            this.el2.style = "";
+            this.quitEditingButtonEl.style = "display: none";
+            this.commentEditorText.textContent = "Add Comment";
+        } else {
+            this.el2.style = "display: none";
+        }
+    }
+
+    shutDownLastOpen(elem) {
+        data.commentEditing.finishEditingComment(false);
+        // Kein zuletzt geöffnetes
+        if(this.lastOpen == null) {
+            this.lastOpen = elem;
+            this.toggleCommentEditor(true);
+            return;
+        }
+        // Zuletzt geöffnetes ist neu geöffnetes
+        if(this.lastOpen == elem) {
+            this.lastOpen = null;
+            this.toggleCommentEditor(false);
+            return;
+        }
+        // Zuletzt geöffnetes und neu geöffnetes unterschiedlich
+        this.lastOpen.toggle();
+        this.lastOpen = elem;
+        this.toggleCommentEditor(true);
+    }
+
+    onKeyDown(e) {
+        if(this.commentEditorText.textContent != "Add Comment") {
+            return;
+        }
+        if(e.keyCode !== /* enter */ 13) {
+            return;
+        }
+        this.lastOpen.addComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
+    }
+
 }
 
 export {UiCommentList };

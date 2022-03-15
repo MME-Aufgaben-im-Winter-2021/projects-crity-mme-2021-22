@@ -8,7 +8,7 @@ class VersionComment extends Observable {
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
 
-    constructor(version, pageNo, comment, pageX, pageY) {
+    constructor(version, pageNo, comment, pageX, pageY, commentId) {
         super();
 
         this.version = version;
@@ -17,12 +17,14 @@ class VersionComment extends Observable {
         this.comment = comment;
         this.pageX = pageX;
         this.pageY = pageY;
+
+        this.id = commentId;
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
         let appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment),
             comment = Comment.fromAppwriteDocument(appwriteComment);
-        return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage);
+        return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage, appwriteVersionComment.comment);
     }
 
     setPagePos(pageX, pageY) {
@@ -54,6 +56,15 @@ class VersionComment extends Observable {
         );
 
         return appwriteVersionComment;
+    }
+
+    async submitComment(author, message) {
+        this.comment.authors.push(author);
+        this.comment.messages.push(message);
+        let appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
+            authors: this.comment.authors,
+            messages: this.comment.messages,
+        })
     }
 }
 
