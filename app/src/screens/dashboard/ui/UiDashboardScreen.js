@@ -15,6 +15,11 @@ class UiDashboardScreen extends UiRestrictedScreen {
         initData();
         this.presentationList = new UiPresentationList(this);
         this.presentationCreation = new UiPresentationCreation(this);
+
+        this.navBarInfo = document.querySelector(".id-info");
+        this.navBarInfo.classList.add("hidden");
+        this.copyLinkButton = document.querySelector("#copy-link-button");
+        this.copyLinkButton.classList.add("hidden");
     }
 
     terminateRestricted() {

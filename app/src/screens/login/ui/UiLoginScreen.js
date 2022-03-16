@@ -30,6 +30,11 @@ class UiLoginScreen extends UiScreen {
             () => this.onLoginStateChanged(),
             this.listener,
         );
+
+        this.navBarInfo = document.querySelector(".id-info");
+        this.navBarInfo.classList.add("hidden");
+        this.copyLinkButton = document.querySelector("#copy-link-button");
+        this.copyLinkButton.classList.add("hidden");
     }
 
     terminate() {
