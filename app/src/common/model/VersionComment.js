@@ -1,6 +1,7 @@
 import { appwrite } from "./appwrite.js";
 import { Comment } from "./Comment.js";
 import { Observable, Event } from "./Observable.js";
+import { accountSession } from "./AccountSession.js";
 
 class VersionComment extends Observable {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
@@ -95,9 +96,9 @@ class VersionComment extends Observable {
         let appwriteComment = await appwrite.database.getDocument("comments", this.id),
             comment = Comment.fromAppwriteDocument(appwriteComment);
         if(liked) {
-            comment.likes.push(this.id);
+            comment.likes.push(accountSession.accountId);
         }else{
-            comment.likes.splice(this.id, 1);
+            comment.likes.splice(accountSession.accountId, 1);
         }
         this.comment.likes = comment.likes;
         appwriteComment = await appwrite.database.updateDocument("comments", this.id, {

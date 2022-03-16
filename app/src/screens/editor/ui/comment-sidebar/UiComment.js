@@ -1,9 +1,11 @@
 import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
+import { accountSession } from "../../../../common/model/AccountSession.js";
 
 class UiComment {
     constructor(comment, parent, versionComment) {
         this.parent = parent;
         this.versionComment = versionComment;
+        this.comment = comment;
 
         this.el = cloneDomTemplate("#thread-template");
 
@@ -39,7 +41,7 @@ class UiComment {
 
     checkForLike(comment) {
         comment.likes.forEach(id => {
-            if(id == this.versionComment.id) {
+            if(id == accountSession.accountId) {
                 this.toggleLike();
                 this.liked = true;
             }
@@ -48,6 +50,7 @@ class UiComment {
 
     addComments(comment) {
         this.comments.innerHTML = "";
+        this.comment = comment;
         for(let i = 0; i < comment.authors.length; i++) {
             let commentElement = cloneDomTemplate("#thread-comment-template");
 
@@ -80,6 +83,7 @@ class UiComment {
 
     likesChanged(newLikes) {
         this.likeCounter.textContent = newLikes.length;
+        this.comment.likes = newLikes;
     }
 
     toggle() {
@@ -106,7 +110,7 @@ class UiComment {
         return;
     }
 
-    addComment(author, text, fromAppwrite) {
+    addComment(author, text) {
         let commentElement = cloneDomTemplate("#thread-comment-template");
 
         let commentElementText = commentElement.querySelector(".comment-text");
@@ -116,6 +120,8 @@ class UiComment {
         commentElementAuthor.textContent = author;
 
         this.comments.appendChild(commentElement);
+        this.comment.authors.push(author);
+        this.comment.messages.push(text);
     }
 }
 

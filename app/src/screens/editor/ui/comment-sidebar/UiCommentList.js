@@ -42,6 +42,13 @@ class UiCommentList {
 
     onVersionCommentAdded(versionComment) {
         let uiComment = new UiComment(versionComment.comment, this, versionComment);
+        for(let i = 0; i < this.uiComments.length; i++) {
+            if(this.uiComments[i].comment.likes.length < uiComment.comment.likes.length) {
+                this.el.insertBefore(uiComment.el, this.uiComments[i].el);
+                this.uiComments.splice(this.uiComments.indexOf(this.uiComments[i]), 0, uiComment);
+                return;
+            }
+        }
         this.el.appendChild(uiComment.el);
         this.uiComments.push(uiComment);
     }
