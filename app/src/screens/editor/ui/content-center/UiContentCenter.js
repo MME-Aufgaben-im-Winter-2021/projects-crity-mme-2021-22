@@ -97,25 +97,25 @@ class UiContentCenterMainState extends UiContentCenterState {
     }
 
     onWheel(e) {
-        if (e.ctrlKey) {
-            let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
+        let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
 
-            // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
-            // TODO: Does this depend on the OS?
-            normalizedDelta = e.deltaY / 102;
-            factor = Math.pow(1.3, -normalizedDelta);
+        // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
+        // TODO: Does this depend on the OS?
+        normalizedDelta = e.deltaY / 102;
+        factor = Math.pow(1.3, -normalizedDelta);
 
-            pageRect = this.pageRectTracker.computePageRect();
-            [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
+        pageRect = this.pageRectTracker.computePageRect();
+        [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
 
-            translateRect(pageRect, -viewportMouseX, -viewportMouseY);
-            scaleRect(pageRect, factor);
-            translateRect(pageRect, viewportMouseX, viewportMouseY);
-            this.pageRectTracker.setPageRect(pageRect);
-        }
+        translateRect(pageRect, -viewportMouseX, -viewportMouseY);
+        scaleRect(pageRect, factor);
+        translateRect(pageRect, viewportMouseX, viewportMouseY);
+        this.pageRectTracker.setPageRect(pageRect);
 
         // Prevent the browser from resizing the page when Ctrl is pressed.
-        e.preventDefault();
+        if (e.ctrlKey) {
+            e.preventDefault();
+        }
     }
 }
 
