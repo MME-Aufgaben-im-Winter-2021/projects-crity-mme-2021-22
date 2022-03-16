@@ -85,8 +85,24 @@ class VersionComment extends Observable {
     async loadNewestComments(uiComment) {
         let appwriteComment = await appwrite.database.getDocument("comments", this.id),
             comment = Comment.fromAppwriteDocument(appwriteComment);
+        if(this.comment.authors.length != comment.authors.length) {
             this.comment = comment;
-        uiComment.addComments(comment);
+            uiComment.addComments(comment);
+        }
+    }
+
+    async changeLikeStatus(liked) {
+        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
+            comment = Comment.fromAppwriteDocument(appwriteComment);
+        if(liked) {
+            comment.likes.push(this.id);
+        }else{
+            comment.likes.splice(this.id, 1);
+        }
+        this.comment.likes = comment.likes;
+        appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
+            likes: comment.likes,
+        })
     }
 }
 
