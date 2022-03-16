@@ -29,6 +29,9 @@ class UiComment {
         this.arrowDown = this.el.querySelector(".thread-arrow-down");
         this.arrowDown.addEventListener("click", () => this.clicked());
 
+        this.likeCounter = this.el.querySelector(".like-counter");
+        this.likeCounter.textContent = comment.likes.length;
+
         this.liked = false;
         this.checkForLike(comment);
         this.addComments(comment);
@@ -66,11 +69,17 @@ class UiComment {
     likeClicked() {
         this.toggleLike();
         if(this.liked) {
-            this.versionComment.changeLikeStatus(false);
+            this.versionComment.changeLikeStatus(false, this);
+            this.liked = false;
         }else{
-            this.versionComment.changeLikeStatus(true);
+            this.versionComment.changeLikeStatus(true, this);
+            this.liked = true;
         }
         
+    }
+
+    likesChanged(newLikes) {
+        this.likeCounter.textContent = newLikes.length;
     }
 
     toggle() {

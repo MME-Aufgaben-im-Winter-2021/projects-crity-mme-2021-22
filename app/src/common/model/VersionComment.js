@@ -91,7 +91,7 @@ class VersionComment extends Observable {
         }
     }
 
-    async changeLikeStatus(liked) {
+    async changeLikeStatus(liked, uiComment) {
         let appwriteComment = await appwrite.database.getDocument("comments", this.id),
             comment = Comment.fromAppwriteDocument(appwriteComment);
         if(liked) {
@@ -103,6 +103,7 @@ class VersionComment extends Observable {
         appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
             likes: comment.likes,
         })
+        uiComment.likesChanged(comment.likes);
     }
 }
 
