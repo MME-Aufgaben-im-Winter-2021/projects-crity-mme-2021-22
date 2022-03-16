@@ -8,6 +8,7 @@ class VersionComment extends Observable {
     static VERSION_COMMENT_COLLECTION_ID = "6214e5ef06bef7005816";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
+    static EVENT_SELECTED = "SELECTED";
 
     constructor(version, pageNo, comment, pageX, pageY, commentId) {
         super();
@@ -105,6 +106,14 @@ class VersionComment extends Observable {
             likes: comment.likes,
         })
         uiComment.likesChanged(comment.likes);
+    }
+
+    commentOpened() {
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: true}));
+    }
+
+    commentClosed() {
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: false}));
     }
 }
 

@@ -93,11 +93,13 @@ class UiComment {
             this.arrowDown.classList.remove("hidden");
             this.versionComment.subscribeToCommentDocument(this);
             this.versionComment.loadNewestComments(this);
+            this.versionComment.commentOpened();
         } else {
             this.comments.style.display = "none";
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
             this.versionComment.unsubscribeFunc();
+            this.versionComment.commentClosed()
         }
     }
 

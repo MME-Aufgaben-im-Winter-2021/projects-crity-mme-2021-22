@@ -13,6 +13,7 @@ class UiCommentMarker {
 
         this.versionComment.addEventListener(VersionComment.EVENT_PAGE_POS_CHANGED, () => this.updatePosition(), this.listener);
         this.pageRectTracker.addEventListener(UiPageRectTracker.EVENT_PAGE_RECT_CHANGED, () => this.updatePosition(), this.listener);
+        this.versionComment.addEventListener(VersionComment.EVENT_SELECTED, e => this.setSelected(e), this.listener);
 
         this.updatePosition();
     }
@@ -32,6 +33,16 @@ class UiCommentMarker {
 
         this.el.style.left = `${x}px`;
         this.el.style.top = `${y}px`;
+    }
+
+    setSelected(e) {
+        if(e.data.open) {
+            this.el.classList.remove("h-4", "w-4", "bg-amber-500");
+            this.el.classList.add("h-6", "w-6", "bg-red-900");
+        }else{
+            this.el.classList.remove("h-6", "w-6", "bg-red-900");
+            this.el.classList.add("h-4", "w-4", "bg-amber-500");
+        }
     }
 }
 
