@@ -66,10 +66,6 @@ class UiComment {
         commentElementAuthor.textContent = author;
 
         this.comments.appendChild(commentElement);
-
-        if(!fromAppwrite) {
-            this.versionComment.submitComment(author, text);
-        }
     }
 }
 
