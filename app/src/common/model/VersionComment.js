@@ -1,14 +1,16 @@
 import { appwrite } from "./appwrite.js";
 import { Comment } from "./Comment.js";
 import { Observable, Event } from "./Observable.js";
+import { accountSession } from "./AccountSession.js";
 
 class VersionComment extends Observable {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
     static VERSION_COMMENT_COLLECTION_ID = "6214e5ef06bef7005816";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
+    static EVENT_SELECTED = "SELECTED";
 
-    constructor(version, pageNo, comment, pageX, pageY) {
+    constructor(version, pageNo, comment, pageX, pageY, commentId) {
         super();
 
         this.version = version;
@@ -17,12 +19,14 @@ class VersionComment extends Observable {
         this.comment = comment;
         this.pageX = pageX;
         this.pageY = pageY;
+
+        this.id = commentId;
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
         let appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment),
             comment = Comment.fromAppwriteDocument(appwriteComment);
-        return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage);
+        return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage, appwriteVersionComment.comment);
     }
 
     setPagePos(pageX, pageY) {
@@ -54,6 +58,62 @@ class VersionComment extends Observable {
         );
 
         return appwriteVersionComment;
+    }
+
+    async submitComment(author, message) {
+        this.comment.authors.push(author);
+        this.comment.messages.push(message);
+        let appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
+            authors: this.comment.authors,
+            messages: this.comment.messages,
+        })
+    }
+
+    subscribeToCommentDocument(uiComment) {  
+        let id = 'documents.'+this.id;  
+        this.unsubscribeFunc = appwrite.subscribe(
+            id,
+            response => this.onDocumentChanged(response, uiComment),
+        );   
+    }
+
+    async onDocumentChanged(response, uiComment) {
+        console.log(response);
+        this.comment.authors = response.payload.authors;
+        this.comment.messages = response.payload.messages;
+        uiComment.addComment(this.comment.authors[this.comment.authors.length-1], this.comment.messages[this.comment.messages.length-1]);
+    }
+
+    async loadNewestComments(uiComment) {
+        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
+            comment = Comment.fromAppwriteDocument(appwriteComment);
+        if(this.comment.authors.length != comment.authors.length) {
+            this.comment = comment;
+            uiComment.addComments(comment);
+        }
+    }
+
+    async changeLikeStatus(liked, uiComment) {
+        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
+            comment = Comment.fromAppwriteDocument(appwriteComment);
+        if(liked) {
+            comment.likes.push(accountSession.accountId);
+        }else{
+            comment.likes.splice(accountSession.accountId, 1);
+        }
+        this.comment.likes = comment.likes;
+        appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
+            likes: comment.likes,
+        })
+        uiComment.likesChanged(comment.likes);
+    }
+
+    commentOpened() {
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: true}));
+    }
+
+    commentClosed() {
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: false}));
     }
 }
 

@@ -1,5 +1,5 @@
 <template id="editor-screen-template">
-    <div class="flex h-full flex-col">
+    <div class="flex h-full flex-col main-screen">
         <!-- main content -->
         <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden">
             <!-- sidebar left -->
@@ -83,11 +83,14 @@
                 <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
                     <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
                 </div>
-                <div class="id-comment-editor flex flex-col shrink-0">
-                    <button class="id-quit-editing-button">X</button>
+                <div class="id-comment-editor flex flex-col shrink-0 bg-slate-500">
+                    <div class="flex flex-row justify-between bg-slate-400 p-2">
+                        <span class="font-semibold text-lg comment-editor-text"></span>
+                        <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
+                    </div>
                     <div class="p-2">
                         <input
-                            class="id-name-input w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none"
+                            class="id-name-input w-3/5 rounded py-2 pr-12 pl-5 focus:outline-none"
                             type="text"
                             placeholder="Name"
                         />
@@ -97,7 +100,7 @@
                         <input
                             class="id-comment-input w-full rounded py-2 pr-12 pl-5 focus:outline-none"
                             type="text"
-                            placeholder="Comment"
+                            placeholder="Title"
                         />
                     </div>
                 </div>
@@ -107,11 +110,11 @@
         </div>
         <!-- timeline -->
         <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col bg-slate-800 text-white">
-            <div class="flex w-full justify-end">
-                <button class="rounded-b bg-slate-400 hover:bg-slate-600">
+            <div class="flex w-full justify-center bg-slate-800 timeline-header">
+                <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
                     <svg
-                        class="h-6 w-6 text-white"
+                        class="h-8 w-16 text-white timeline-arrow-down"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -126,7 +129,7 @@
 
                     <!-- "unhide"-arrow, to be shown when timeline is hidden -->
                     <svg
-                        class="hidden h-6 w-6 text-white"
+                        class="hidden h-8 w-16 text-white timeline-arrow-up"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -142,7 +145,7 @@
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="id-version-list flex grow items-center space-x-2 overflow-x-scroll p-2">
+            <div class="id-version-list flex grow items-center space-x-2 pl-8 pb-8">
                 <!-- #version-template get instantiated here. -->
 
                 <button
@@ -164,5 +167,5 @@
         E.g., programmatically adding style.left = "10px" places the circle's _center_ at 10px (relative to
         the upper left corner of the canvas) 
     -->
-    <div class="w-4 h-4 rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800"></div>
+    <div class="w-4 h-4 rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800 pointer-obj"></div>
 </template>
