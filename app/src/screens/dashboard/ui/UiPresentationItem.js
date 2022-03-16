@@ -15,11 +15,19 @@ class UiPresentationItem {
 
         this.descriptionEl = this.el.querySelector(".presentation-description");
         this.descriptionEl.textContent = presentation.description;
+
+        this.dotsButtonEl = this.el.querySelector(".id-dots-button");
+        this.dotsButtonEl.addEventListener("click", () => this.onDotsButtonClicked());
     }
 
     onClick() {
         uiScreenSwapper.loadScreen("editor", {presentation: this.presentation.appwriteId});
     }
+
+    onDotsButtonClicked() {
+        console.log("robbed confirmed");
+    }
+
 }
 
 export { UiPresentationItem };
