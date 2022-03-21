@@ -16,6 +16,28 @@ class UiTimeline {
 
         this.listener = new Listener();
         data.versionList.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
+
+        this.timelineWindow = document.querySelector(".id-bottom-bar");
+        this.timelineHideButton = document.querySelector(".timeline-hide-button");
+        this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
+        this.timelineHeader = document.querySelector(".timeline-header");
+        this.mainScreen = document.querySelector(".main-screen")
+        this.arrowUp = document.querySelector(".timeline-arrow-up");
+        this.arrowDown = document.querySelector(".timeline-arrow-down");
+    }
+
+    timelineHideButtonClicked() {
+        if(this.timelineWindow.style.display === "none") {
+            this.timelineWindow.style.display = "block";
+            this.timelineWindow.insertBefore(this.timelineHeader, this.el);
+            this.arrowUp.classList.add("hidden");
+            this.arrowDown.classList.remove("hidden");
+        }else{
+            this.timelineWindow.style.display = "none";
+            this.mainScreen.appendChild(this.timelineHeader);
+            this.arrowUp.classList.remove("hidden");
+            this.arrowDown.classList.add("hidden");
+        }
     }
 
     terminate() {

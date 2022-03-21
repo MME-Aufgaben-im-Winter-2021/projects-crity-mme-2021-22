@@ -15,6 +15,8 @@ class UiCommentEditor {
         this.commentInputFieldEl = screen.el.querySelector(".id-comment-input");
         this.commentInputFieldEl.addEventListener("keydown", e => this.onKeyDown(e));
 
+        this.commentEditorText = screen.el.querySelector(".comment-editor-text");
+
         this.setVisible(false);
 
         data.commentEditing.addEventListener(EditorCommentEditing.EVENT_COMMENT_EDITING_STARTED, () => this.onCommentEditingStarted(), this.listener);
@@ -28,12 +30,18 @@ class UiCommentEditor {
     setVisible(visible) {
         if (visible) {
             this.el.style = "";
+            this.quitEditingButtonEl.style = "";
+            this.commentEditorText.textContent = "Add Thread";
+            
         } else {
             this.el.style = "display: none";
         }
     }
 
     onKeyDown(e) {
+        if(this.commentEditorText.textContent != "Add Thread") {
+            return;
+        }
         if(e.keyCode !== /* enter */ 13) {
             return;
         }

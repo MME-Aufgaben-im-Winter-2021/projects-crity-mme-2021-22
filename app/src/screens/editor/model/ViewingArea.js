@@ -54,7 +54,7 @@ class EditorViewingArea extends Observable {
         let pageWidth, pageHeight, pageCenterX, pageCenterY;
 
         pageWidth = pageRect.right - pageRect.left;
-        pageHeight = pageRect.top - pageRect.bottom;
+        pageHeight = pageRect.bottom - pageRect.top;
         pageCenterX = 0.5 * (pageRect.left + pageRect.right);
         pageCenterY = 0.5 * (pageRect.top + pageRect.bottom);
 

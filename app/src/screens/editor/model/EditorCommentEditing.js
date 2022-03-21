@@ -25,10 +25,11 @@ class EditorCommentEditing extends Observable {
             this.editedVersionComment.submit();
         }
 
-        this.editedVersionComment.terminate();
-        this.editedVersionComment = null;
-
-        this.notifyAll(new Event(EditorCommentEditing.EVENT_COMMENT_EDITING_FINISHED, {submitted: submit}));
+        if(this.editedVersionComment != null){
+            this.editedVersionComment.terminate();
+            this.editedVersionComment = null;
+            this.notifyAll(new Event(EditorCommentEditing.EVENT_COMMENT_EDITING_FINISHED, {submitted: submit}));
+        }
     }
 }
 
