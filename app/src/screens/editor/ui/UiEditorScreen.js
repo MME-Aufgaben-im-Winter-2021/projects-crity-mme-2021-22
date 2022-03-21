@@ -20,17 +20,18 @@ class UiEditorScreen extends UiRestrictedScreen {
     initRestricted() {
         initData(this.screenParameters.presentation);
 
+        
+        this.thumbnailBar = new UiThumbnailBar(this);
+        this.contentCenter = new UiContentCenter(this);
+        this.timeline = new UiTimeline(this);
+        this.rightSideBar = new UiRightSidebar(this);
+        
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.remove("hidden");
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
         this.copyLinkButton.addEventListener("click", e => this.onCopyLinkButtonClicked(e))
-
-        this.thumbnailBar = new UiThumbnailBar(this);
-        this.contentCenter = new UiContentCenter(this);
-        this.timeline = new UiTimeline(this);
-        this.rightSideBar = new UiRightSidebar(this);
     }
 
     terminateRestricted() {

@@ -2,6 +2,7 @@ import { Listener } from "../../../../common/model/Observable.js";
 import { ObservableArray } from "../../../../common/model/ObservableArray.js";
 import { data } from "../../model/data.js";
 import { UiTimelineVersion } from "./UiTimelineVersion.js";
+import { TimelineCanvas } from "./TimelineCanvas.js";
 
 class UiTimeline {
     constructor(screen) {
@@ -24,6 +25,8 @@ class UiTimeline {
         this.mainScreen = document.querySelector(".main-screen")
         this.arrowUp = document.querySelector(".timeline-arrow-up");
         this.arrowDown = document.querySelector(".timeline-arrow-down");
+
+        this.canvas = new TimelineCanvas();
     }
 
     timelineHideButtonClicked() {
