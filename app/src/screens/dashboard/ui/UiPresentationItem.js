@@ -1,6 +1,8 @@
 import { cloneDomTemplate } from "../../../common/ui/dom-utils.js";
 import { uiScreenSwapper } from "../../uiScreenSwapper.js";
 
+let isHovering = false;
+
 class UiPresentationItem {
     constructor(screen, presentation) {
         this.screen = screen;
@@ -17,15 +19,25 @@ class UiPresentationItem {
         this.descriptionEl.textContent = presentation.description;
 
         this.dotsButtonEl = this.el.querySelector(".id-dots-button");
-        this.dotsButtonEl.addEventListener("click", () => this.onDotsButtonClicked());
+       // this.dotsButtonEl.addEventListener("click", () => this.onDotsButtonClicked());
+        this.dotsButtonEl.addEventListener("mouseenter", () => this.enterHover());
+        this.dotsButtonEl.addEventListener("mouseleave", () => this.leaveHover());
     }
 
     onClick() {
-        uiScreenSwapper.loadScreen("editor", {presentation: this.presentation.appwriteId});
+        if (!isHovering) {
+            uiScreenSwapper.loadScreen("editor", {presentation: this.presentation.appwriteId});
+        } else {
+            console.log("cannot click");
+        }
     }
 
-    onDotsButtonClicked() {
-        console.log("robbed confirmed");
+    enterHover() {
+        isHovering = true;
+    }
+
+    leaveHover() {
+        isHovering = false;
     }
 
 }
