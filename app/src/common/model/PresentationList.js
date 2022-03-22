@@ -44,6 +44,22 @@ class PresentationList {
 
         this.presentations.push(presentation);
     }
+
+    async getPresentation(appwriteId) {
+        let appwritePresentation = await appwrite.database.getDocument(
+            PresentationList.PRESENTATIONS_COLLECTION_ID,
+            appwriteId,
+        );
+        return appwritePresentation;
+    }
+
+    async removePresentation(appwriteId) {
+        let appwritePresentation = await appwrite.database.deleteDocument(
+            PresentationList.PRESENTATIONS_COLLECTION_ID,
+            appwriteId,
+        );
+        this.presentations.remove(appwritePresentation);
+    }
 }
 
 export { PresentationList };

@@ -11,6 +11,7 @@ class UiPresentationList {
         this.listener = new Listener();
 
         data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onPresentationAdded(e), this.listener);
+        data.presentationList.presentations.addEventListener(ObservableArray.EVENT_ITEM_REMOVED, e => this.onPresentationRemoved(e), this.listener);
     }
 
     terminate() {
@@ -20,6 +21,10 @@ class UiPresentationList {
     onPresentationAdded(e) {
         let presentationItem = new UiPresentationItem(this.screen, e.data.item);
         this.el.appendChild(presentationItem.el);
+    }
+
+    onPresentationRemoved(e) {
+        // listener geht noch net
     }
 }
 
