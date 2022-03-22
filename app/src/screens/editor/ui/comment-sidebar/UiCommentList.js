@@ -28,6 +28,7 @@ class UiCommentList {
     onCommentsCleared() {
         this.el.innerHTML = "";
     }
+
 }
 
 export {UiCommentList };

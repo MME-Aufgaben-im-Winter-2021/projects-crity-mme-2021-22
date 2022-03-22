@@ -17,20 +17,14 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "dev": "npm-watch",
-
-
         "tailwindOneShot": "npx tailwindcss -c ./tailwind.config.cjs -i ./app/resources/css/style.css -o ./dist/style.css",
         "tailwindWatch": "npm run tailwindOneShot -- --watch",
         "webpackOneShot": "webpack",
         "webpackWatch": "npm run webpackOneShot -- --watch",
         "startDevServer": "node start_dev_server.js",
-
         "build": "npm run webpackOneShot && npm run tailwindOneShot && node build_for_deployment.js",
         "devSession": "npm run webpackOneShot && concurrently --kill-others \"npm run webpackWatch\" \"npm run tailwindWatch\" \"npm run startDevServer\"",
-
         "check": "eslint app/src/",
-        
-
         "prebuild": "npm install && npm run check"
     },
     "author": "",

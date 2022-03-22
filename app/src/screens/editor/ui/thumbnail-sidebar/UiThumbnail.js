@@ -3,6 +3,7 @@ import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../../common/u
 import { UiPageCanvas } from "../UiPageCanvas.js";
 import { data } from "../../model/data.js";
 import { ActivePdf } from "../../model/ActivePdf.js";
+// import { PageComments } from "../../model/PageComments.js";
 
 // Represents the widget for a single PDF page in the thumbnail bar.
 // Instantiates the DOM template for the thumbnail. The user of the class
@@ -16,6 +17,13 @@ class UiThumbnail {
         this.pageNoEl = this.el.querySelector(".page-number");
         this.pageNoEl.textContent = pageNo;
 
+        // TODO: Initiate variables with length of comment list
+        // Number of unresolved threads? Threads the author has not answered yet?
+        // Number of unread comments might be too painful
+        this.numComments = 5; // data.activePdf.activePageComments.comments.items.length;
+        this.commentNumEl = this.el.querySelector(".num-comments");
+        this.commentNumEl.textContent = this.numComments;
+
         let pageCanvasEl = this.el.querySelector("canvas");
         this.pageCanvas = new UiPageCanvas(pageCanvasEl);
 
@@ -24,11 +32,12 @@ class UiThumbnail {
         
         this.updateSelectionState();
         this.p_fetchPage();
+        
     }
 
     terminate() {
         this.listener.terminate();
-    }
+    }  
 
     // Asynchronously fill the canvas with our page.
     async p_fetchPage() {

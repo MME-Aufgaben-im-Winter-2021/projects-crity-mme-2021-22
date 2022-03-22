@@ -2,6 +2,7 @@ import { ObservableArray } from "../../../common/model/ObservableArray.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { Comment } from "./Comment.js";
 import { Query } from "appwrite";
+// import { UiThumbnail } from "../ui/thumbnail-sidebar/UiThumbnail.js";
 
 class PageComments {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
@@ -23,6 +24,7 @@ class PageComments {
     setActivePage(pageNo) {
         this.pageNo = pageNo;
         this.p_fetchComments();
+
     }
 
     async p_fetchComments() {
@@ -40,6 +42,10 @@ class PageComments {
                 comment = new Comment(appwriteComment.author, appwriteComment.text);
             this.comments.push(comment);
         }
+        
+        // UiThumbnail.numComments = this.comments.items.length;
+        // UiThumbnail.commentNumEl.textContent = UiThumbnail.numComments;
+
     }
 
     async subscribeToCommentsVersionCollections() {
