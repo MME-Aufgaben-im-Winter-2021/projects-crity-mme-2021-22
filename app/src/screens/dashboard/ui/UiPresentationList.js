@@ -19,14 +19,18 @@ class UiPresentationList {
     }
 
     onPresentationAdded(e) {
-        let presentationItem = new UiPresentationItem(this.screen, e.data.item);
+        let presentationItem = new UiPresentationItem(this.screen, e.data.item, this);
     //    console.log(e.data.item); gibt die Präsentation zurück
     //    console.log(presentationItem); gibt das UI-Element zurück
         this.el.appendChild(presentationItem.el);
     }
 
     onPresentationRemoved(e) {
-        console.log("listener not working yet");
+        console.log(e.data.item);
+    }
+
+    removePresentation(el) {
+        this.el.removeChild(el);
     }
 }
 

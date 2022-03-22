@@ -6,8 +6,9 @@ let isHovering = false,
     dropDownActive = false;
 
 class UiPresentationItem {
-    constructor(screen, presentation) {
+    constructor(screen, presentation, parent) {
         this.screen = screen;
+        this.parent = parent;
 
         this.el = cloneDomTemplate("#presentation-template");
         this.el.addEventListener("click", () => this.onClick());
@@ -65,7 +66,8 @@ class UiPresentationItem {
 
     onDeleteButtonClicked() {
         this.modal.classList.add("hidden");
-        data.presentationList.removePresentation(this.presentation.appwriteId);
+        data.presentationList.removePresentation(this.presentation);
+        this.parent.removePresentation(this.el)
     }
 
     onCancelButtonClicked() {
