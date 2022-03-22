@@ -22,8 +22,9 @@
                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                 </svg>
+
                 <!-- Heroicons dots -->
-                <button class="id-dots-button">
+                <button class="id-dots-button" data-dropdown-toggle="dropdown">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="absolute bottom-0 right-0 h-6 w-7 rounded bg-slate-400 px-1 text-white hover:bg-slate-600"
@@ -35,7 +36,47 @@
                     />
                 </svg>
             </button>
+
+            <!-- dropdown menu -->
+            <div id="dropdown" class="id-dropdown hidden z-10 w-auto bg-slate-400 rounded shadow">
+                <ul class="text-sm text-white dark:text-gray-200" aria-labelledby="dropdownDefault">
+                  <li>
+                    <a class="id-dropdown-edit block py-2 px-4 hover:bg-slate-600 rounded">Edit</a>
+                  </li>
+                  <li>
+                    <a class="id-dropdown-delete block py-2 px-4 hover:bg-slate-600 rounded">Delete</a>
+                  </li>
+                  </li>
+                </ul>
             </div>
+            </div>
+
+            <!-- modal -->
+            <div class="id-modal bg-black bg-opacity-30 hidden absolute inset-0 flex justify-center items-center">
+                <div class="flex h-fit w-fit flex-col items-center rounded-xl bg-slate-800 p-10 relative">
+                    <div class="id-close-modal-button rounded m-2 absolute top-0 right-0">
+                        <button class="bg-slate-400 hover:bg-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                    </div>
+                    <h class="text-white">Are you sure you want to delete this project?</h>
+                    <div class="flex justify-end">
+                        <button
+                        class="id-delete-presentation-button rounded-full bg-red-500 py-2 px-4 font-bold text-white hover:bg-red-700 m-3"
+                        >
+                        Delete!
+                    </button>
+                    <button
+                        class="id-cancel-button rounded-full bg-slate-400 py-2 px-4 font-bold text-white hover:bg-slate-600 m-3"
+                        >
+                        Cancel
+                    </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- /thumbnail -->
         </div>
         <!-- description text -->

@@ -20,11 +20,13 @@ class UiPresentationList {
 
     onPresentationAdded(e) {
         let presentationItem = new UiPresentationItem(this.screen, e.data.item);
+    //    console.log(e.data.item); gibt die Präsentation zurück
+    //    console.log(presentationItem); gibt das UI-Element zurück
         this.el.appendChild(presentationItem.el);
     }
 
     onPresentationRemoved(e) {
-        // listener geht noch net
+        console.log("listener not working yet");
     }
 }
 
