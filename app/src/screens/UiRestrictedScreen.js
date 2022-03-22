@@ -42,13 +42,20 @@ class UiRestrictedScreen extends UiScreen {
             } break;
 
             case LoginState.LOGGED_OUT: {
-                uiScreenSwapper.loadScreen("login", {});
+                
+                if(this.screenParameters){
+                    accountSession.createAnonymAccount();
+                }else{
+                    uiScreenSwapper.loadScreen("login", {});
+                }
             } break;
 
             case LoginState.UNKNOWN: break;
             default: break;
         }
     }
+
+
 
     initRestricted() {
         // Override this.
