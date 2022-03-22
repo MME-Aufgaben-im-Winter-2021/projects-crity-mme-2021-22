@@ -29,13 +29,25 @@ class UiPresentationItem {
         this.dropDownEdit.addEventListener("click", () => this.onDropDownEditClicked());
         this.dropDownDelete.addEventListener("click", () => this.onDropDownDeleteClicked());
 
-        this.modal = this.el.querySelector(".id-modal");
-        this.closeModalButton = this.el.querySelector(".id-close-modal-button");
+        this.editModal = this.el.querySelector(".id-modal-edit");
+        this.closeEditModalButton = this.el.querySelector(".id-close-edit-modal-button");
+        this.editTitle = this.el.querySelector(".id-edit-title-input");
+        this.editTitle.value = presentation.title;
+        this.editDescription = this.el.querySelector(".id-edit-description-input");
+        this.editDescription.value = presentation.description;
+        this.updateButton = this.el.querySelector(".id-update-presentation-button");
+        this.editModal.addEventListener("mouseenter", () => this.enterHover());
+        this.editModal.addEventListener("mouseleave", () => this.leaveHover());
+        this.closeEditModalButton.addEventListener("click", () => this.onCloseModalButtonClicked(this.editModal));
+        this.updateButton.addEventListener("click", () => this.onSaveEditClicked());
+
+        this.deleteModal = this.el.querySelector(".id-delete-modal");
+        this.closeDeleteModalButton = this.el.querySelector(".id-close-delete-modal-button");
         this.deletePresentationButton = this.el.querySelector(".id-delete-presentation-button");
         this.cancelButton = this.el.querySelector(".id-cancel-button");
-        this.modal.addEventListener("mouseenter", () => this.enterHover());
-        this.modal.addEventListener("mouseleave", () => this.leaveHover());
-        this.closeModalButton.addEventListener("click", () => this.onCloseModalButtonClicked());
+        this.deleteModal.addEventListener("mouseenter", () => this.enterHover());
+        this.deleteModal.addEventListener("mouseleave", () => this.leaveHover());
+        this.closeDeleteModalButton.addEventListener("click", () => this.onCloseModalButtonClicked(this.deleteModal));
         this.deletePresentationButton.addEventListener("click", () => this.onDeleteButtonClicked());
         this.cancelButton.addEventListener("click", () => this.onCancelButtonClicked());
 
@@ -56,26 +68,36 @@ class UiPresentationItem {
     }
 
     onDropDownEditClicked() {
-        console.log("edit presentation");
+        this.toggleDropDown();
+        this.editModal.classList.remove("hidden");
+    }
+
+    onSaveEditClicked() {
+        let newTitle = this.editTitle.value,
+            newDescription = this.editDescription.value;
+        this.titleEl.textContent = newTitle;
+        this.descriptionEl.textContent = newDescription;
+        this.editModal.classList.add("hidden");
+        data.presentationList.updatePresentation(newTitle, newDescription);
     }
 
     onDropDownDeleteClicked() {
         this.toggleDropDown();
-        this.modal.classList.remove("hidden");
+        this.deleteModal.classList.remove("hidden");
     }
 
     onDeleteButtonClicked() {
-        this.modal.classList.add("hidden");
+        this.deleteModal.classList.add("hidden");
         data.presentationList.removePresentation(this.presentation);
-        this.parent.removePresentation(this.el)
+        this.parent.removePresentation(this.el);
     }
 
     onCancelButtonClicked() {
-        this.modal.classList.add("hidden");
+        this.deleteModal.classList.add("hidden");
     }
 
-    onCloseModalButtonClicked() {
-        this.modal.classList.add("hidden");
+    onCloseModalButtonClicked(modal) {
+        modal.classList.add("hidden");
     }
 
     toggleDropDown() {
