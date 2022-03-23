@@ -39,7 +39,7 @@ class UiCommentEditor {
     }
 
     onKeyDown(e) {
-        if(this.commentEditorText.textContent != "Add Thread") {
+        if(this.commentEditorText.textContent !== "Add Thread") {
             return;
         }
         if(e.keyCode !== /* enter */ 13) {

@@ -61,7 +61,7 @@ class UiCommentList {
     }
 
     onCommentEditingStarted() {
-        if(this.lastOpen != null) {
+        if(this.lastOpen !== null) {
             this.lastOpen.toggle();
             this.lastOpen = null;
         }
@@ -80,13 +80,13 @@ class UiCommentList {
     shutDownLastOpen(elem) {
         data.commentEditing.finishEditingComment(false);
         // Kein zuletzt geöffnetes
-        if(this.lastOpen == null) {
+        if(this.lastOpen === null) {
             this.lastOpen = elem;
             this.toggleCommentEditor(true);
             return;
         }
         // Zuletzt geöffnetes ist neu geöffnetes
-        if(this.lastOpen == elem) {
+        if(this.lastOpen === elem) {
             this.lastOpen = null;
             this.toggleCommentEditor(false);
             return;
@@ -98,7 +98,7 @@ class UiCommentList {
     }
 
     onKeyDown(e) {
-        if(this.commentEditorText.textContent != "Add Comment") {
+        if(this.commentEditorText.textContent !== "Add Comment") {
             return;
         }
         if(e.keyCode !== /* enter */ 13) {

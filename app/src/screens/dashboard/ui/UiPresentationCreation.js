@@ -11,7 +11,7 @@ class UiPresentationCreation {
 
         this.addButtonEl.addEventListener("click", () => this.onAddButtonClicked());
         this.addProjectButtonEl.addEventListener("click", () => this.onAddProjectButtonClicked());
-        this.closeButtonEl.addEventListener("click", () => this.onCloseButtonClicked())
+        this.closeButtonEl.addEventListener("click", () => this.onCloseButtonClicked());
     }
 
     onAddButtonClicked() {

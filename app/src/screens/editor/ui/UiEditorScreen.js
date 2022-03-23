@@ -25,7 +25,7 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
-        this.copyLinkButton.addEventListener("click", e => this.onCopyLinkButtonClicked(e))
+        this.copyLinkButton.addEventListener("click", () => this.onCopyLinkButtonClicked());
 
         this.thumbnailBar = new UiThumbnailBar(this);
         this.contentCenter = new UiContentCenter(this);
@@ -47,7 +47,7 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.navBarInfo.textContent = appwritePresentation.title;
     }
 
-    onCopyLinkButtonClicked(e) {
+    onCopyLinkButtonClicked() {
 
         navigator.clipboard.writeText(window.location.href);
 

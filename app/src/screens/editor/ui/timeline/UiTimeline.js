@@ -21,7 +21,7 @@ class UiTimeline {
         this.timelineHideButton = document.querySelector(".timeline-hide-button");
         this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
         this.timelineHeader = document.querySelector(".timeline-header");
-        this.mainScreen = document.querySelector(".main-screen")
+        this.mainScreen = document.querySelector(".main-screen");
         this.arrowUp = document.querySelector(".timeline-arrow-up");
         this.arrowDown = document.querySelector(".timeline-arrow-down");
     }

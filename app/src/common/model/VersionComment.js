@@ -63,10 +63,12 @@ class VersionComment extends Observable {
     async submitComment(author, message) {
         this.comment.authors.push(author);
         this.comment.messages.push(message);
-        let appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
+        console.log(this.comment.authors);
+        console.log(this.comment.messages);
+        await appwrite.database.updateDocument("comments", this.id, {
             authors: this.comment.authors,
             messages: this.comment.messages,
-        })
+        });
     }
 
     subscribeToCommentDocument(uiComment) {  
@@ -81,13 +83,14 @@ class VersionComment extends Observable {
         console.log(response);
         this.comment.authors = response.payload.authors;
         this.comment.messages = response.payload.messages;
+        console.log(this.comment.authors);
         uiComment.addComment(this.comment.authors[this.comment.authors.length-1], this.comment.messages[this.comment.messages.length-1]);
     }
 
     async loadNewestComments(uiComment) {
         let appwriteComment = await appwrite.database.getDocument("comments", this.id),
             comment = Comment.fromAppwriteDocument(appwriteComment);
-        if(this.comment.authors.length != comment.authors.length) {
+        if(this.comment.authors.length !== comment.authors.length) {
             this.comment = comment;
             uiComment.addComments(comment);
         }
@@ -104,7 +107,7 @@ class VersionComment extends Observable {
         this.comment.likes = comment.likes;
         appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
             likes: comment.likes,
-        })
+        });
         uiComment.likesChanged(comment.likes);
     }
 

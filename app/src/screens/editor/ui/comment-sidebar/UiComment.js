@@ -41,7 +41,7 @@ class UiComment {
 
     checkForLike(comment) {
         comment.likes.forEach(id => {
-            if(id == accountSession.accountId) {
+            if(id === accountSession.accountId) {
                 this.toggleLike();
                 this.liked = true;
             }
@@ -52,14 +52,11 @@ class UiComment {
         this.comments.innerHTML = "";
         this.comment = comment;
         for(let i = 0; i < comment.authors.length; i++) {
-            let commentElement = cloneDomTemplate("#thread-comment-template");
-
-            let commentElementText = commentElement.querySelector(".comment-text");
-            commentElementText.textContent = comment.messages[i];
-
-            let commentElementAuthor = commentElement.querySelector(".comment-author");
+            let commentElement = cloneDomTemplate("#thread-comment-template"),
+                commentElementText = commentElement.querySelector(".comment-text"),
+                commentElementAuthor = commentElement.querySelector(".comment-author");
+                commentElementText.textContent = comment.messages[i];
             commentElementAuthor.textContent = comment.authors[i];
-
             this.comments.appendChild(commentElement);
         }
     }
@@ -99,7 +96,7 @@ class UiComment {
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
             this.versionComment.unsubscribeFunc();
-            this.versionComment.commentClosed()
+            this.versionComment.commentClosed();
         }
     }
 
@@ -113,12 +110,11 @@ class UiComment {
     }
 
     addComment(author, text) {
-        let commentElement = cloneDomTemplate("#thread-comment-template");
-
-        let commentElementText = commentElement.querySelector(".comment-text");
+        let commentElement = cloneDomTemplate("#thread-comment-template"),
+            commentElementText = commentElement.querySelector(".comment-text"),
+            commentElementAuthor = commentElement.querySelector(".comment-author");
         commentElementText.textContent = text;
 
-        let commentElementAuthor = commentElement.querySelector(".comment-author");
         commentElementAuthor.textContent = author;
 
         this.comments.appendChild(commentElement);
