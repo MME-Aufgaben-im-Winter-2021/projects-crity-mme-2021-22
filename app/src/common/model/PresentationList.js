@@ -53,6 +53,13 @@ class PresentationList {
         return appwritePresentation;
     }
 
+    async updatePresentation(presentation, title, description) {
+        let appwritePresentation = await appwrite.database.updateDocument(
+            PresentationList.PRESENTATIONS_COLLECTION_ID,
+            presentation.appwriteId,
+        );
+    }
+
     async removePresentation(presentation) {
         let appwritePresentation = await appwrite.database.deleteDocument(
             PresentationList.PRESENTATIONS_COLLECTION_ID,
