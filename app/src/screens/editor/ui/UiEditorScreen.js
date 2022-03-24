@@ -48,10 +48,10 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     onCopyLinkButtonClicked() {
-
         navigator.clipboard.writeText(window.location.href);
 
-        alert("URL copied to clipboard!!!");
+        // TODO: Make this a custom popup (like we do with the presentation creation dialog).
+        //alert("URL copied to clipboard!!!");
     }
 }
 
