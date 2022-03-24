@@ -1,4 +1,5 @@
 import { Observable, Event } from "../../../common/model/Observable.js";
+import { clamped } from "../../../common/utils.js";
 
 class EditorViewingArea extends Observable {
     static EVENT_CHANGED = "CHANGED";
@@ -69,7 +70,15 @@ class EditorViewingArea extends Observable {
         this.centeredX = pageCenterX / containerWidth;
         this.centeredY = pageCenterY / containerHeight;
 
+        // Kind of ugly to have this here ... But easiest way to get this working for now.
+        this.clampPanning();
+
         this.notifyAll(new Event(EditorViewingArea.EVENT_CHANGED, {}));
+    }
+
+    clampPanning() {
+        this.centeredX = clamped(this.centeredX, 0.0, 1.0);
+        this.centeredY = clamped(this.centeredY, 0.0, 1.0);
     }
 }
 

@@ -24,4 +24,8 @@ function lerp(a, b, t) {
     return (1.0 - t) * a + t * b;
 }
 
-export { unused, assert, generateId, lerp };
+function clamped(x, min, max) {
+    return Math.min(max, Math.max(min, x));
+}
+
+export { unused, assert, generateId, lerp, clamped };

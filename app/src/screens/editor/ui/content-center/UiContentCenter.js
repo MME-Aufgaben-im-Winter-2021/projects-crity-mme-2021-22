@@ -7,7 +7,7 @@ import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
 import { UiViewportScrollbar } from "./UiViewportScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
-import { unused } from "../../../../common/utils.js";
+import { clamped, unused } from "../../../../common/utils.js";
 import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiContentCenterState {
@@ -72,6 +72,7 @@ class UiContentCenterPanningState extends UiContentCenterState {
         let pageRect = this.pageRectTracker.computePageRect();
         translateRect(pageRect, e.movementX, e.movementY);
         this.pageRectTracker.setPageRect(pageRect);
+        data.viewingArea.clampPanning();
     }
 }
 
@@ -105,13 +106,20 @@ class UiContentCenterMainState extends UiContentCenterState {
         }
     }
 
+    static ZOOM_STEP = 1.3;
+    static ZOOM_MIN = Math.pow(UiContentCenterMainState.ZOOM_STEP, -5);
+    static ZOOM_MAX = Math.pow(UiContentCenterMainState.ZOOM_STEP, +5);
     onWheel(e) {
         let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
 
         // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
         // TODO: Does this depend on the OS?
         normalizedDelta = e.deltaY / 102;
-        factor = Math.pow(1.3, -normalizedDelta);
+        factor = Math.pow(UiContentCenterMainState.ZOOM_STEP, -normalizedDelta);
+        factor = clamped(
+            factor,
+            UiContentCenterMainState.ZOOM_MIN / data.viewingArea.zoom,
+            UiContentCenterMainState.ZOOM_MAX / data.viewingArea.zoom);
 
         pageRect = this.pageRectTracker.computePageRect();
         [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
