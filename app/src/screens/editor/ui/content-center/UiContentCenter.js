@@ -33,6 +33,10 @@ class UiContentCenterState {
         unused(e);
     }
 
+    onMouseLeave(e) {
+        unused(e);
+    }
+
     onWheel(e) {
         unused(e);
     }
@@ -57,6 +61,11 @@ class UiContentCenterPanningState extends UiContentCenterState {
         if (e.button === MouseButtonCodes.MIDDLE) {
             this.changeToState(new UiContentCenterMainState(this.pageRectTracker));
         }
+    }
+
+    onMouseLeave(e) {
+        unused(e);
+        this.changeToState(new UiContentCenterMainState(this.pageRectTracker));
     }
 
     onMouseMotion(e) {
@@ -139,10 +148,11 @@ class UiContentCenter {
         this.scrollbarY = new UiViewportScrollbar(screen, this.pageRectTracker, "y");
 
         this.viewportEl = this.pageRectTracker.viewportEl;
-        this.viewportEl.addEventListener("mousedown", e => this.onMouseDown(e));
-        this.viewportEl.addEventListener("mouseup", e => this.onMouseUp(e));
-        this.viewportEl.addEventListener("wheel", e => this.onWheel(e));
-        this.viewportEl.addEventListener("mousemove", e => this.onMouseMotion(e));
+        this.wireUpViewportEvent("mousedown", "onMouseDown");
+        this.wireUpViewportEvent("mouseup", "onMouseUp");
+        this.wireUpViewportEvent("wheel", "onWheel");
+        this.wireUpViewportEvent("mousemove", "onMouseMotion");
+        this.wireUpViewportEvent("mouseleave", "onMouseLeave");
 
         this.state = new UiContentCenterMainState(this.pageRectTracker);
     }
@@ -162,24 +172,11 @@ class UiContentCenter {
         }
     }
 
-    onMouseDown(e) {
-        this.state.onMouseDown(e);
-        this.pollStateChange();
-    }
-
-    onMouseUp(e) {
-        this.state.onMouseUp(e);
-        this.pollStateChange();
-    }
-
-    onWheel(e) {
-        this.state.onWheel(e);
-        this.pollStateChange();
-    }
-
-    onMouseMotion(e) {
-        this.state.onMouseMotion(e);
-        this.pollStateChange();
+    wireUpViewportEvent(jsEventName, handlerFuncName) {
+        this.viewportEl.addEventListener(jsEventName, e => {
+            this.state[handlerFuncName](e);
+            this.pollStateChange();
+        });
     }
 }
 
