@@ -20,4 +20,12 @@ function generateId() {
     return nextId++;
 }
 
-export { unused, assert, generateId };
+function lerp(a, b, t) {
+    return (1.0 - t) * a + t * b;
+}
+
+function clamped(x, min, max) {
+    return Math.min(max, Math.max(min, x));
+}
+
+export { unused, assert, generateId, lerp, clamped };

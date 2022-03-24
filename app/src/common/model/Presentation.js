@@ -5,7 +5,7 @@ class Presentation {
         this.description = description;
     }
 
-    static fromAppwritePresentation(appwritePresentation) {
+    static fromAppwriteDocument(appwritePresentation) {
         return new Presentation(
             appwritePresentation.$id,
             appwritePresentation.title,

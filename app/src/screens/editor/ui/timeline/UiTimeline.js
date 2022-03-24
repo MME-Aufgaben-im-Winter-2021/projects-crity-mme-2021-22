@@ -15,7 +15,29 @@ class UiTimeline {
         this.fileInputEl.addEventListener("change", () => this.onFileSelectorConcluded());
 
         this.listener = new Listener();
-        data.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
+        data.versionList.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
+
+        this.timelineWindow = document.querySelector(".id-bottom-bar");
+        this.timelineHideButton = document.querySelector(".timeline-hide-button");
+        this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
+        this.timelineHeader = document.querySelector(".timeline-header");
+        this.mainScreen = document.querySelector(".main-screen");
+        this.arrowUp = document.querySelector(".timeline-arrow-up");
+        this.arrowDown = document.querySelector(".timeline-arrow-down");
+    }
+
+    timelineHideButtonClicked() {
+        if(this.timelineWindow.style.display === "none") {
+            this.timelineWindow.style.display = "block";
+            this.timelineWindow.insertBefore(this.timelineHeader, this.el);
+            this.arrowUp.classList.add("hidden");
+            this.arrowDown.classList.remove("hidden");
+        }else{
+            this.timelineWindow.style.display = "none";
+            this.mainScreen.appendChild(this.timelineHeader);
+            this.arrowUp.classList.remove("hidden");
+            this.arrowDown.classList.add("hidden");
+        }
     }
 
     terminate() {
@@ -33,8 +55,9 @@ class UiTimeline {
         this.fileInputEl.click();
     }
 
-    onFileSelectorConcluded() {
-        data.createPresentationVersion(data.presentationId, "V"+(data.versions.items.length+1), this.fileInputEl.files[0]);
+    async onFileSelectorConcluded() {
+        let version = await data.versionList.createVersion(data.presentationId, "V"+(data.versionList.versions.items.length+1), this.fileInputEl.files[0]);
+        data.selTracker.activateVersion(version);
     }
 }
 

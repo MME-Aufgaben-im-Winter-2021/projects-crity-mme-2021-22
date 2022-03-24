@@ -1,5 +1,5 @@
 <template id="editor-screen-template">
-    <div class="flex h-full flex-col">
+    <div class="flex h-full flex-col main-screen">
         <!-- main content -->
         <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden">
             <!-- sidebar left -->
@@ -7,12 +7,20 @@
                 <!-- #thumbnail-template gets instantiated here. -->
             </div>
             <!-- content center -->
-            <div class="id-content-center relative grow overflow-scroll bg-zinc-50">
-                <canvas class="id-pdf-canvas"></canvas>
-                <div class="id-pdf-text-layer textLayer"></div>
+            <div class="id-content-center flex flex-col grow bg-slate-600">
+                <div class="flex grow">
+                    <div class="id-viewport grow relative overflow-hidden">
+                        <canvas class="id-pdf-canvas absolute top-0 left-0"></canvas>
+                        <div class="id-marker-container absolute top-0 left-0 w-10 h-10"></div>
+                        <div class="id-pdf-text-layer textLayer"></div>
+                    </div>
+                    <div class="id-scrollbar-y-container flex"></div>
+                </div>
+
+                <div class="id-scrollbar-x-container"></div>
             </div>
             <!-- sidebar right -->
-            <div class="id-sidebar-right ml-auto flex h-full w-1/4 grow flex-col">
+            <div class="id-sidebar-right ml-auto flex h-full w-1/4 flex-col">
                 <!-- search/sort/filter bar -->
                 <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
                     <!-- search bar -->
@@ -72,22 +80,29 @@
                     <!-- /search/sort/filter bar -->
                 </div>
                 <!-- comment list -->
-                <div class="id-comment-list flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
+                <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
                     <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
                 </div>
-                <div class="p-2">
-                    <input
-                        class="id-name-input z-0 float-right w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none"
-                        type="text"
-                        placeholder="Add Name"
-                    />
-                </div>
-                <div class="p-2">
-                    <input
-                        class="id-comment-input z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
-                        type="text"
-                        placeholder="Add Comment"
-                    />
+                <div class="id-comment-editor flex flex-col shrink-0 bg-slate-500">
+                    <div class="flex flex-row justify-between bg-slate-400 p-2">
+                        <span class="font-semibold text-lg comment-editor-text"></span>
+                        <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
+                    </div>
+                    <div class="p-2">
+                        <input
+                            class="id-name-input w-3/5 rounded py-2 pr-12 pl-5 focus:outline-none"
+                            type="text"
+                            placeholder="Name"
+                        />
+                    </div>
+                    <div class="p-2">
+                        <!-- TODO: Make this a multi-line input field -->
+                        <input
+                            class="id-comment-input w-full rounded py-2 pr-12 pl-5 focus:outline-none"
+                            type="text"
+                            placeholder="Title"
+                        />
+                    </div>
                 </div>
                 <!-- /sidebar right-->
             </div>
@@ -95,11 +110,11 @@
         </div>
         <!-- timeline -->
         <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col bg-slate-800 text-white">
-            <div class="flex w-full justify-end">
-                <button class="rounded-b bg-slate-400 hover:bg-slate-600">
+            <div class="flex w-full justify-center bg-slate-800 timeline-header">
+                <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
                     <svg
-                        class="h-6 w-6 text-white"
+                        class="h-8 w-16 text-white timeline-arrow-down"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -114,7 +129,7 @@
 
                     <!-- "unhide"-arrow, to be shown when timeline is hidden -->
                     <svg
-                        class="hidden h-6 w-6 text-white"
+                        class="hidden h-8 w-16 text-white timeline-arrow-up"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -130,7 +145,7 @@
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="id-version-list flex grow items-center space-x-2 overflow-x-scroll p-2">
+            <div class="id-version-list flex grow items-center space-x-2 pl-8 pb-8">
                 <!-- #version-template get instantiated here. -->
 
                 <button
@@ -143,4 +158,14 @@
         </div>
         <!-- /content wrapper -->
     </div>
+</template>
+
+<template id="comment-marker">
+    <!--
+        Translation percentages are relative to the item size.
+        Shift the item back by 50% to make the left and right style properties map to the circle's center.
+        E.g., programmatically adding style.left = "10px" places the circle's _center_ at 10px (relative to
+        the upper left corner of the canvas) 
+    -->
+    <div class="w-4 h-4 rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800 pointer-obj"></div>
 </template>

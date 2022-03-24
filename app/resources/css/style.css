@@ -16,6 +16,17 @@
     --canary: #fffd98ff;
     --snow: #f7f2f4ff;
     --jet: #343434ff;
+
+    /* We only want this for scroll bars */
+    color-scheme: dark;
+
+    color: black;
+    background-color: white;
+}
+
+/* Needed on Firefox to overwrite the dark color scheme */
+input {
+    background-color: white;
 }
 
 .attachment-full {

@@ -7,6 +7,10 @@ class PdfPage {
         // We mainly use this to get the page width/height.
         this.viewport = pdfJsPage.getViewport({scale: 1});
     }
+
+    get asp() {
+        return this.viewport.width / this.viewport.height;
+    }
 }
 
 export { PdfPage };

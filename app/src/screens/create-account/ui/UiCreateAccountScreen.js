@@ -15,6 +15,8 @@ class UiCreateAccountScreen extends UiScreen {
         this.nameInputEl = this.el.querySelector(".id-name-input");
         this.emailInputEl = this.el.querySelector(".id-email-input");
         this.passwordInputEl = this.el.querySelector(".id-password-input");
+        this.confPasswordInputEl = this.el.querySelector(".id-confPassword-input");
+        this.message = this.el.querySelector(".id-message");
         this.registerFormEl = this.el.querySelector(".id-register-form");
 
         this.registerFormEl.addEventListener("submit", (e) => {
@@ -49,11 +51,19 @@ class UiCreateAccountScreen extends UiScreen {
     onCreateButtonClicked() {
         let name = this.nameInputEl.value,
             email = this.emailInputEl.value,
-            password = this.passwordInputEl.value;
+            password = this.passwordInputEl.value,
+            confPassword = this.confPasswordInputEl.value;
 
-        (async () => {
-            await accountSession.createAccountAndLogIn(name, email, password);
-        })();
+        if (password !== confPassword) {
+            this.message.textContent = "Passwords do not match";
+            this.confPasswordInputEl.classList.remove("border-none");
+            this.passwordInputEl.classList.remove("border-none");
+        } else {
+            this.message.textContent = "";
+            (async () => {
+                await accountSession.createAccountAndLogIn(name, email, password);
+            })();
+        }
     }
 
     onLogInButtonClicked() {

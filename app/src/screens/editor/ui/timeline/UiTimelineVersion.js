@@ -1,6 +1,7 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../../common/ui/dom-utils.js";
-import { data, EditorData } from "../../model/data.js";
+import { data } from "../../model/data.js";
+import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 
 // An item in the timeline, representing a version of the presentation.
 class UiTimelineVersion {
@@ -16,7 +17,7 @@ class UiTimelineVersion {
         this.updateSelectionState();
 
         this.listener = new Listener();
-        data.addEventListener(EditorData.EVENT_ACTIVE_VERSION_CHANGED, () => this.updateSelectionState(), this.listener);
+        data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_VERSION_CHANGED, () => this.updateSelectionState(), this.listener);
     }
 
     terminate() {
@@ -24,12 +25,12 @@ class UiTimelineVersion {
     }
 
     onClick() {
-        data.setVersion(this.version);
+        data.selTracker.activateVersion(this.version);
     }
     
     // TODO(optimize): This is called for every version item, in theory we only need to call this twice.
     updateSelectionState() {
-        let isSelected = (data.activeVersion === this.version);
+        let isSelected = (data.selTracker.version === this.version);
         ensureCssClassPresentIff(isSelected, "selected", this.el);
     }
 }

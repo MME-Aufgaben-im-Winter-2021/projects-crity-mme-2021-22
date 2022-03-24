@@ -15,6 +15,7 @@ class UiLoginScreen extends UiScreen {
         this.loginFormEl = this.el.querySelector(".id-login-form");
         this.emailInputEl = this.el.querySelector(".id-email-input");
         this.passwordInputEl = this.el.querySelector(".id-password-input");
+        this.message = this.el.querySelector(".id-message");
 
         this.loginFormEl.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -29,6 +30,11 @@ class UiLoginScreen extends UiScreen {
             () => this.onLoginStateChanged(),
             this.listener,
         );
+
+        this.navBarInfo = document.querySelector(".id-info");
+        this.navBarInfo.classList.add("hidden");
+        this.copyLinkButton = document.querySelector("#copy-link-button");
+        this.copyLinkButton.classList.add("hidden");
     }
 
     terminate() {
@@ -45,7 +51,7 @@ class UiLoginScreen extends UiScreen {
     onLogInButtonClicked() {
         let email = this.emailInputEl.value,
             password = this.passwordInputEl.value;
-        accountSession.logIn(email, password);
+        accountSession.logIn(email, password, this.message);
     }
 
     onCreateAccountButtonClicked() {

@@ -28,7 +28,7 @@ class PresentationList {
 
         for (let i = 0; i < presentations.documents.length; i++) {
             let appwritePresentation = presentations.documents[i],
-                presentation = Presentation.fromAppwritePresentation(appwritePresentation);
+                presentation = Presentation.fromAppwriteDocument(appwritePresentation);
 
             this.presentations.push(presentation);
         }
@@ -40,7 +40,7 @@ class PresentationList {
                 "unique()", 
                 {author: accountSession.accountId, title, description},
             ),
-            presentation = Presentation.fromAppwritePresentation(appwritePresentation);
+            presentation = Presentation.fromAppwriteDocument(appwritePresentation);
 
         this.presentations.push(presentation);
     }

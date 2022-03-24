@@ -13,15 +13,20 @@
             <div class="h-0 grow" id="screen-swapper"></div>
         </div>
 
-        <!-- TODO: Figure out to make webpack render templates recursively -->
+        <!-- TODO: Figure out how to make webpack render templates recursively -->
 
-        <%= require("html-loader!./screens/login/ui/UiLoginScreen.html").default %> <%=
-        require("html-loader!./screens/create-account/ui/UiCreateAccountScreen.html").default %> <%=
-        require("html-loader!./screens/dashboard/ui/UiDashboardScreen.html").default %> <%=
-        require("html-loader!./screens/dashboard/ui/UiPresentationItem.html").default %> <%=
-        require("html-loader!./screens/editor/ui/UiEditorScreen.html").default %> <%=
-        require("html-loader!./screens/editor/ui/comment-sidebar/UiComment.html").default %> <%=
-        require("html-loader!./screens/editor/ui/thumbnail-sidebar/UiThumbnail.html").default %> <%=
-        require("html-loader!./screens/editor/ui/timeline/UiTimelineVersion.html").default %>
+        <%= require("html-loader!./common/ui/UiScrollbar.html").default %>
+
+        <%= require("html-loader!./screens/login/ui/UiLoginScreen.html").default %>
+
+        <%= require("html-loader!./screens/create-account/ui/UiCreateAccountScreen.html").default %>
+
+        <%= require("html-loader!./screens/dashboard/ui/UiDashboardScreen.html").default %>
+        <%= require("html-loader!./screens/dashboard/ui/UiPresentationItem.html").default %>
+
+        <%= require("html-loader!./screens/editor/ui/UiEditorScreen.html").default %>
+        <%= require("html-loader!./screens/editor/ui/comment-sidebar/UiComment.html").default %>
+        <%= require("html-loader!./screens/editor/ui/thumbnail-sidebar/UiThumbnail.html").default %>
+        <%= require("html-loader!./screens/editor/ui/timeline/UiTimelineVersion.html").default %>
     </body>
 </html>

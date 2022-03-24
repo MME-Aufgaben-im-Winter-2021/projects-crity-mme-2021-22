@@ -1,18 +1,20 @@
 
 import { Listener } from "../../../../common/model/Observable.js";
-import { data, EditorData } from "../../model/data.js";
+import { VersionPdf } from "../../../../common/model/VersionPdf.js";
+import { data } from "../../model/data.js";
+import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 import { UiThumbnail } from "./UiThumbnail.js";
 
 class UiThumbnailBar {
     constructor(screen) {
         this.el = screen.el.querySelector(".id-sidebar-left");
 
-        if (data.hasPdf()) {
+        if (data.selTracker.hasPdf()) {
             this.createThumbnails();
         }
 
         this.listener = new Listener();
-        data.addEventListener(EditorData.EVENT_PDF_LOADED, () => this.createThumbnails(), this.listener);
+        data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_VERSION_CHANGED, () => this.onActiveVersionChanged(), this.listener);
 
         this.uiThumbnails = [];
     }
@@ -22,12 +24,16 @@ class UiThumbnailBar {
         this.listener.terminate();
     }
 
+    onActiveVersionChanged() {
+        data.selTracker.pdf.addEventListener(VersionPdf.EVENT_PDF_LOADED, () => this.createThumbnails(), this.listener);
+    }
+
     // Responsible for creating all the little thumbnails.
     // TODO: Remove old thumbnails once a new PDF is loaded?
     createThumbnails() {
         this.p_clearUiThumbnails();
 
-        let numPages = data.activePdf.pdfJsPdf.numPages;
+        let numPages = data.selTracker.pdf.numPages;
         for (let i = 0; i < numPages; i++) {
             let uiThumbnail = new UiThumbnail(i + 1);
 

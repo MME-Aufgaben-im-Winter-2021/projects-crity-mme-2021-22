@@ -18,4 +18,9 @@ function ensureCssClassPresentIff(predicate, className, ...elements) {
     });
 }
 
-export {cloneDomTemplate, ensureCssClassPresentIff};
+const MouseButtonCodes = {
+    LEFT: 0,
+    MIDDLE: 1,
+};
+
+export {cloneDomTemplate, ensureCssClassPresentIff, MouseButtonCodes};
