@@ -20,7 +20,8 @@
         </div>
         <!-- info -->
         <div class="flex items-center text-white">
-            <p class="id-info"></p>
+            <p class="id-info text-2xl font-extrabold"></p>
+            <button class="rounded bg-slate-400 px-1 mx-4 hover:bg-slate-600" id="copy-link-button">CopyLink</button>
         </div>
 
         <!-- user-icon+login / logout -->
@@ -46,7 +47,19 @@
             <div class="h-0 grow" id="screen-swapper"></div>
         </div>
 
-        <!-- TODO: Figure out to make webpack render templates recursively -->
+        <!-- TODO: Figure out how to make webpack render templates recursively -->
+
+        <template id="scrollbar-x-template">
+    <div class="relative overflow-x-scroll overflow-y-hidden shrink-0">
+        <div class="id-fake-content absolute" style="height: 10px; width: 200%"></div>
+    </div>
+</template>
+
+<template id="scrollbar-y-template">
+    <div class="relative overflow-y-scroll overflow-x-hidden shrink-0">
+        <div class="id-fake-content absolute" style="width: 10px; height: 200%"></div>
+    </div>
+</template>
 
         <template id="login-screen-template">
     <div class="flex h-full items-center justify-center">
@@ -61,6 +74,7 @@
                 type="password"
                 placeholder="Password"
             />
+            <p class="id-message bg-red-500 font-bold text-white rounded"></p>
             <input
                 class="m-3 w-1/2 rounded bg-slate-400 py-2 px-4 font-bold text-white hover:bg-slate-600"
                 type="submit"
@@ -75,7 +89,9 @@
         </form>
     </div>
 </template>
- <template id="create-account-screen-template">
+
+
+        <template id="create-account-screen-template">
     <div class="flex h-full items-center justify-center">
         <form class="id-register-form flex h-fit w-fit flex-col items-center rounded-xl bg-slate-800 p-10">
             <input
@@ -91,12 +107,20 @@
                 required
             />
             <input
-                class="id-password-input m-3 w-72 rounded py-2 px-5 focus:outline-none"
+                class="id-password-input border-none border-2 border-red-500 m-3 w-72 rounded py-2 px-5 focus:outline-none"
                 type="password"
                 placeholder="Password"
                 minlength="8"
                 required
             />
+            <input
+                class="id-confPassword-input border-none border-2 border-red-500 m-3 w-72 rounded py-2 px-5 focus:outline-none"
+                type="password"
+                placeholder="Confirm password"
+                minlength="8"
+                required
+            />
+            <p class="id-message bg-red-500 font-bold text-white rounded"></p>
             <input
                 class="m-3 w-1/2 rounded bg-slate-400 py-2 px-4 font-bold text-white hover:bg-slate-600"
                 type="submit"
@@ -109,33 +133,70 @@
         </form>
     </div>
 </template>
- <template id="dashboard-screen-template">
+
+
+        <template id="dashboard-screen-template">
     <div>
         <div class="relative grow overflow-y-scroll bg-zinc-50">
+
+            <!-- <div class="id-modal hidden relative w-10/12 md:w-1/2 h-1/2 md:h-3/4 bg-white rounded shadow-lg"> -->
+            <div class="id-modal bg-black bg-opacity-30 hidden absolute inset-0 flex justify-center items-center">
+                <div class="bg-zinc-300 rounded items-center">
+                    <div class="id-close-button rounded float-right m-1">
+                        <button class="bg-slate-400 hover:bg-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                    </div>
+                    <div>
+                        <input
+                        class="id-presentation-title-input rounded p-2 focus:outline-none m-3"
+                        type="text"
+                        placeholder="Title"
+                    />
+                    </div>
+                    <div>
+                        <input
+                        class="id-presentation-description-input rounded p-2 focus:outline-none m-3"
+                        type="text"
+                        placeholder="Description"
+                    />
+                    </div>
+                    <div>
+                        <button
+                        class="id-add-presentation-button rounded-full bg-slate-400 py-2 px-4 font-bold text-white hover:bg-slate-600 m-3"
+                        >
+                        Add Project
+                    </button>
+                    </div>
+                </div>
+            </div>
+
             <h1 class="my-5 mx-5 font-bold">Authored Presentations</h1>
+            <div class="relative w-10/12 md:w-1/2 h-1/2 md:h-3/4 bg-white rounded shadow-lg"></div>
+            <button class="id-add-project-button bg-slate-400 hover:bg-slate-600 text-white font-bold py-3 px-3 rounded-full inline-flex items-center m-2">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                  </svg>
+              </button>
             <div class="id-presentation-list my-5 mx-5 grid grid-cols-4 flex-col">
                 <!-- #presentation-template gets instantiated here. -->
             </div>
         </div>
-
-        <!-- presentation creation -->
-        <div class="flex h-16 items-center justify-center gap-4 bg-zinc-200">
-            <input class="id-presentation-title-input rounded p-2 focus:outline-none" type="text" placeholder="Title" />
-            <input
-                class="id-presentation-description-input rounded p-2 focus:outline-none"
-                type="text"
-                placeholder="Description"
-            />
-            <button
-                class="id-add-presentation-button rounded-full bg-slate-400 py-2 px-4 font-bold text-white hover:bg-slate-600"
-            >
-                Add Project
-            </button>
-            <!-- /presentation creation -->
         </div>
     </div>
 </template>
- <template id="presentation-template">
+
+        <template id="presentation-template">
     <div class="m-2 max-h-80 min-h-min content-center rounded bg-zinc-200 p-2 hover:cursor-pointer">
         <!-- title text -->
         <div class="my-auto flex min-h-[3rem] justify-center text-center">
@@ -160,6 +221,7 @@
                     />
                 </svg>
                 <!-- Heroicons dots -->
+                <button class="id-dots-button">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="absolute bottom-0 right-0 h-6 w-7 rounded bg-slate-400 px-1 text-white hover:bg-slate-600"
@@ -170,6 +232,7 @@
                         d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"
                     />
                 </svg>
+            </button>
             </div>
             <!-- /thumbnail -->
         </div>
@@ -179,8 +242,10 @@
         </div>
     </div>
 </template>
- <template id="editor-screen-template">
-    <div class="flex h-full flex-col">
+
+
+        <template id="editor-screen-template">
+    <div class="flex h-full flex-col main-screen">
         <!-- main content -->
         <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden">
             <!-- sidebar left -->
@@ -188,12 +253,20 @@
                 <!-- #thumbnail-template gets instantiated here. -->
             </div>
             <!-- content center -->
-            <div class="id-content-center relative grow overflow-scroll bg-zinc-50">
-                <canvas class="id-pdf-canvas"></canvas>
-                <div class="id-pdf-text-layer textLayer"></div>
+            <div class="id-content-center flex flex-col grow bg-slate-600">
+                <div class="flex grow">
+                    <div class="id-viewport grow relative overflow-hidden">
+                        <canvas class="id-pdf-canvas absolute top-0 left-0"></canvas>
+                        <div class="id-marker-container absolute top-0 left-0 w-10 h-10"></div>
+                        <div class="id-pdf-text-layer textLayer"></div>
+                    </div>
+                    <div class="id-scrollbar-y-container flex"></div>
+                </div>
+
+                <div class="id-scrollbar-x-container"></div>
             </div>
             <!-- sidebar right -->
-            <div class="id-sidebar-right ml-auto flex h-full w-1/4 grow flex-col">
+            <div class="id-sidebar-right ml-auto flex h-full w-1/4 flex-col">
                 <!-- search/sort/filter bar -->
                 <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
                     <!-- search bar -->
@@ -253,22 +326,29 @@
                     <!-- /search/sort/filter bar -->
                 </div>
                 <!-- comment list -->
-                <div class="id-comment-list flex h-full w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
+                <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
                     <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
                 </div>
-                <div class="p-2">
-                    <input
-                        class="id-name-input z-0 float-right w-1/5 rounded py-2 pr-12 pl-5 focus:outline-none"
-                        type="text"
-                        placeholder="Add Name"
-                    />
-                </div>
-                <div class="p-2">
-                    <input
-                        class="id-comment-input z-0 float-right w-full rounded py-2 pr-12 pl-5 focus:outline-none"
-                        type="text"
-                        placeholder="Add Comment"
-                    />
+                <div class="id-comment-editor flex flex-col shrink-0 bg-slate-500">
+                    <div class="flex flex-row justify-between bg-slate-400 p-2">
+                        <span class="font-semibold text-lg comment-editor-text"></span>
+                        <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
+                    </div>
+                    <div class="p-2">
+                        <input
+                            class="id-name-input w-3/5 rounded py-2 pr-12 pl-5 focus:outline-none"
+                            type="text"
+                            placeholder="Name"
+                        />
+                    </div>
+                    <div class="p-2">
+                        <!-- TODO: Make this a multi-line input field -->
+                        <input
+                            class="id-comment-input w-full rounded py-2 pr-12 pl-5 focus:outline-none"
+                            type="text"
+                            placeholder="Title"
+                        />
+                    </div>
                 </div>
                 <!-- /sidebar right-->
             </div>
@@ -276,11 +356,11 @@
         </div>
         <!-- timeline -->
         <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col bg-slate-800 text-white">
-            <div class="flex w-full justify-end">
-                <button class="rounded-b bg-slate-400 hover:bg-slate-600">
+            <div class="flex w-full justify-center bg-slate-800 timeline-header">
+                <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
                     <svg
-                        class="h-6 w-6 text-white"
+                        class="h-8 w-16 text-white timeline-arrow-down"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -295,7 +375,7 @@
 
                     <!-- "unhide"-arrow, to be shown when timeline is hidden -->
                     <svg
-                        class="hidden h-6 w-6 text-white"
+                        class="hidden h-8 w-16 text-white timeline-arrow-up"
                         id="arrow-"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
@@ -311,7 +391,7 @@
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="id-version-list flex grow items-center space-x-2 overflow-x-scroll p-2">
+            <div class="id-version-list flex grow items-center space-x-2 pl-8 pb-8">
                 <!-- #version-template get instantiated here. -->
 
                 <button
@@ -325,24 +405,86 @@
         <!-- /content wrapper -->
     </div>
 </template>
- <template id="comment-template">
+
+<template id="comment-marker">
+    <!--
+        Translation percentages are relative to the item size.
+        Shift the item back by 50% to make the left and right style properties map to the circle's center.
+        E.g., programmatically adding style.left = "10px" places the circle's _center_ at 10px (relative to
+        the upper left corner of the canvas) 
+    -->
+    <div class="w-4 h-4 rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800 pointer-obj"></div>
+</template>
+        <template id="comment-template">
     <div class="h-auto w-full bg-slate-400 p-2">
         <span class="font-bold text-orange-600 comment-author"></span>
         <span class="comment-text"></span>
     </div>
 </template>
 
-<!-- TODO: Thread-Template fertigstellen -->
 <template id="thread-template">
-    <!-- thread container -->
-    <div class="h-60 w-full flex-none items-center justify-start bg-black opacity-50">
-        <!-- TODO: erstellen eines Thread-Haupt-Kommentar-Templates -->
-        <div></div>
-        <!-- TODO: erstellen eines Thread-Antwort-Kommentar-Templates -->
-        <div></div>
+    <div class="h-auto w-auto bg-slate-400 p-2 rounded-md">
+        <div class="flex flex-row justify-between">
+            <div class="flex flex-row">
+                <!-- "hide"-arrow, to be shown when timeline is visible -->
+                <svg
+                class="hidden h-6 w-6 mr-2 text-white thread-arrow-down"
+                id="arrow-"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+    
+            <!-- "unhide"-arrow, to be shown when timeline is hidden -->
+                <svg
+                class="h-6 w-6 mr-2 text-white thread-arrow-up"
+                id="arrow-"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        transform="scale(1 -1) translate(0 -20)"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                    />
+                </svg>
+                <div class="text-lg thread-header">
+                    <span class="text-orange-700 thread-author font-bold text-sm"></span>
+                    <span class="thread-title font-bold"></span>
+                </div>
+
+            </div>
+            <div class="flex flex-row">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 thread-like" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden thread-like-filled" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                </svg>
+                <span class="ml-1 text-lg like-counter"></span>
+            </div>
+        </div>
+        <div class="mt-5 thread-comments">
+        </div>
     </div>
 </template>
- <template id="thumbnail-template">
+
+<template id="thread-comment-template">
+    <div class="h-auto w-auto bg-slate-200 p-1 m-2 rounded-sm">
+        <span class="font-bold text-red-900 comment-author">MAx</span>
+        <span class="comment-text">Und</span>
+    </div>
+</template>
+
+        <template id="thumbnail-template">
     <button class="transition p-4 flex flex-col space-y-2 rounded-xl bg-slate-800 hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
         <div class="flex space-x-2 items-center">
             <div class="text-sm opacity-80 page-number">12</div>
@@ -367,7 +509,8 @@
             </span>
         </div>
     </button>
-</template> <template id="version-template">
+</template>
+        <template id="version-template">
     <button class="transition p-4 rounded-xl bg-transparent hover:bg-slate-400 active:bg-slate-900 selected:bg-amber-500 text-white selected:text-black">
         <span class="label">12</span>
     </button>
