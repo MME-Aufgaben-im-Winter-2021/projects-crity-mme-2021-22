@@ -145,11 +145,13 @@ class UiScrollbar extends Observable {
     }
 
     getFakeContentSize() {
+        let result;
         if (this.axis === "x") {
-            return this.fakeContentEl.offsetWidth;
+            result = this.fakeContentEl.offsetWidth;
         } else {
-            return this.fakeContentEl.offsetHeight;
+            result = this.fakeContentEl.offsetHeight;
         }
+        return result;
     }
 }
 
