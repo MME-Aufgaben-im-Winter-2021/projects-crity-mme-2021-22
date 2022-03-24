@@ -1,5 +1,5 @@
 import { Observable, Event } from "../model/Observable.js";
-import { assert } from "../utils.js";
+import { assert, lerp } from "../utils.js";
 import { cloneDomTemplate } from "./dom-utils.js";
 
 // Custom scrollbar. Works by creating a dummy div that is big enough to produce the desired knob length.
@@ -14,30 +14,47 @@ class UiScrollbar extends Observable {
         this.axis = axis;
         this.el = cloneDomTemplate(`#scrollbar-${axis}-template`);
         this.fakeContentEl = this.el.querySelector(".id-fake-content");
+
+        this.scrollPos = 0;
         
         containerDiv.appendChild(this.el);
 
         this.el.addEventListener("scroll", () => this.onScroll());
+        this.el.addEventListener("mousedown", () => this.onMouseDown());
 
         this.throttledScrollHandlerPending = false;
     }
 
-    reconfigure(contentStart, contentEnd, visibleStart, visibleEnd) {
-        let contentSize, visibleSize, visibleProportion, elSize;
+    // Kind of confusing: The knob represents the visible area, the trough represents the content (which is
+    // bigger than the visible area when zoomed in). 
 
+    reconfigure(contentStart, contentEnd, visibleStart, visibleEnd) {
         this.contentStart = contentStart;
         this.contentEnd = contentEnd;
         this.visibleStart = visibleStart;
         this.visibleEnd = visibleEnd;
+        this.p_reconfigure();
+    }
 
-        contentSize = contentEnd - contentStart;
-        visibleSize = visibleEnd - visibleStart;
-        visibleProportion = visibleSize / contentSize;
+    p_reconfigure() {
+        let ds, absoluteFakeContentSize;
 
-        this.setFakeContentSize(`${100*visibleProportion}%`);
+        ds = this.computeDerivedSizes();
 
-        elSize = this.getElSize();
-        this.scrollTo(elSize * (contentStart - visibleStart) / contentSize);
+        this.setFakeContentSize(`${100.0/ds.visibleClippedProportion}%`);
+
+        absoluteFakeContentSize = this.getFakeContentSize();
+        this.scrollPos = absoluteFakeContentSize * Math.max(0.0, this.visibleStart - this.contentStart) / ds.contentSize;
+        this.scrollTo(this.scrollPos);
+    }
+
+    computeDerivedSizes() {
+        let visibleSize = this.visibleEnd - this.visibleStart, 
+            clippedVisibleSize = Math.min(this.contentEnd, this.visibleEnd) - Math.max(this.contentStart, this.visibleStart),
+            contentSize = this.contentEnd - this.contentStart,
+            visibleClippedProportion = clippedVisibleSize / contentSize;
+
+        return { visibleSize, clippedVisibleSize, contentSize, visibleClippedProportion };
     }
 
     onScroll() {
@@ -54,23 +71,46 @@ class UiScrollbar extends Observable {
     }
 
     onThrottledScroll() {
-        let elSize, visibleSize, contentSize, scrollPos;
+        let scrollPos, relKnobLeft, ds = this.computeDerivedSizes();
 
-        console.log("Executing throttled scroll.");
         if (this.axis === "x") {
             scrollPos = this.el.scrollLeft;
         } else {
             scrollPos = this.el.scrollTop;
         }
 
-        elSize = this.getElSize();
+        // HACK: Fix some numerical precision problems ... Ideally there would be a way to
+        // tell the Web API not to call us when the scroll position was set programmatically ...
+        if (Math.abs(scrollPos - this.scrollPos) < 2) {
+            return;
+        }
 
-        visibleSize = this.visibleEnd - this.visibleStart;
-        contentSize = this.contentEnd - this.contentStart;
-        this.visibleStart = -scrollPos * contentSize / elSize - this.contentStart;
-        this.visibleEnd = this.visibleStart + visibleSize;
+        this.scrollPos = scrollPos;
+
+        relKnobLeft = scrollPos / this.getFakeContentSize();
+        // "Un-clip" the knob.
+        relKnobLeft -= Math.max(0, this.contentStart - this.visibleStart) / (this.contentEnd - this.contentStart);
+
+        this.visibleStart = lerp(this.contentStart, this.contentEnd, relKnobLeft);
+        this.visibleEnd = this.visibleStart + ds.visibleSize;
 
         this.notifyAll(new Event(UiScrollbar.EVENT_VISIBLE_INTERVAL_CHANGED, {}));
+        this.p_reconfigure();
+    }
+
+    onMouseDown() {
+        // There is no way (I can think of) to get the knob to e.g. be dragged farther out than the content
+        // (unless we go crazy and write our own scrollbar with HTML5 canvas), so clip the position when the user clicks the scrollbar ...
+        let ds = this.computeDerivedSizes();
+
+        this.visibleStart = Math.max(this.visibleStart, this.contentStart);
+        this.visibleEnd = this.visibleStart + ds.visibleSize;
+
+        this.visibleEnd = Math.min(this.visibleEnd, this.contentEnd);
+        this.visibleStart = this.visibleEnd - ds.visibleSize;
+
+        this.notifyAll(new Event(UiScrollbar.EVENT_VISIBLE_INTERVAL_CHANGED, {}));
+        this.p_reconfigure();
     }
 
     scrollTo(numPixels) {
@@ -101,6 +141,14 @@ class UiScrollbar extends Observable {
             this.fakeContentEl.style.width = size;
         } else {
             this.fakeContentEl.style.height = size;
+        }
+    }
+
+    getFakeContentSize() {
+        if (this.axis === "x") {
+            return this.fakeContentEl.offsetWidth;
+        } else {
+            return this.fakeContentEl.offsetHeight;
         }
     }
 }

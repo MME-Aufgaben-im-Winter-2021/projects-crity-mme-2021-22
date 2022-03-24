@@ -30,9 +30,6 @@ class EditorViewingArea extends Observable {
 
         pageRect = {};
 
-        pageCenterX = containerWidth * this.centeredX;
-        pageCenterY = containerHeight * this.centeredY;
-
         if (asp > 1) {
             // longerAxis = x
             pageWidth = this.zoom * containerWidth;
@@ -42,6 +39,9 @@ class EditorViewingArea extends Observable {
             pageHeight = this.zoom * containerHeight;
             pageWidth = pageHeight * asp; 
         }
+
+        pageCenterX = 0.5 * containerWidth + (0.5 - this.centeredX) * pageWidth;
+        pageCenterY = 0.5 * containerHeight + (0.5 - this.centeredY) * pageHeight;
 
         pageRect.left = pageCenterX - 0.5 * pageWidth;
         pageRect.right = pageCenterX + 0.5 * pageWidth;
@@ -67,8 +67,8 @@ class EditorViewingArea extends Observable {
             this.zoom = pageHeight / containerHeight;
         }
 
-        this.centeredX = pageCenterX / containerWidth;
-        this.centeredY = pageCenterY / containerHeight;
+        this.centeredX = (-pageCenterX + 0.5 * containerWidth + 0.5 * pageWidth) / pageWidth;
+        this.centeredY = (-pageCenterY + 0.5 * containerHeight + 0.5 * pageHeight) / pageHeight;
 
         // Kind of ugly to have this here ... But easiest way to get this working for now.
         this.clampPanning();
