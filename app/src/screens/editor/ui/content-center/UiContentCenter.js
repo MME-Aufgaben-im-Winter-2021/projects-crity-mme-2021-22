@@ -72,7 +72,6 @@ class UiContentCenterPanningState extends UiContentCenterState {
         let pageRect = this.pageRectTracker.computePageRect();
         translateRect(pageRect, e.movementX, e.movementY);
         this.pageRectTracker.setPageRect(pageRect);
-        data.viewingArea.clampPanning();
     }
 }
 
@@ -107,8 +106,8 @@ class UiContentCenterMainState extends UiContentCenterState {
     }
 
     static ZOOM_STEP = 1.3;
-    static ZOOM_MIN = Math.pow(UiContentCenterMainState.ZOOM_STEP, -5);
-    static ZOOM_MAX = Math.pow(UiContentCenterMainState.ZOOM_STEP, +5);
+    static ZOOM_MIN = Math.pow(UiContentCenterMainState.ZOOM_STEP, -8);
+    static ZOOM_MAX = Math.pow(UiContentCenterMainState.ZOOM_STEP, +8);
     onWheel(e) {
         let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
 
