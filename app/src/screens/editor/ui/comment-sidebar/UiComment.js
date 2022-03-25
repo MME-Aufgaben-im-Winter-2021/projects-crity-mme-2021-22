@@ -118,8 +118,6 @@ class UiComment {
         commentElementAuthor.textContent = author;
 
         this.comments.appendChild(commentElement);
-        this.comment.authors.push(author);
-        this.comment.messages.push(text);
     }
 }
 
