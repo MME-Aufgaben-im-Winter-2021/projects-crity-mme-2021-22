@@ -8,12 +8,13 @@ let isHovering = false,
 class UiPresentationItem {
     constructor(screen, presentation, parent) {
         this.screen = screen;
+        this.presentation = presentation;
         this.parent = parent;
 
         this.el = cloneDomTemplate("#presentation-template");
         this.el.addEventListener("click", () => this.onClick());
-
-        this.presentation = presentation;
+        
+        this.thumbnail = this.el.querySelector(".id-presentation-thumbnail");
 
         this.titleEl = this.el.querySelector(".presentation-title");
         this.titleEl.textContent = presentation.title;
