@@ -1,11 +1,19 @@
+import { renderSchedule } from "./renderSchedule.js";
+
 // All the code that is necessary for feeding the PDFJS render output into a canvas.
 // Currently used for the main PDF display and the thumbnail preview.
 class UiPageCanvas {
-    constructor(canvasEl) {
+    constructor(canvasEl, priorityLevel=0) {
         this.canvasEl = canvasEl;
         this.canvasCtx = this.canvasEl.getContext("2d");
-        this.currentRenderTask = null;
-        this.currentPage = null;
+
+        this.priorityLevel = priorityLevel;
+
+        this.scheduleTask = null;
+    }
+
+    terminate() {
+        this.cancelPotentialRenderTask();
     }
 
     // This will be how big the canvas shows up in the UI.
@@ -25,18 +33,13 @@ class UiPageCanvas {
     /// Tells PDFJS to asynchronously draw the PDF into our canvas.
     /// @param[pdfPage] Has type PdfPage.
     renderPage(pdfPage) {
-        let viewport, scaleX, scaleY, renderTask;
+        let viewport, scaleX, scaleY;
 
         if (pdfPage === null) {
             return;
         }
 
-        this.currentPdfPage = pdfPage;
-
-        if (this.currentRenderTask !== null) {
-            this.currentRenderTask.cancel();
-            this.currentRenderTask = null;
-        }
+        this.cancelPotentialRenderTask();
 
         viewport = pdfPage.viewport;
 
@@ -46,7 +49,7 @@ class UiPageCanvas {
         scaleX = this.canvasEl.width / viewport.width;
         scaleY = this.canvasEl.height / viewport.height;
 
-        renderTask = pdfPage.pdfJsPage.render({
+        this.scheduleTask = renderSchedule.createTask(pdfPage, this.priorityLevel, {
             canvasContext: this.canvasCtx,
 
             // I think this encodes the first two rows of the 3x3 homogeneous transform in column-major
@@ -57,13 +60,19 @@ class UiPageCanvas {
 
             viewport,
         });
+    }
 
-        this.currentRenderTask = renderTask;
+    cancelPotentialRenderTask() {
+        if (this.scheduleTask !== null) {
+            renderSchedule.destroyTask(this.scheduleTask);
+            this.scheduleTask = null;
+        }
+    }
 
-        (async () => {
-            await renderTask.promise;
-            this.currentRenderTask = null;
-        })();
+    reprioritize(newPriorityLevel) {
+        if (this.scheduleTask !== null) {
+            renderSchedule.reprioritizeTask(this.scheduleTask, newPriorityLevel);
+        }
     }
 }
 
