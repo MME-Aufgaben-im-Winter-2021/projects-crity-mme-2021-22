@@ -57,6 +57,7 @@ class UiCommentList {
         this.uiComments.forEach(uiComment => {
             uiComment.terminate();
         });
+        this.uiComments.length = 0;
         this.el.innerHTML = "";
     }
 
