@@ -37,22 +37,23 @@ class VersionList extends Observable {
                 label = presentationVersion.label,
                 storageFileId = presentationVersion.storageFile,
                 pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
-                version = new Version(label, pdfUrl, presentationVersion.$id);
+                previousVersion = presentationVersion.previous,
+                version = new Version(label, pdfUrl, presentationVersion.$id, previousVersion);
 
             this.versions.push(version);
         }
     }
 
-    async createVersion(presentationId, label, file) {
+    async createVersion(presentationId, label, file, previous) {
         let storageFile = await appwrite.storage.createFile(
                 "unique()",
                 file, 
                 ["role:all"], 
                 ["role:all"]),
-            appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId}),
+            appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId, previous}),
             storageFileId = storageFile.$id,
             pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
-            version = new Version(label, pdfUrl, appwriteVersion.$id);
+            version = new Version(label, pdfUrl, appwriteVersion.$id, previous);
 
         this.versions.push(version);
 
