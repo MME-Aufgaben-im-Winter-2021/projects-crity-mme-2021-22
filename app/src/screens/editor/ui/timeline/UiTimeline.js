@@ -43,7 +43,7 @@ class UiTimeline {
 
     timelineHideButtonClicked() {
         if(this.timelineWindow.style.display === "none") {
-            this.timelineWindow.style.display = "block";
+            this.timelineWindow.style.display = "flex";
             this.timelineWindow.insertBefore(this.timelineHeader, this.el);
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
