@@ -107,7 +107,6 @@ class UiCommentList {
         }
         this.lastOpen.versionComment.submitComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
     }
-
 }
 
 export {UiCommentList };

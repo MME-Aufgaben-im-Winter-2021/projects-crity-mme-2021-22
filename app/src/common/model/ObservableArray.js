@@ -39,6 +39,7 @@ class ObservableArray extends Observable {
         
         return this.items[this.items.length - 1];
     }
+
 }
 
 export {ObservableArray};

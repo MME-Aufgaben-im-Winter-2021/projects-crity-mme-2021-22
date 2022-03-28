@@ -15,9 +15,6 @@ class UiComment {
         this.authorEl = this.el.querySelector(".thread-author");
         this.authorEl.textContent = comment.author;
 
-        this.header = this.el.querySelector(".thread-header");
-        //this.header.addEventListener("click", () => this.clicked());
-
         this.comments = this.el.querySelector(".thread-comments");
         this.comments.style.display = "none";
 
@@ -34,6 +31,7 @@ class UiComment {
         this.likeCounter = this.el.querySelector(".like-counter");
         this.likeCounter.textContent = comment.likes.length;
 
+        versionComment.registerUiComment(this);
         this.liked = false;
         this.checkForLike(comment);
         this.addComments(comment);
@@ -51,12 +49,12 @@ class UiComment {
     addComments(comment) {
         this.comments.innerHTML = "";
         this.comment = comment;
-        for(let i = 0; i < comment.authors.length; i++) {
+        for(let i = 0; i < comment.subComments.length; i++) {
             let commentElement = cloneDomTemplate("#thread-comment-template"),
                 commentElementText = commentElement.querySelector(".comment-text"),
                 commentElementAuthor = commentElement.querySelector(".comment-author");
-                commentElementText.textContent = comment.messages[i];
-            commentElementAuthor.textContent = comment.authors[i];
+                commentElementText.textContent = comment.subComments[i].message;
+                commentElementAuthor.textContent = comment.subComments[i].author;
             this.comments.appendChild(commentElement);
         }
     }
@@ -88,14 +86,11 @@ class UiComment {
             this.comments.style.display = "block";
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
-            this.versionComment.subscribeToCommentDocument(this);
-            this.versionComment.loadNewestComments(this);
             this.versionComment.commentOpened();
         } else {
             this.comments.style.display = "none";
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
-            this.versionComment.unsubscribeFunc();
             this.versionComment.commentClosed();
         }
     }
