@@ -14,9 +14,9 @@ class UiTimelineGraph {
 
     versionAdded(version, timeline) {
         this.destroyNetwork();
-        this.nodes.push({ id: version.appwriteId, label: version.label, fixed: true })
+        this.nodes.push({ id: version.appwriteId, label: version.label, fixed: true, widthConstraint: { minimum: 30 }, heightConstraint: { minimum: 30 }, font: { size: 18}})
         if(version.previousVersion) {
-            this.edges.push({ from: version.appwriteId, to: version.previousVersion });
+            this.edges.push({ from: version.appwriteId, to: version.previousVersion, value:5 });
             let index = this.nodes.map(object => object.id).indexOf(version.previousVersion);
             console.log(index);
             this.nodes[this.nodes.length-1]["level"] = this.nodes[index]["level"] + 1;
@@ -99,7 +99,7 @@ class UiTimelineGraph {
     changeSelectedNodeColor(nodeId, red) {
         console.log(nodeId + red);
         if(red) {
-            var newColor = "star";
+            var newColor = "box";
         }else{
             var newColor = "ellipse";
 
