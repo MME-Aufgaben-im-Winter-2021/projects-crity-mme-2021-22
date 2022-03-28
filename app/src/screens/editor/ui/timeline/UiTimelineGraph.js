@@ -56,9 +56,6 @@ class UiTimelineGraph {
             console.log(
               "click event, getNodeAt returns: " + this.getNodeAt(params.pointer.DOM)
             );
-            if (typeof this.getNodeAt(params.pointer.DOM) == 'undefined') {
-                return;
-            }
             timeline.nodeSelected(this.getNodeAt(params.pointer.DOM));
         });
         this.network.on("doubleClick", function (params) {

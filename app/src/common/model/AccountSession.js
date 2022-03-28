@@ -105,6 +105,12 @@ class AccountSession extends Observable {
         this.loginState = loginState;
         this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
     }
+
+    async createAnonymAccount() {
+        let account = await appwrite.account.createAnonymousSession();
+                this.p_accountId = account.$id;
+                this.p_changeLoginState(LoginState.LOGGED_IN);
+    }
 }
 
 accountSession = new AccountSession();
