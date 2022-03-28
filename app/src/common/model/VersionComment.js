@@ -9,6 +9,7 @@ class VersionComment extends Observable {
     // These are instances of Threads, just one!
     static VERSION_COMMENT_COLLECTION_ID = "6214e5ef06bef7005816";
     static THREAD_COMMENT_COLLECTION_ID = "6241d36259cb4d652b9f";
+    static THREAD_VOTES_COLLECTION_ID = "6214e708a17a5ac6fa84";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
     static EVENT_SELECTED = "SELECTED";
@@ -36,7 +37,13 @@ class VersionComment extends Observable {
             let appwriteSubComment = appwriteSubComments.documents[i];
             subComments.push({ message: appwriteSubComment.message, author: appwriteSubComment.author });
         }
-        let comment = Comment.fromAppwriteDocument(appwriteComment, subComments);
+        let appwriteThreadVotes = await appwrite.database.listDocuments(VersionComment.THREAD_VOTES_COLLECTION_ID, [Query.equal("threadId", appwriteVersionComment.comment)]);
+        let votes = [];
+        for (let i = 0; i < appwriteThreadVotes.documents.length; i++) {   
+            let appwriteVote = appwriteThreadVotes.documents[i];
+            votes.push(appwriteVote.userId);
+        }
+        let comment = Comment.fromAppwriteDocument(appwriteComment, subComments, votes);
         return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage, appwriteVersionComment.comment);
     }
 
@@ -71,6 +78,7 @@ class VersionComment extends Observable {
         return appwriteVersionComment;
     }
 
+    // Create an SubComment Entry
     async submitComment(author, message) {
         this.comment.subComments.push({ message: message, author: author });
         await appwrite.database.createDocument(
@@ -84,19 +92,24 @@ class VersionComment extends Observable {
         );
     }
 
-    async changeLikeStatus(liked, uiComment) {
-        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
-            comment = Comment.fromAppwriteDocument(appwriteComment);
-        if(liked) {
-            comment.likes.push(accountSession.accountId);
+    async changeVoteStatus(voted, uiComment) {
+        if(voted) {
+            this.comment.votes.push(accountSession.accountId);
+            await appwrite.database.createDocument(
+                "6214e708a17a5ac6fa84",
+                "unique()",
+                {
+                    userId: accountSession.accountId,
+                    threadId: this.id,
+                },
+            );
         }else{
-            comment.likes.splice(accountSession.accountId, 1);
+            this.comment.votes.splice(accountSession.accountId, 1);
+            let myVoteDocument = await appwrite.database.listDocuments("6214e708a17a5ac6fa84", [Query.equal("userId", accountSession.accountId), Query.equal("threadId",this.id)]);
+            await appwrite.database.deleteDocument("6214e708a17a5ac6fa84", myVoteDocument.documents[0].$id);
         }
-        this.comment.likes = comment.likes;
-        appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
-            likes: comment.likes,
-        });
-        uiComment.likesChanged(comment.likes);
+
+        uiComment.votesChanged(this.comment.votes);
     }
 
     commentOpened() {
