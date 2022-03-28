@@ -1,7 +1,6 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { ObservableArray } from "../../../../common/model/ObservableArray.js";
 import { data } from "../../model/data.js";
-import { UiTimelineVersion } from "./UiTimelineVersion.js";
 import { UiTimelineGraph } from "./UiTimelineGraph.js";
 
 class UiTimeline {
