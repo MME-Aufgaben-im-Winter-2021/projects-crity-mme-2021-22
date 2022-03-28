@@ -6,7 +6,7 @@ import { UiTimelineGraph } from "./UiTimelineGraph.js";
 
 class UiTimeline {
     constructor(screen) {
-        this.el = screen.el.querySelector(".id-version-list");
+        this.el = screen.el.querySelector(".timeline-content");
 
         this.addVersionButtonEl = screen.el.querySelector(".id-add-version-button");
         this.addVersionButtonEl.addEventListener("click", () => this.onAddButtonClicked());

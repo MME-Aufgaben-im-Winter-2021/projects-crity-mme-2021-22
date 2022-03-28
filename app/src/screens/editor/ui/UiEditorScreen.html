@@ -145,17 +145,13 @@
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="flex h-full">
-                <div class="id-version-list grow items-center space-x-2 pl-8 pb-8">
-    
-                    <button
-                        class="id-add-version-button selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
-                    >
-                        <input class="id-file-input" type="file" name="name" style="display: none" />
-                        <span class="label font-bold">+</span>
-                    </button>
-                </div>
-    
+            <div class="flex h-full timeline-content">
+                <button
+                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
+                >
+                    <input class="id-file-input" type="file" name="name" style="display: none" />
+                    <span class="label font-bold">Add Version</span>
+                </button>
                 <div class="grow" id="mynetwork"></div>
 
             </div>
