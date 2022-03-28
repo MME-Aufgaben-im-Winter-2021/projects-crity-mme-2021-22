@@ -1,14 +1,23 @@
-import { unused } from "../../../common/utils.js";
+import { assert, unused } from "../../../common/utils.js";
 
 var renderSchedule;
+
+// https://stackoverflow.com/a/17386803
+function canvasIsBlank(context) {
+    let pixelBuffer = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.buffer);
+  
+    return !pixelBuffer.some(color => color !== 0);
+}
 
 class ScheduleTask {
     constructor(pdfPage, priorityLevel, pdfJsRenderConfig) {
         this.pdfPage = pdfPage;
         this.priorityLevel = priorityLevel;
         this.pdfJsRenderConfig = pdfJsRenderConfig;
+
         // Filled in when attended.
         this.pdfJsTask = null;
+        this.numRenderAttempts = 0;
     }
 }
 
@@ -40,9 +49,7 @@ class RenderSchedule {
 
     createTask(pdfPage, initialPriorityLevel, pdfJsRenderConfig) {
         let task = new ScheduleTask(pdfPage, initialPriorityLevel, pdfJsRenderConfig);
-
-        this.priorityBuckets[initialPriorityLevel].add(task);
-
+        this.addTaskToBucket(task);
         this.attendHighestPriorityTask();
 
         return task;
@@ -58,6 +65,10 @@ class RenderSchedule {
         }
     }
 
+    addTaskToBucket(task) {
+        this.priorityBuckets[task.priorityLevel].add(task);
+    }
+
     deleteTaskFromBucket(task) {
         this.priorityBuckets[task.priorityLevel].delete(task);
     }
@@ -67,12 +78,18 @@ class RenderSchedule {
     }
 
     reprioritizeTask(scheduleTask, newPriorityLevel) {
-        if (!this.taskIsRunning(scheduleTask)) {
+        let isRunning = this.taskIsRunning(scheduleTask);
+
+        if (!isRunning) {
             this.deleteTaskFromBucket(scheduleTask);
-            this.priorityBuckets[newPriorityLevel].add(scheduleTask);
         }
 
+        // This does have an effect I guess, due to our blank-canvas hack.
         scheduleTask.priorityLevel = newPriorityLevel;
+
+        if (!isRunning) {
+            this.addTaskToBucket(scheduleTask);
+        }
     }
 
     pickHighestPriorityTask() {
@@ -115,6 +132,31 @@ class RenderSchedule {
             }
 
             this.runningTasks.delete(highestPriorityTask);
+
+            // HACK: PDFJS seems to sporadically not render into some canvasses, even though my debugging attempts
+            // seem to indicate that we *are* in fact calling and we finishing successfully. This only seems
+            // to be the case on Firefox ...
+            // So check its work.
+            if (canvasIsBlank(highestPriorityTask.pdfJsRenderConfig.canvasContext)) {
+                let shouldRetry = false;
+                if (highestPriorityTask.numRenderAttempts === 0) {
+                    shouldRetry = true;
+                } else if (highestPriorityTask.numRenderAttempts === 1) {
+                    // Wait and retry.
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    shouldRetry = true;
+                }
+
+                if (shouldRetry) {
+                    this.addTaskToBucket(highestPriorityTask);
+                } else {
+                    // Give up.
+                    assert(false);
+                }
+
+                highestPriorityTask.numRenderAttempts++;
+            }
+
             this.attendWaitingTasks();
         })();
 
