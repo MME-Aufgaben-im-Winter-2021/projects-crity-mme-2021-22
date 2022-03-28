@@ -5,7 +5,7 @@
         </div>
         
         <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col bg-slate-800 text-white">
+        <div class="id-bottom-bar bottom-0 flex w-screen h-2/4 shrink-0 flex-col bg-slate-800 text-white">
             <div class="flex w-full justify-center bg-slate-800 timeline-header">
                 <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
@@ -41,15 +41,15 @@
                 </button>
             </div>
             <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="id-version-list flex grow items-center space-x-2 pl-8 pb-8">
-                <!-- #version-template get instantiated here. -->
-
+            <div class="flex h-full timeline-content">
                 <button
-                    class="id-add-version-button selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
+                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
                 >
                     <input class="id-file-input" type="file" name="name" style="display: none" />
-                    <span class="label font-bold">+</span>
+                    <span class="label font-bold">Add Version</span>
                 </button>
+                <div class="grow" id="mynetwork"></div>
+
             </div>
         </div>
         <!-- /content wrapper -->
