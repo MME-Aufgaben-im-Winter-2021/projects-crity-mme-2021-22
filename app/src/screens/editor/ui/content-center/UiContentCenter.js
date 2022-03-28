@@ -93,6 +93,9 @@ class UiContentCenterMainState extends UiContentCenterState {
                 pageX = (viewportX - pageRect.left) / (pageRect.right - pageRect.left);
                 pageY = (viewportY - pageRect.top) / (pageRect.bottom - pageRect.top);
 
+                pageX = clamped(pageX, 0.0, 1.0);
+                pageY = clamped(pageY, 0.0, 1.0);
+
                 if (data.commentEditing.isEditing()) {
                     data.commentEditing.editedVersionComment.setPagePos(pageX, pageY);
                 } else {
