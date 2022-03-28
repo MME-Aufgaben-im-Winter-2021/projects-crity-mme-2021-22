@@ -3,6 +3,7 @@ import { cloneDomTemplate, ensureCssClassPresentIff } from "../../../../common/u
 import { UiPageCanvas } from "../UiPageCanvas.js";
 import { data } from "../../model/data.js";
 import { EditorSelTracker } from "../../model/EditorSelTracker.js";
+import { RenderSchedule } from "../renderSchedule.js";
 
 // Represents the widget for a single PDF page in the thumbnail bar.
 // Instantiates the DOM template for the thumbnail. The user of the class
@@ -17,16 +18,19 @@ class UiThumbnail {
         this.pageNoEl.textContent = pageNo;
 
         let pageCanvasEl = this.el.querySelector("canvas");
-        this.pageCanvas = new UiPageCanvas(pageCanvasEl);
+        this.visible = false;
+        this.pageCanvas = new UiPageCanvas(pageCanvasEl, RenderSchedule.PRIORITY_LEVEL_THE_OTHER_THUMBNAILS);
 
         this.listener = new Listener();
         data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
         
         this.updateSelectionState();
         this.p_fetchPage();
+
     }
 
     terminate() {
+        this.pageCanvas.terminate();
         this.listener.terminate();
     }
 
@@ -61,6 +65,15 @@ class UiThumbnail {
         }
 
         return [width, height];
+    }
+
+    // Set and unset this from the thumbnail bar.
+    setVisible(visible) {
+        if (visible) {
+            this.pageCanvas.reprioritize(RenderSchedule.PRIORITY_LEVEL_THE_VISIBLE_THUMBNAILS);
+        } else {
+            this.pageCanvas.reprioritize(RenderSchedule.PRIORITY_LEVEL_THE_OTHER_THUMBNAILS);
+        }
     }
 
     // TODO(optimize): This is called for every thumbnail, in theory we only need to call this for two thumbnails.

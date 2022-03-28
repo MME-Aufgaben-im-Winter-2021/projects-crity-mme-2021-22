@@ -1,7 +1,6 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { ObservableArray } from "../../../../common/model/ObservableArray.js";
 import { data } from "../../model/data.js";
-import { UiTimelineVersion } from "./UiTimelineVersion.js";
 import { UiTimelineGraph } from "./UiTimelineGraph.js";
 
 class UiTimeline {
@@ -43,7 +42,7 @@ class UiTimeline {
 
     timelineHideButtonClicked() {
         if(this.timelineWindow.style.display === "none") {
-            this.timelineWindow.style.display = "block";
+            this.timelineWindow.style.display = "flex";
             this.timelineWindow.insertBefore(this.timelineHeader, this.el);
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");

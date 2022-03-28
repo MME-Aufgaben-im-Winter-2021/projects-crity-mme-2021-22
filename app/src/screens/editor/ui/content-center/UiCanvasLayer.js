@@ -1,6 +1,7 @@
 import { Listener } from "../../../../common/model/Observable.js";
 import { data } from "../../model/data.js";
 import { EditorSelTracker } from "../../model/EditorSelTracker.js";
+import { RenderSchedule } from "../renderSchedule.js";
 import { UiPageCanvas } from "../UiPageCanvas.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
@@ -8,7 +9,7 @@ class UiCanvasLayer {
     constructor(screen, pageRectTracker) {
         this.listener = new Listener();
 
-        this.pageCanvas = new UiPageCanvas(screen.el.querySelector(".id-pdf-canvas"));
+        this.pageCanvas = new UiPageCanvas(screen.el.querySelector(".id-pdf-canvas"), RenderSchedule.PRIORITY_LEVEL_THE_ACTIVE_PAGE);
 
         this.pageRectTracker = pageRectTracker;
         this.pageRectTracker.addEventListener(UiPageRectTracker.EVENT_PAGE_RECT_CHANGED, () => this.updateTransform(), this.listener);
