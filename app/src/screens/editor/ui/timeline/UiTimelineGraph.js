@@ -1,4 +1,4 @@
-import { DataSet, Network } from '../../../../../../node_modules/vis-network/standalone/esm/index.js';
+import { DataSet, Network } from "vis-network";
 
 class UiTimelineGraph {
     constructor(timeline) {
