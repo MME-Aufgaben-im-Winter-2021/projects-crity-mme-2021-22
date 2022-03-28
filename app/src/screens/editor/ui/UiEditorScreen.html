@@ -1,11 +1,11 @@
 <template id="editor-screen-template">
     <div class="flex h-full flex-col main-screen">
         <!-- main content -->
-        <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden">
+        <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
         </div>
         
         <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 flex w-screen h-2/4 shrink-0 flex-col bg-slate-800 text-white">
+        <div class="id-bottom-bar bottom-0 flex w-screen h-3/5 shrink-0 flex-col bg-slate-900 text-white absolute">
             <div class="flex w-full justify-center bg-slate-800 timeline-header">
                 <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
@@ -48,7 +48,9 @@
                     <input class="id-file-input" type="file" name="name" style="display: none" />
                     <span class="label font-bold">Add Version</span>
                 </button>
-                <div class="grow" id="mynetwork"></div>
+                <div class="grow relative">
+                    <div class="w-full h-full absolute" id="mynetwork"></div>
+                </div>
 
             </div>
         </div>
