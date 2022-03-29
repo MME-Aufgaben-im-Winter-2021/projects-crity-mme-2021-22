@@ -12,7 +12,7 @@ class VersionList extends Observable {
     constructor(presentationId) {
         super();
 
-        assert(accountSession.loginState === LoginState.LOGGED_IN);
+        assert(accountSession.loginState !== LoginState.UNKNOWN);
         this.presentationId = presentationId;
         this.versions = new ObservableArray();
 

@@ -4,6 +4,7 @@ import { initData, terminateData } from "../model/data.js";
 import { UiPresentationCreation } from "./UiPresentationCreation.js";
 import { UiPresentationList } from "./UiPresentationList.js";
 import { appwrite } from "../../../common/model/appwrite.js";
+import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
 
 class UiDashboardScreen extends UiRestrictedScreen {
     static NAME = "dashboard";
@@ -33,6 +34,10 @@ class UiDashboardScreen extends UiRestrictedScreen {
     terminateRestricted() {
         this.presentationList.terminate();
         terminateData();
+    }
+
+    loginStateIsCompatible() {
+        return accountSession.loginState === LoginState.LOGGED_IN;
     }
 }
 

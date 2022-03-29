@@ -11,6 +11,9 @@ class UiLoggedInAccountPanel {
 
         this.logOutButtonEl = this.el.querySelector(".id-log-out-button");
         this.logOutButtonEl.addEventListener("click", () => this.onLogOutButtonClicked());
+
+        this.userNameEl = this.el.querySelector(".id-user-name");
+        this.userNameEl.textContent = accountSession.accountName;
     }
 
     onLogOutButtonClicked() {

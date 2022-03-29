@@ -1,5 +1,5 @@
 import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
-import { accountSession } from "../../../../common/model/AccountSession.js";
+import { accountSession, LoginState } from "../../../../common/model/AccountSession.js";
 
 class UiComment {
     constructor(comment, parent, versionComment) {
@@ -38,12 +38,14 @@ class UiComment {
     }
 
     checkForVotes(comment) {
-        comment.votes.forEach(id => {
-            if(id === accountSession.accountId) {
-                this.toggleVote();
-                this.voted = true;
-            }
-        });
+        if (accountSession.loginState === LoginState.LOGGED_IN) {
+            comment.votes.forEach(id => {
+                if(id === accountSession.accountId) {
+                    this.toggleVote();
+                    this.voted = true;
+                }
+            });
+        }
     }
 
     addComments(comment) {

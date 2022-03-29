@@ -1,9 +1,10 @@
 import { initData, terminateData } from "../model/data.js";
-import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 import { UiTimeline } from "./timeline/UiTimeline.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
+import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
+import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
 
 // TODO: We probably won't want to inherit from restricted screen, since people
 // should be able to add comments without an account? That doesn't work at the
@@ -15,12 +16,16 @@ class UiEditorScreen extends UiRestrictedScreen {
         super("#editor-screen-template", screenParameters);
     }
 
+    loginStateIsCompatible() {
+        return true;
+    }
+
     initRestricted() {
         initData(this.screenParameters.presentation);
 
+        // TODO: Move navbar-related code out of UiEditorScreen.
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.remove("hidden");
-        this.userName = document.querySelector(".id-user-name");
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
@@ -42,7 +47,6 @@ class UiEditorScreen extends UiRestrictedScreen {
             account = await appwrite.account.get();
 
         this.navBarInfo.textContent = appwritePresentation.title;
-        this.userName.textContent= account.name;
     }
 
     onCopyLinkButtonClicked() {

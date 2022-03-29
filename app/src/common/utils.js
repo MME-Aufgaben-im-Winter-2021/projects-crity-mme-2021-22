@@ -9,9 +9,12 @@ function unused() {
 }
 
 // TODO: Can webpack compile this out in release builds?
-// TODO: Does JS support programmatic breakpoints?
 function assert(predicate) {
-    console.assert(!IS_DBG || predicate);
+    if (!predicate) {
+        // Set breakpoint here.
+        // TODO: Does JS support programmatic breakpoints?
+        console.assert(!IS_DBG);
+    }
 }
 
 // Generate a globally unique ID.

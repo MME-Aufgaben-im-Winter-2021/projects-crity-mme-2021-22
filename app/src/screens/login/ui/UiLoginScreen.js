@@ -1,10 +1,10 @@
 import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
 import { Listener } from "../../../common/model/Observable.js";
-import { UiScreen } from "../../UiScreen.js";
+import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { uiScreenSwapper } from "../../uiScreenSwapper.js";
 
-class UiLoginScreen extends UiScreen {
+class UiLoginScreen extends UiRestrictedScreen {
     static NAME = "login";
 
     constructor() {
@@ -25,27 +25,23 @@ class UiLoginScreen extends UiScreen {
         this.createAccountButtonEl = this.el.querySelector(".id-create-account-button");
         this.createAccountButtonEl.addEventListener("click", () => this.onCreateAccountButtonClicked());
 
-        accountSession.addEventListener(
-            AccountSession.EVENT_LOGIN_STATE_CHANGED,
-            () => this.onLoginStateChanged(),
-            this.listener,
-        );
-
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.add("hidden");
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.add("hidden");
     }
 
+    loginStateIsCompatible() {
+        return accountSession.loginState === LoginState.LOGGED_OUT;
+    }
+
+    redirect() {
+        uiScreenSwapper.loadScreen("dashboard", {});
+    }
+
     terminate() {
         super.terminate();
         this.listener.terminate();
-    }
-
-    onLoginStateChanged() {
-        if (accountSession.loginState === LoginState.LOGGED_IN) {
-            uiScreenSwapper.loadScreen("dashboard", {});
-        }
     }
 
     onLogInButtonClicked() {
