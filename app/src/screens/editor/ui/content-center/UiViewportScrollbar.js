@@ -15,7 +15,7 @@ class UiViewportScrollbar extends UiScrollbar {
     }
 
     reconfigure() {
-        let pageRect, pageStart, pageEnd;
+        let pageRect, pageStart, pageEnd, pageSize;
 
         pageRect = this.pageRectTracker.computePageRect();
 
@@ -27,18 +27,22 @@ class UiViewportScrollbar extends UiScrollbar {
             pageEnd = pageRect.bottom;
         }
 
-        super.reconfigure(0, this.getViewportSize(), pageStart, pageEnd);
+        pageSize = pageEnd - pageStart;
+
+        super.reconfigure(0, pageSize, -pageStart, this.getViewportSize() - pageStart);
     }
 
     onVisibleIntervalChanged() {
         let pageRect = this.pageRectTracker.computePageRect();
 
         if (this.axis === "x") {
-            pageRect.left = this.visibleStart;
-            pageRect.right = this.visibleEnd;
+            let pageSize = pageRect.right - pageRect.left;
+            pageRect.left = -this.visibleStart;
+            pageRect.right = pageRect.left + pageSize;
         } else {
-            pageRect.top = this.visibleStart;
-            pageRect.bottom = this.visibleEnd;
+            let pageSize = pageRect.bottom - pageRect.top;
+            pageRect.top = -this.visibleStart;
+            pageRect.bottom = pageRect.top + pageSize;
         }
 
         this.pageRectTracker.setPageRect(pageRect);

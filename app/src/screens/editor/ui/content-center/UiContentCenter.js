@@ -7,7 +7,7 @@ import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
 import { UiViewportScrollbar } from "./UiViewportScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
-import { unused } from "../../../../common/utils.js";
+import { clamped, unused } from "../../../../common/utils.js";
 import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiContentCenterState {
@@ -30,6 +30,10 @@ class UiContentCenterState {
     }
 
     onMouseMotion(e) {
+        unused(e);
+    }
+
+    onMouseLeave(e) {
         unused(e);
     }
 
@@ -59,6 +63,11 @@ class UiContentCenterPanningState extends UiContentCenterState {
         }
     }
 
+    onMouseLeave(e) {
+        unused(e);
+        this.changeToState(new UiContentCenterMainState(this.pageRectTracker));
+    }
+
     onMouseMotion(e) {
         let pageRect = this.pageRectTracker.computePageRect();
         translateRect(pageRect, e.movementX, e.movementY);
@@ -84,6 +93,9 @@ class UiContentCenterMainState extends UiContentCenterState {
                 pageX = (viewportX - pageRect.left) / (pageRect.right - pageRect.left);
                 pageY = (viewportY - pageRect.top) / (pageRect.bottom - pageRect.top);
 
+                pageX = clamped(pageX, 0.0, 1.0);
+                pageY = clamped(pageY, 0.0, 1.0);
+
                 if (data.commentEditing.isEditing()) {
                     data.commentEditing.editedVersionComment.setPagePos(pageX, pageY);
                 } else {
@@ -96,13 +108,20 @@ class UiContentCenterMainState extends UiContentCenterState {
         }
     }
 
+    static ZOOM_STEP = 1.3;
+    static ZOOM_MIN = Math.pow(UiContentCenterMainState.ZOOM_STEP, -8);
+    static ZOOM_MAX = Math.pow(UiContentCenterMainState.ZOOM_STEP, +8);
     onWheel(e) {
         let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
 
         // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
         // TODO: Does this depend on the OS?
         normalizedDelta = e.deltaY / 102;
-        factor = Math.pow(1.3, -normalizedDelta);
+        factor = Math.pow(UiContentCenterMainState.ZOOM_STEP, -normalizedDelta);
+        factor = clamped(
+            factor,
+            UiContentCenterMainState.ZOOM_MIN / data.viewingArea.zoom,
+            UiContentCenterMainState.ZOOM_MAX / data.viewingArea.zoom);
 
         pageRect = this.pageRectTracker.computePageRect();
         [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
@@ -139,10 +158,11 @@ class UiContentCenter {
         this.scrollbarY = new UiViewportScrollbar(screen, this.pageRectTracker, "y");
 
         this.viewportEl = this.pageRectTracker.viewportEl;
-        this.viewportEl.addEventListener("mousedown", e => this.onMouseDown(e));
-        this.viewportEl.addEventListener("mouseup", e => this.onMouseUp(e));
-        this.viewportEl.addEventListener("wheel", e => this.onWheel(e));
-        this.viewportEl.addEventListener("mousemove", e => this.onMouseMotion(e));
+        this.wireUpViewportEvent("mousedown", "onMouseDown");
+        this.wireUpViewportEvent("mouseup", "onMouseUp");
+        this.wireUpViewportEvent("wheel", "onWheel");
+        this.wireUpViewportEvent("mousemove", "onMouseMotion");
+        this.wireUpViewportEvent("mouseleave", "onMouseLeave");
 
         this.state = new UiContentCenterMainState(this.pageRectTracker);
     }
@@ -162,24 +182,11 @@ class UiContentCenter {
         }
     }
 
-    onMouseDown(e) {
-        this.state.onMouseDown(e);
-        this.pollStateChange();
-    }
-
-    onMouseUp(e) {
-        this.state.onMouseUp(e);
-        this.pollStateChange();
-    }
-
-    onWheel(e) {
-        this.state.onWheel(e);
-        this.pollStateChange();
-    }
-
-    onMouseMotion(e) {
-        this.state.onMouseMotion(e);
-        this.pollStateChange();
+    wireUpViewportEvent(jsEventName, handlerFuncName) {
+        this.viewportEl.addEventListener(jsEventName, e => {
+            this.state[handlerFuncName](e);
+            this.pollStateChange();
+        });
     }
 }
 

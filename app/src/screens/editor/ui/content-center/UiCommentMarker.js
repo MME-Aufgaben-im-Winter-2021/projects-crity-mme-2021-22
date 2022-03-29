@@ -37,11 +37,11 @@ class UiCommentMarker {
 
     setSelected(e) {
         if(e.data.open) {
-            this.el.classList.remove("h-4", "w-4", "bg-amber-500");
-            this.el.classList.add("h-6", "w-6", "bg-red-900");
+            this.el.classList.remove("h-4", "w-4");
+            this.el.classList.add("h-6", "w-6");
         }else{
-            this.el.classList.remove("h-6", "w-6", "bg-red-900");
-            this.el.classList.add("h-4", "w-4", "bg-amber-500");
+            this.el.classList.remove("h-6", "w-6");
+            this.el.classList.add("h-4", "w-4");
         }
     }
 }

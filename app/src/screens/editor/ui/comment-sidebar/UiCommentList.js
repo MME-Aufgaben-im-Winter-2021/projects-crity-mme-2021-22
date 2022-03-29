@@ -43,7 +43,7 @@ class UiCommentList {
     onVersionCommentAdded(versionComment) {
         let uiComment = new UiComment(versionComment.comment, this, versionComment);
         for(let i = 0; i < this.uiComments.length; i++) {
-            if(this.uiComments[i].comment.likes.length < uiComment.comment.likes.length) {
+            if(this.uiComments[i].comment.votes.length < uiComment.comment.votes.length) {
                 this.el.insertBefore(uiComment.el, this.uiComments[i].el);
                 this.uiComments.splice(this.uiComments.indexOf(this.uiComments[i]), 0, uiComment);
                 return;
@@ -57,11 +57,12 @@ class UiCommentList {
         this.uiComments.forEach(uiComment => {
             uiComment.terminate();
         });
+        this.uiComments.length = 0;
         this.el.innerHTML = "";
     }
 
     onCommentEditingStarted() {
-        if(this.lastOpen != null) {
+        if(this.lastOpen !== null) {
             this.lastOpen.toggle();
             this.lastOpen = null;
         }
@@ -80,13 +81,13 @@ class UiCommentList {
     shutDownLastOpen(elem) {
         data.commentEditing.finishEditingComment(false);
         // Kein zuletzt geöffnetes
-        if(this.lastOpen == null) {
+        if(this.lastOpen === null) {
             this.lastOpen = elem;
             this.toggleCommentEditor(true);
             return;
         }
         // Zuletzt geöffnetes ist neu geöffnetes
-        if(this.lastOpen == elem) {
+        if(this.lastOpen === elem) {
             this.lastOpen = null;
             this.toggleCommentEditor(false);
             return;
@@ -98,7 +99,7 @@ class UiCommentList {
     }
 
     onKeyDown(e) {
-        if(this.commentEditorText.textContent != "Add Comment") {
+        if(this.commentEditorText.textContent !== "Add Comment") {
             return;
         }
         if(e.keyCode !== /* enter */ 13) {
@@ -106,7 +107,6 @@ class UiCommentList {
         }
         this.lastOpen.versionComment.submitComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
     }
-
 }
 
 export {UiCommentList };

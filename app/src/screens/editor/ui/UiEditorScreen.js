@@ -1,11 +1,10 @@
 import { initData, terminateData } from "../model/data.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
-import { UiThumbnailBar } from "./thumbnail-sidebar/UiThumbnailBar.js";
-import { UiContentCenter } from "./content-center/UiContentCenter.js";
 import { UiTimeline } from "./timeline/UiTimeline.js";
-import { UiRightSidebar } from "./comment-sidebar/UiRightSidebar.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
+import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
+
 
 // TODO: We probably won't want to inherit from restricted screen, since people
 // should be able to add comments without an account? That doesn't work at the
@@ -26,19 +25,15 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
-        this.copyLinkButton.addEventListener("click", e => this.onCopyLinkButtonClicked(e));
+        this.copyLinkButton.addEventListener("click", () => this.onCopyLinkButtonClicked());
 
-        this.thumbnailBar = new UiThumbnailBar(this);
-        this.contentCenter = new UiContentCenter(this);
+        this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
-        this.rightSideBar = new UiRightSidebar(this);
     }
 
     terminateRestricted() {
-        this.rightSideBar.terminate();
+        this.mainContainer.terminate();
         this.timeline.terminate();
-        this.contentCenter.terminate();
-        this.thumbnailBar.terminate();
 
         terminateData();
     }
@@ -51,11 +46,11 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.userName.textContent= account.name;
     }
 
-    onCopyLinkButtonClicked(e) {
-
+    onCopyLinkButtonClicked() {
         navigator.clipboard.writeText(window.location.href);
 
-        alert("URL copied to clipboard!!!");
+        // TODO: Make this a custom popup (like we do with the presentation creation dialog).
+        //alert("URL copied to clipboard!!!");
     }
 }
 
