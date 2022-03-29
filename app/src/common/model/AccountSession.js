@@ -19,24 +19,24 @@ class AccountSession extends Observable {
         super();
 
         this.loginState = LoginState.UNKNOWN;
-        this.p_accountId = null;
+        this.pAccountId = null;
         
         (async () => {
             // Check if already logged in.
             try { 
                 // TODO: Is there a cleaner way of doing this?
                 let account = await appwrite.account.get();
-                this.p_accountId = account.$id;
-                this.p_changeLoginState(LoginState.LOGGED_IN);
+                this.pAccountId = account.$id;
+                this.pChangeLoginState(LoginState.LOGGED_IN);
             } catch (e) {
-                this.p_changeLoginState(LoginState.LOGGED_OUT);
+                this.pChangeLoginState(LoginState.LOGGED_OUT);
             }
         })();
     }
 
     get accountId() {
         assert(this.loginState === LoginState.LOGGED_IN);
-        return this.p_accountId;
+        return this.pAccountId;
     }
 
     async createAccountAndLogIn(name, email, password) {
@@ -54,8 +54,8 @@ class AccountSession extends Observable {
 
         try {
             let session = await appwrite.account.createSession(email, password);
-            this.p_accountId = session.userId;
-            this.p_changeLoginState(LoginState.LOGGED_IN);
+            this.pAccountId = session.userId;
+            this.pChangeLoginState(LoginState.LOGGED_IN);
         } catch (e) {
             message.textContent = "Wrong e-mail or password";
         }
@@ -66,11 +66,11 @@ class AccountSession extends Observable {
 
         // Do this first I guess, to prevent people from using the account while
         // we're waiting for the server response.
-        this.p_changeLoginState(LoginState.UNKNOWN);
+        this.pChangeLoginState(LoginState.UNKNOWN);
 
         await appwrite.account.deleteSession("current");
         
-        this.p_changeLoginState(LoginState.LOGGED_OUT);
+        this.pChangeLoginState(LoginState.LOGGED_OUT);
     }
 
     onceLoginStateIsKnownDo(doWhat, listener) {
@@ -101,7 +101,7 @@ class AccountSession extends Observable {
         }
     }
 
-    p_changeLoginState(loginState) {
+    pChangeLoginState(loginState) {
         this.loginState = loginState;
         this.notifyAll(new Event(AccountSession.EVENT_LOGIN_STATE_CHANGED, {}));
     }

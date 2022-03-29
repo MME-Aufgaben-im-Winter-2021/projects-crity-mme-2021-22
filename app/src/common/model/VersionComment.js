@@ -30,20 +30,22 @@ class VersionComment extends Observable {
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
-        let appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment);
-        let appwriteSubComments = await appwrite.database.listDocuments(VersionComment.THREAD_COMMENT_COLLECTION_ID, [Query.equal("commentId", appwriteVersionComment.comment)]);
-        let subComments = [];
+        let appwriteComment, appwriteSubComments, subComments, appwriteThreadVotes, votes, comment;
+
+        appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment);
+        appwriteSubComments = await appwrite.database.listDocuments(VersionComment.THREAD_COMMENT_COLLECTION_ID, [Query.equal("commentId", appwriteVersionComment.comment)]);
+        subComments = [];
         for (let i = 0; i < appwriteSubComments.documents.length; i++) {   
             let appwriteSubComment = appwriteSubComments.documents[i];
             subComments.push({ message: appwriteSubComment.message, author: appwriteSubComment.author });
         }
-        let appwriteThreadVotes = await appwrite.database.listDocuments(VersionComment.THREAD_VOTES_COLLECTION_ID, [Query.equal("threadId", appwriteVersionComment.comment)]);
-        let votes = [];
+        appwriteThreadVotes = await appwrite.database.listDocuments(VersionComment.THREAD_VOTES_COLLECTION_ID, [Query.equal("threadId", appwriteVersionComment.comment)]);
+        votes = [];
         for (let i = 0; i < appwriteThreadVotes.documents.length; i++) {   
             let appwriteVote = appwriteThreadVotes.documents[i];
             votes.push(appwriteVote.userId);
         }
-        let comment = Comment.fromAppwriteDocument(appwriteComment, subComments, votes);
+        comment = Comment.fromAppwriteDocument(appwriteComment, subComments, votes);
         return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage, appwriteVersionComment.comment);
     }
 

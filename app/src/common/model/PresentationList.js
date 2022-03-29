@@ -4,7 +4,7 @@ import { appwrite } from "./appwrite.js";
 import { Presentation } from "./Presentation.js";
 import { Query } from "appwrite";
 import { accountSession } from "./AccountSession.js";
-import { assert } from "../utils.js";
+import { assert, unused } from "../utils.js";
 
 class PresentationList {
     static PRESENTATIONS_COLLECTION_ID = "presentations";
@@ -14,14 +14,14 @@ class PresentationList {
 
         this.presentations = new ObservableArray();
 
-        this.p_fetch();
+        this.pFetch();
     }
 
     terminate() {
         this.presentations.terminate();
     }
 
-    async p_fetch() {
+    async pFetch() {
         let presentations = await appwrite.database.listDocuments(PresentationList.PRESENTATIONS_COLLECTION_ID, [
             Query.equal("author", accountSession.accountId),
         ]);
@@ -54,14 +54,21 @@ class PresentationList {
     }
 
     async updatePresentation(presentation, title, description) {
-        let appwritePresentation = await appwrite.database.updateDocument(
+        // TODO: Update the presentation on the server side.
+        unused(title);
+        unused(description);
+
+        await appwrite.database.updateDocument(
             PresentationList.PRESENTATIONS_COLLECTION_ID,
             presentation.appwriteId,
         );
     }
 
     async removePresentation(presentation) {
-        let appwritePresentation = await appwrite.database.deleteDocument(
+        // TODO: This only removes the presentation document, but we should also remove comments etc.
+        // However, I don't think this is possible with the current approach that we have for permissions ...
+
+        await appwrite.database.deleteDocument(
             PresentationList.PRESENTATIONS_COLLECTION_ID,
             presentation.appwriteId,
         );

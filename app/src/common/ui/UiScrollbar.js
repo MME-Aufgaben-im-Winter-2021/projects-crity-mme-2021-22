@@ -33,10 +33,10 @@ class UiScrollbar extends Observable {
         this.contentEnd = contentEnd;
         this.visibleStart = visibleStart;
         this.visibleEnd = visibleEnd;
-        this.p_reconfigure();
+        this.pReconfigure();
     }
 
-    p_reconfigure() {
+    pReconfigure() {
         let ds, absoluteFakeContentSize;
 
         ds = this.computeDerivedSizes();
@@ -95,7 +95,7 @@ class UiScrollbar extends Observable {
         this.visibleEnd = this.visibleStart + ds.visibleSize;
 
         this.notifyAll(new Event(UiScrollbar.EVENT_VISIBLE_INTERVAL_CHANGED, {}));
-        this.p_reconfigure();
+        this.pReconfigure();
     }
 
     onMouseDown() {
@@ -110,7 +110,7 @@ class UiScrollbar extends Observable {
         this.visibleStart = this.visibleEnd - ds.visibleSize;
 
         this.notifyAll(new Event(UiScrollbar.EVENT_VISIBLE_INTERVAL_CHANGED, {}));
-        this.p_reconfigure();
+        this.pReconfigure();
     }
 
     scrollTo(numPixels) {

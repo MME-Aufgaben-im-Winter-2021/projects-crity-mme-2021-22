@@ -27,10 +27,10 @@ class VersionPdf extends Observable {
         this.pdfJsPdf = null;
         this.numPages = null;
 
-        this.p_fetch();
+        this.pFetch();
     }
 
-    async p_fetch() {
+    async pFetch() {
         this.pdfJsPdf = await pdfjsLib.getDocument(this.version.pdfUrl).promise;
 
         // Not sure how expensive it is to access the # of pages, let's store this ourselves to be on the safe side.

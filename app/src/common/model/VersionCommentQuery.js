@@ -19,7 +19,7 @@ class VersionCommentQuery {
         this.subscribeToCommentsVersionCollections();
         this.subscribeToThreadCommentsCollection();
 
-        this.p_fetch();
+        this.pFetch();
     }
     
     // TODO: Might want to wrap Appwrite's subscription mechanisms to make use of our Observable infrastructure?
@@ -60,8 +60,9 @@ class VersionCommentQuery {
 
     async onThreadCollectionChanged(response) {
         console.log(this.versionCommentsNormalArray.length);
-        this.versionCommentsNormalArray.find(obj => { return obj.id === response.payload.commentId}).commentUpdate(response.payload);
-        
+        this.versionCommentsNormalArray.find(obj => { 
+            return obj.id === response.payload.commentId;
+        }).commentUpdate(response.payload);
     }
 
     terminate() {
@@ -78,7 +79,7 @@ class VersionCommentQuery {
         return queries;
     }
 
-    async p_fetch() {
+    async pFetch() {
         this.versionComments.clear();
 
         // Do the query.

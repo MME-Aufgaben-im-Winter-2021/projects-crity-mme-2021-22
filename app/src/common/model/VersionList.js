@@ -17,7 +17,7 @@ class VersionList extends Observable {
         this.versions = new ObservableArray();
 
         (async () => {
-            await this.p_fetch();
+            await this.pFetch();
             this.notifyAll(new Event(VersionList.EVENT_INITIAL_FETCH_CONCLUDED, {}));
         })();
     }
@@ -26,7 +26,7 @@ class VersionList extends Observable {
         this.versions.terminate();
     }
 
-    async p_fetch() {
+    async pFetch() {
         let presentationId = this.presentationId,
             presentationVersions = await appwrite.database.listDocuments("presentationVersions", [
                 Query.equal("presentation", presentationId),

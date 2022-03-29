@@ -5,7 +5,6 @@ import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
 
-
 // TODO: We probably won't want to inherit from restricted screen, since people
 // should be able to add comments without an account? That doesn't work at the
 // moment, so for now this is probably okay.
