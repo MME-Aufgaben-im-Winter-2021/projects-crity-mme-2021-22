@@ -174,6 +174,7 @@ class UiContentCenter {
         this.canvasLayer.terminate();
         this.scrollbarX.terminate();
         this.scrollbarY.terminate();
+        this.pageRectTracker.terminate();
     }
 
     pollStateChange() {

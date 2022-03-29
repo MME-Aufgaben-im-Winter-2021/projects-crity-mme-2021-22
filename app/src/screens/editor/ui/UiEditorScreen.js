@@ -21,6 +21,7 @@ class UiEditorScreen extends UiRestrictedScreen {
 
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.remove("hidden");
+        this.userName = document.querySelector(".id-user-name");
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
@@ -38,8 +39,11 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     async getProjectDataForNavbar() {
-        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation);
+        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation),
+            account = await appwrite.account.get();
+
         this.navBarInfo.textContent = appwritePresentation.title;
+        this.userName.textContent= account.name;
     }
 
     onCopyLinkButtonClicked() {

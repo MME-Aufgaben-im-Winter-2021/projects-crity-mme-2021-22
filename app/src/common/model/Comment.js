@@ -3,16 +3,15 @@ import { appwrite } from "./appwrite.js";
 // WARNING: ALWAYS make sure to import Comment.js! Apparently, the Web APIs already
 // have a Comment class, which will be created if you forget the import!
 class Comment {
-    constructor(author, text, authors, messages, likes) {
+    constructor(author, text, subComments, votes) {
         this.author = author;
         this.text = text;
-        this.authors = authors;
-        this.messages = messages;
-        this.likes = likes;
+        this.votes = votes;
+        this.subComments = subComments;
     }
 
-    static fromAppwriteDocument(appwriteComment) {
-        return new Comment(appwriteComment.author, appwriteComment.text, appwriteComment.authors, appwriteComment.messages, appwriteComment.likes);
+    static fromAppwriteDocument(appwriteComment, subComments, votes) {
+        return new Comment(appwriteComment.author, appwriteComment.text, subComments, votes);
     }
 
     async submit() {

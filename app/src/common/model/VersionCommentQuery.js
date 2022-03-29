@@ -15,7 +15,9 @@ class VersionCommentQuery {
 
         // Fill this with the query results.
         this.versionComments = new ObservableArray();
+        this.versionCommentsNormalArray = [];
         this.subscribeToCommentsVersionCollections();
+        this.subscribeToThreadCommentsCollection();
 
         this.p_fetch();
     }
@@ -26,6 +28,13 @@ class VersionCommentQuery {
         this.unsubscribeFunc = appwrite.subscribe(
             `collections.${VersionComment.VERSION_COMMENT_COLLECTION_ID}.documents`, 
             response => this.onVersionCommentCollectionChanged(response),
+        );
+    }
+
+    subscribeToThreadCommentsCollection() {
+        this.unsubscribeFuncTwo = appwrite.subscribe(
+            `collections.${"6241d36259cb4d652b9f"}.documents`, 
+            response => this.onThreadCollectionChanged(response),
         );
     }
 
@@ -45,12 +54,20 @@ class VersionCommentQuery {
         if (this.appwriteVersionCommentMatchesQuery(response.payload)) {
             let versionComment = await VersionComment.fromAppwriteDocument(this.version, response.payload);
             this.versionComments.push(versionComment);
+            this.versionCommentsNormalArray.push(versionComment);
         }
+    }
+
+    async onThreadCollectionChanged(response) {
+        console.log(this.versionCommentsNormalArray.length);
+        this.versionCommentsNormalArray.find(obj => { return obj.id === response.payload.commentId}).commentUpdate(response.payload);
+        
     }
 
     terminate() {
         this.versionComments.terminate();
         this.unsubscribeFunc();
+        this.unsubscribeFuncTwo();
     }
 
     buildAppwriteQueryArray() {
@@ -76,6 +93,7 @@ class VersionCommentQuery {
                 let appwriteVersionComment = appwriteVersionComments.documents[i],
                     versionComment = await VersionComment.fromAppwriteDocument(this.version, appwriteVersionComment);
                 this.versionComments.push(versionComment);
+                this.versionCommentsNormalArray.push(versionComment);
             //})();
         }
     }
