@@ -74,11 +74,20 @@ class UiAccountPanel {
 class UiNavbar {
     constructor() {
         this.el = document.querySelector("#navbar");
+
+        this.logoButtonEl = this.el.querySelector(".id-logo-button");
+        this.logoButtonEl.addEventListener("click", () => this.onLogoButtonClicked());
+
         this.accountPanel = new UiAccountPanel();
     }
 
     terminate() {
         this.accountPanel.terminate();
+    }
+
+    onLogoButtonClicked() {
+        // Note that the login page will redirect to the dashboard if a user was logged in.
+        uiScreenSwapper.loadScreen("login");
     }
 }
 
