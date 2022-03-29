@@ -20,7 +20,6 @@ class UiTimelineGraph {
         if(version.previousVersion) {
             this.edges.push({ from: version.appwriteId, to: version.previousVersion, value:5 });
             let index = this.nodes.map(object => object.id).indexOf(version.previousVersion);
-            console.log(index);
             this.nodes[this.nodes.length-1]["level"] = this.nodes[index]["level"] + 1;
         }else{
             this.nodes[this.nodes.length-1]["level"] = 0;
@@ -55,20 +54,14 @@ class UiTimelineGraph {
 
         this.network.on("click", function (params) {
             params.event = "[original event]";
-            console.log(
-              "click event, getNodeAt returns: " + this.getNodeAt(params.pointer.DOM),
-            );
-            if (typeof this.getNodeAt(params.pointer.DOM) === 'undefined') {
+            if (typeof this.getNodeAt(params.pointer.DOM) === "undefined") {
                 return;
             }
             timeline.nodeSelected(this.getNodeAt(params.pointer.DOM));
         });
         this.network.on("doubleClick", function (params) {
             params.event = "[original event]";
-            console.log(
-              "click event, getNodeAt returns: " + this.getNodeAt(params.pointer.DOM),
-            );
-            if (typeof this.getNodeAt(params.pointer.DOM) === 'undefined') {
+            if (typeof this.getNodeAt(params.pointer.DOM) === "undefined") {
                 return;
             }
             timeline.nodeDoubleClicked(this.getNodeAt(params.pointer.DOM));

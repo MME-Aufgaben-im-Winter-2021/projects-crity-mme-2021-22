@@ -1,6 +1,7 @@
 import { data } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
 import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
+import { KeyCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiCommentEditor {
     constructor(screen) {
@@ -42,7 +43,7 @@ class UiCommentEditor {
         if(this.commentEditorText.textContent !== "Add Thread") {
             return;
         }
-        if(e.keyCode !== /* enter */ 13) {
+        if(e.keyCode !== KeyCodes.ENTER) {
             return;
         }
 

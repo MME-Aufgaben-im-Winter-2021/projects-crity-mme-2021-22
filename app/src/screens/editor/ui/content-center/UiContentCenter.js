@@ -7,7 +7,7 @@ import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
 import { UiViewportScrollbar } from "./UiViewportScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
-import { clamped, unused } from "../../../../common/utils.js";
+import { clamped, lerp, unused } from "../../../../common/utils.js";
 import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiContentCenterState {
@@ -43,17 +43,17 @@ class UiContentCenterState {
 }
 
 function translateRect(rect, xOffset, yOffset) {
-    rect.left   += xOffset;
-    rect.right  += xOffset;
-    rect.top    += yOffset;
+    rect.left += xOffset;
+    rect.right += xOffset;
+    rect.top += yOffset;
     rect.bottom += yOffset;
 }
 
-function scaleRect(rect, factor) {
-    rect.left   *= factor;
-    rect.right  *= factor;
-    rect.top    *= factor;
-    rect.bottom *= factor;
+function scaleRect(rect, factor, xPivot, yPivot) {
+    rect.left = lerp(xPivot, rect.left, factor);
+    rect.right = lerp(xPivot, rect.right, factor);
+    rect.top = lerp(yPivot, rect.top, factor);
+    rect.bottom = lerp(yPivot, rect.bottom, factor);
 }
 
 class UiContentCenterPanningState extends UiContentCenterState {
@@ -126,9 +126,7 @@ class UiContentCenterMainState extends UiContentCenterState {
         pageRect = this.pageRectTracker.computePageRect();
         [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
 
-        translateRect(pageRect, -viewportMouseX, -viewportMouseY);
-        scaleRect(pageRect, factor);
-        translateRect(pageRect, viewportMouseX, viewportMouseY);
+        scaleRect(pageRect, factor, viewportMouseX, viewportMouseY);
         this.pageRectTracker.setPageRect(pageRect);
 
         // Prevent the browser from resizing the page when Ctrl is pressed.
@@ -174,6 +172,7 @@ class UiContentCenter {
         this.canvasLayer.terminate();
         this.scrollbarX.terminate();
         this.scrollbarY.terminate();
+        this.pageRectTracker.terminate();
     }
 
     pollStateChange() {

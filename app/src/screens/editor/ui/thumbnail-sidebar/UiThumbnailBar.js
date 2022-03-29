@@ -13,7 +13,7 @@ class UiThumbnailBar {
     }
 
     terminate() {
-        this.p_clearUiThumbnails();
+        this.pClearUiThumbnails();
         this.listener.terminate();
     }
 
@@ -28,7 +28,7 @@ class UiThumbnailBar {
         }
     }
 
-    p_clearUiThumbnails() {
+    pClearUiThumbnails() {
         this.el.innerHTML = "";
         this.uiThumbnails.forEach(uiThumbnail => {
             uiThumbnail.terminate();

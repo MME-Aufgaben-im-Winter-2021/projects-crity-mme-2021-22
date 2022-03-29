@@ -25,7 +25,7 @@ class UiThumbnail {
         data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.updateSelectionState(), this.listener);
         
         this.updateSelectionState();
-        this.p_fetchPage();
+        this.pFetchPage();
 
     }
 
@@ -36,7 +36,7 @@ class UiThumbnail {
 
     // TODO(optimize): Lazy thumbnail loading, or at least prioritize rendering thumbnails that are in view.
     // Asynchronously fill the canvas with our page.
-    async p_fetchPage() {
+    async pFetchPage() {
         let activePdfPage = await data.selTracker.pdf.fetchPage(this.pageNo),
             [width, height] = this.computeDimensions(activePdfPage);
         this.pageCanvas.setDimensions(width, height);

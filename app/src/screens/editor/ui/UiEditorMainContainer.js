@@ -62,7 +62,7 @@ class UiEditorMainContainer {
 
     terminate() {
         this.listener.terminate();
-        this.loadedVersion.terminate();
+        this.currentContent.terminate();
     }
 }
 

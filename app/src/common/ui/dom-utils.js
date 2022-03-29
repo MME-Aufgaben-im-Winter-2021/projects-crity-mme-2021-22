@@ -1,3 +1,5 @@
+let MouseButtonCodes, KeyCodes;
+
 // IIRC, calling clone on the template directly produces a document fragment;
 // this causes subtle issues when working with the fragment that are not
 // very fun to debug. This method has proven more reliable thus far.
@@ -18,9 +20,13 @@ function ensureCssClassPresentIff(predicate, className, ...elements) {
     });
 }
 
-const MouseButtonCodes = {
+MouseButtonCodes = {
     LEFT: 0,
     MIDDLE: 1,
 };
 
-export {cloneDomTemplate, ensureCssClassPresentIff, MouseButtonCodes};
+KeyCodes = {
+    ENTER: 13,
+};
+
+export {cloneDomTemplate, ensureCssClassPresentIff, MouseButtonCodes, KeyCodes};

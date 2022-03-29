@@ -2,10 +2,14 @@ import { appwrite } from "./appwrite.js";
 import { Comment } from "./Comment.js";
 import { Observable, Event } from "./Observable.js";
 import { accountSession } from "./AccountSession.js";
+import { Query } from "appwrite";
 
 class VersionComment extends Observable {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
+    // These are instances of Threads, just one!
     static VERSION_COMMENT_COLLECTION_ID = "6214e5ef06bef7005816";
+    static THREAD_COMMENT_COLLECTION_ID = "6241d36259cb4d652b9f";
+    static THREAD_VOTES_COLLECTION_ID = "6214e708a17a5ac6fa84";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
     static EVENT_SELECTED = "SELECTED";
@@ -21,11 +25,27 @@ class VersionComment extends Observable {
         this.pageY = pageY;
 
         this.id = commentId;
+
+        this.uiComment = null;
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
-        let appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment),
-            comment = Comment.fromAppwriteDocument(appwriteComment);
+        let appwriteComment, appwriteSubComments, subComments, appwriteThreadVotes, votes, comment;
+
+        appwriteComment = await appwrite.database.getDocument("comments", appwriteVersionComment.comment);
+        appwriteSubComments = await appwrite.database.listDocuments(VersionComment.THREAD_COMMENT_COLLECTION_ID, [Query.equal("commentId", appwriteVersionComment.comment)]);
+        subComments = [];
+        for (let i = 0; i < appwriteSubComments.documents.length; i++) {   
+            let appwriteSubComment = appwriteSubComments.documents[i];
+            subComments.push({ message: appwriteSubComment.message, author: appwriteSubComment.author });
+        }
+        appwriteThreadVotes = await appwrite.database.listDocuments(VersionComment.THREAD_VOTES_COLLECTION_ID, [Query.equal("threadId", appwriteVersionComment.comment)]);
+        votes = [];
+        for (let i = 0; i < appwriteThreadVotes.documents.length; i++) {   
+            let appwriteVote = appwriteThreadVotes.documents[i];
+            votes.push(appwriteVote.userId);
+        }
+        comment = Comment.fromAppwriteDocument(appwriteComment, subComments, votes);
         return new VersionComment(version, appwriteVersionComment.pageNo, comment, appwriteVersionComment.xOnPage, appwriteVersionComment.yOnPage, appwriteVersionComment.comment);
     }
 
@@ -60,55 +80,38 @@ class VersionComment extends Observable {
         return appwriteVersionComment;
     }
 
+    // Create an SubComment Entry
     async submitComment(author, message) {
-        this.comment.authors.push(author);
-        this.comment.messages.push(message);
-        console.log(this.comment.authors);
-        console.log(this.comment.messages);
-        await appwrite.database.updateDocument("comments", this.id, {
-            authors: this.comment.authors,
-            messages: this.comment.messages,
-        });
+        this.comment.subComments.push({ message: message, author: author });
+        await appwrite.database.createDocument(
+            "6241d36259cb4d652b9f",
+            "unique()",
+            {
+                author: author,
+                message: message,
+                commentId: this.id,
+            },
+        );
     }
 
-    subscribeToCommentDocument(uiComment) {  
-        let id = 'documents.'+this.id;  
-        this.unsubscribeFunc = appwrite.subscribe(
-            id,
-            response => this.onDocumentChanged(response, uiComment),
-        );   
-    }
-
-    async onDocumentChanged(response, uiComment) {
-        console.log(response);
-        this.comment.authors = response.payload.authors;
-        this.comment.messages = response.payload.messages;
-        console.log(this.comment.authors);
-        uiComment.addComment(this.comment.authors[this.comment.authors.length-1], this.comment.messages[this.comment.messages.length-1]);
-    }
-
-    async loadNewestComments(uiComment) {
-        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
-            comment = Comment.fromAppwriteDocument(appwriteComment);
-        if(this.comment.authors.length !== comment.authors.length) {
-            this.comment = comment;
-            uiComment.addComments(comment);
-        }
-    }
-
-    async changeLikeStatus(liked, uiComment) {
-        let appwriteComment = await appwrite.database.getDocument("comments", this.id),
-            comment = Comment.fromAppwriteDocument(appwriteComment);
-        if(liked) {
-            comment.likes.push(accountSession.accountId);
+    async changeVoteStatus(voted, uiComment) {
+        if(voted) {
+            this.comment.votes.push(accountSession.accountId);
+            await appwrite.database.createDocument(
+                "6214e708a17a5ac6fa84",
+                "unique()",
+                {
+                    userId: accountSession.accountId,
+                    threadId: this.id,
+                },
+            );
         }else{
-            comment.likes.splice(accountSession.accountId, 1);
+            this.comment.votes.splice(accountSession.accountId, 1);
+            let myVoteDocument = await appwrite.database.listDocuments("6214e708a17a5ac6fa84", [Query.equal("userId", accountSession.accountId), Query.equal("threadId",this.id)]);
+            await appwrite.database.deleteDocument("6214e708a17a5ac6fa84", myVoteDocument.documents[0].$id);
         }
-        this.comment.likes = comment.likes;
-        appwriteComment = await appwrite.database.updateDocument("comments", this.id, {
-            likes: comment.likes,
-        });
-        uiComment.likesChanged(comment.likes);
+
+        uiComment.votesChanged(this.comment.votes);
     }
 
     commentOpened() {
@@ -117,6 +120,15 @@ class VersionComment extends Observable {
 
     commentClosed() {
         this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: false}));
+    }
+
+    registerUiComment(uiComment) {
+        this.uiComment = uiComment;
+    }
+
+    commentUpdate(subComment) {
+        this.comment.subComments.push({ message: subComment.message, author: subComment.author });
+        this.uiComment.addComment(subComment.author, subComment.message);
     }
 }
 

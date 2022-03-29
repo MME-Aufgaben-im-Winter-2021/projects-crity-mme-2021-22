@@ -3,6 +3,7 @@ import { UiComment } from "./UiComment.js";
 import { data, EditorData } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
 import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
+import { KeyCodes } from "../../../../common/ui/dom-utils.js";
 
 class UiCommentList {
     constructor(screen) {
@@ -27,8 +28,6 @@ class UiCommentList {
         this.commentEditorText = screen.el.querySelector(".comment-editor-text");
     }
 
-
-
     terminate() {
         this.listener.terminate();
     }
@@ -43,7 +42,7 @@ class UiCommentList {
     onVersionCommentAdded(versionComment) {
         let uiComment = new UiComment(versionComment.comment, this, versionComment);
         for(let i = 0; i < this.uiComments.length; i++) {
-            if(this.uiComments[i].comment.likes.length < uiComment.comment.likes.length) {
+            if(this.uiComments[i].comment.votes.length < uiComment.comment.votes.length) {
                 this.el.insertBefore(uiComment.el, this.uiComments[i].el);
                 this.uiComments.splice(this.uiComments.indexOf(this.uiComments[i]), 0, uiComment);
                 return;
@@ -102,12 +101,11 @@ class UiCommentList {
         if(this.commentEditorText.textContent !== "Add Comment") {
             return;
         }
-        if(e.keyCode !== /* enter */ 13) {
+        if(e.keyCode !== KeyCodes.ENTER) {
             return;
         }
         this.lastOpen.versionComment.submitComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
     }
-
 }
 
 export {UiCommentList };

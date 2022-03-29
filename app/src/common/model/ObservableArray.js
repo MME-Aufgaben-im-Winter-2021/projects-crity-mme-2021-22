@@ -3,6 +3,7 @@ import { Observable, Event } from "./Observable.js";
 // Array + Events.
 class ObservableArray extends Observable {
     static EVENT_ITEM_ADDED = "ITEM_ADDED";
+    static EVENT_ITEM_REMOVED = "ITEM_REMOVED";
     static EVENT_CLEARED = "CLEARED";
     
     // TODO: Add those?
@@ -17,6 +18,11 @@ class ObservableArray extends Observable {
     push(item) {
         this.items.push(item);
         this.notifyAll(new Event(ObservableArray.EVENT_ITEM_ADDED, {item}));
+    }
+
+    remove(item) {
+        this.items.splice(this.items.indexOf(item), 1);
+        this.notifyAll(new Event(ObservableArray.EVENT_ITEM_REMOVED, {item}));
     }
 
     clear() {
@@ -39,6 +45,7 @@ class ObservableArray extends Observable {
         
         return this.items[this.items.length - 1];
     }
+
 }
 
 export {ObservableArray};
