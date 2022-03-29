@@ -86,12 +86,12 @@ class UiComment {
             this.comments.style.display = "block";
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
-            this.versionComment.commentOpened();
+            this.versionComment.setSelected();
         } else {
             this.comments.style.display = "none";
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
-            this.versionComment.commentClosed();
+            this.versionComment.unsetSelected();
         }
     }
 

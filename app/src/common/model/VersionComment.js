@@ -12,7 +12,7 @@ class VersionComment extends Observable {
     static THREAD_VOTES_COLLECTION_ID = "6214e708a17a5ac6fa84";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
-    static EVENT_SELECTED = "SELECTED";
+    static EVENT_SELECTION_STATE_CHANGED = "SELECTION_STATE_CHANGED";
 
     constructor(version, pageNo, comment, pageX, pageY, commentId) {
         super();
@@ -27,6 +27,8 @@ class VersionComment extends Observable {
         this.id = commentId;
 
         this.uiComment = null;
+
+        this.selected = false;
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
@@ -114,12 +116,14 @@ class VersionComment extends Observable {
         uiComment.votesChanged(this.comment.votes);
     }
 
-    commentOpened() {
-        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: true}));
+    setSelected() {
+        this.selected = true;
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTION_STATE_CHANGED, {open: true}));
     }
 
-    commentClosed() {
-        this.notifyAll(new Event(VersionComment.EVENT_SELECTED, {open: false}));
+    unsetSelected() {
+        this.selected = false;
+        this.notifyAll(new Event(VersionComment.EVENT_SELECTION_STATE_CHANGED, {open: false}));
     }
 
     registerUiComment(uiComment) {
