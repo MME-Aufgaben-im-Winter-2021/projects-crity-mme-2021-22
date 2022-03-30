@@ -25,7 +25,7 @@ import "/app/resources/css/text_layer_builder.css";
 // The screens rely on the navbar, so let's import this first.
 import "./navbar/UiNavbar.js";
 
-// UiScreens depend on the screenbar, so let's import this now
+// UiScreens depend on the navbar, so let's import this now
 // to make dependencies clear, even though this is only needed
 // farther down.
 import { uiScreenSwapper } from "./screens/uiScreenSwapper.js";
