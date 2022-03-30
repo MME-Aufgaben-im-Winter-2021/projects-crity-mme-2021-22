@@ -1,12 +1,28 @@
 <template id="editor-screen-template">
     <div class="flex h-full flex-col main-screen">
-        <!-- main content -->
-        <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
+        <!-- view layers -->
+        <div class="flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden relative">
+            <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
+            </div>
+
+            <div class="flex timeline-content h-3/5 w-full absolute bottom-0 bg-slate-900 bg-opacity-95">
+                <button
+                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-400 active:bg-slate-900"
+                >
+                    <input class="id-file-input" type="file" name="name" style="display: none" />
+                    <span class="label font-bold">Add Version</span>
+                </button>
+                <div class="grow relative">
+                    <div class="w-full h-full absolute" id="mynetwork"></div>
+                </div>
+            </div>
         </div>
         
-        <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 flex w-screen h-3/5 shrink-0 flex-col bg-slate-900 text-white absolute">
-            <div class="flex w-full justify-center bg-slate-800 timeline-header">
+        <!-- timeline header -->
+        <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col text-white">
+            <!-- TODO: Do we want a canvas for fancy graphics? -->
+            <div class="flex w-full justify-center bg-slate-800 timeline-header relative">
+
                 <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
                     <svg
@@ -39,19 +55,6 @@
                         />
                     </svg>
                 </button>
-            </div>
-            <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="flex h-full timeline-content">
-                <button
-                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-400 active:bg-slate-900"
-                >
-                    <input class="id-file-input" type="file" name="name" style="display: none" />
-                    <span class="label font-bold">Add Version</span>
-                </button>
-                <div class="grow relative">
-                    <div class="w-full h-full absolute" id="mynetwork"></div>
-                </div>
-
             </div>
         </div>
         <!-- /content wrapper -->
