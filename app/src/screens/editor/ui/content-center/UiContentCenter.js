@@ -5,7 +5,7 @@ import { VersionComment } from "../../../../common/model/VersionComment.js";
 import { UiTextLayer } from "./UiTextLayer.js";
 import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
-import { UiViewportScrollbar } from "./UiViewportScrollbar.js";
+import { UiContentCenterScrollbar } from "./UiContainerScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 import { clamped, lerp, unused } from "../../../../common/utils.js";
 import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
@@ -59,13 +59,13 @@ function scaleRect(rect, factor, xPivot, yPivot) {
 class UiContentCenterPanningState extends UiContentCenterState {
     onMouseUp(e) {
         if (e.button === MouseButtonCodes.MIDDLE) {
-            this.changeToState(new UiContentCenterMainState(this.pageRectTracker));
+            this.changeToState(new UiContentCenterIdleState(this.pageRectTracker));
         }
     }
 
     onMouseLeave(e) {
         unused(e);
-        this.changeToState(new UiContentCenterMainState(this.pageRectTracker));
+        this.changeToState(new UiContentCenterIdleState(this.pageRectTracker));
     }
 
     onMouseMotion(e) {
@@ -75,7 +75,7 @@ class UiContentCenterPanningState extends UiContentCenterState {
     }
 }
 
-class UiContentCenterMainState extends UiContentCenterState {
+class UiContentCenterIdleState extends UiContentCenterState {
     onMouseDown(e) {
         switch (e.button) {
             // Start panning.
@@ -85,13 +85,13 @@ class UiContentCenterMainState extends UiContentCenterState {
 
             // Add a comment marker.
             case MouseButtonCodes.LEFT: {
-                let viewportX, viewportY, pageRect, pageX, pageY;
+                let containerX, containerY, pageRect, pageX, pageY;
 
-                [viewportX, viewportY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
+                [containerX, containerY] = this.pageRectTracker.clientToContainerCoords(e.clientX, e.clientY);
                 pageRect = this.pageRectTracker.computePageRect();
 
-                pageX = (viewportX - pageRect.left) / (pageRect.right - pageRect.left);
-                pageY = (viewportY - pageRect.top) / (pageRect.bottom - pageRect.top);
+                pageX = (containerX - pageRect.left) / (pageRect.right - pageRect.left);
+                pageY = (containerY - pageRect.top) / (pageRect.bottom - pageRect.top);
 
                 pageX = clamped(pageX, 0.0, 1.0);
                 pageY = clamped(pageY, 0.0, 1.0);
@@ -109,24 +109,24 @@ class UiContentCenterMainState extends UiContentCenterState {
     }
 
     static ZOOM_STEP = 1.3;
-    static ZOOM_MIN = Math.pow(UiContentCenterMainState.ZOOM_STEP, -8);
-    static ZOOM_MAX = Math.pow(UiContentCenterMainState.ZOOM_STEP, +8);
+    static ZOOM_MIN = Math.pow(UiContentCenterIdleState.ZOOM_STEP, -8);
+    static ZOOM_MAX = Math.pow(UiContentCenterIdleState.ZOOM_STEP, +8);
     onWheel(e) {
-        let normalizedDelta, factor, pageRect, viewportMouseX, viewportMouseY;
+        let normalizedDelta, factor, pageRect, containerMouseX, containerMouseY;
 
         // For some reason, a single scroll step has e.deltaY = 102 (Windows 10).
         // TODO: Does this depend on the OS?
         normalizedDelta = e.deltaY / 102;
-        factor = Math.pow(UiContentCenterMainState.ZOOM_STEP, -normalizedDelta);
+        factor = Math.pow(UiContentCenterIdleState.ZOOM_STEP, -normalizedDelta);
         factor = clamped(
             factor,
-            UiContentCenterMainState.ZOOM_MIN / data.viewingArea.zoom,
-            UiContentCenterMainState.ZOOM_MAX / data.viewingArea.zoom);
+            UiContentCenterIdleState.ZOOM_MIN / data.viewingArea.zoom,
+            UiContentCenterIdleState.ZOOM_MAX / data.viewingArea.zoom);
 
         pageRect = this.pageRectTracker.computePageRect();
-        [viewportMouseX, viewportMouseY] = this.pageRectTracker.clientToViewportCoords(e.clientX, e.clientY);
+        [containerMouseX, containerMouseY] = this.pageRectTracker.clientToContainerCoords(e.clientX, e.clientY);
 
-        scaleRect(pageRect, factor, viewportMouseX, viewportMouseY);
+        scaleRect(pageRect, factor, containerMouseX, containerMouseY);
         this.pageRectTracker.setPageRect(pageRect);
 
         // Prevent the browser from resizing the page when Ctrl is pressed.
@@ -137,11 +137,6 @@ class UiContentCenterMainState extends UiContentCenterState {
 }
 
 // The PDF-viewer proper. We only display a single page for now.
-// PDFJS renders into a canvas, however this alone does not allow for selecting
-// text. We therefore construct a rough facsimile (the "text layer") of the PDF in the DOM.
-// PDFJS does this for us. This facsimile is positioned atop the canvas. The text is all there,
-// but we make it transparent. A good way to understand how this works is to using element inspection
-// in your web browser.
 class UiContentCenter {
     constructor(screen) {
         this.pageRectTracker = new UiPageRectTracker(screen);
@@ -152,17 +147,17 @@ class UiContentCenter {
 
         this.listener = new Listener();
 
-        this.scrollbarX = new UiViewportScrollbar(screen, this.pageRectTracker, "x");
-        this.scrollbarY = new UiViewportScrollbar(screen, this.pageRectTracker, "y");
+        this.scrollbarX = new UiContentCenterScrollbar(screen, this.pageRectTracker, "x");
+        this.scrollbarY = new UiContentCenterScrollbar(screen, this.pageRectTracker, "y");
 
-        this.viewportEl = this.pageRectTracker.viewportEl;
-        this.wireUpViewportEvent("mousedown", "onMouseDown");
-        this.wireUpViewportEvent("mouseup", "onMouseUp");
-        this.wireUpViewportEvent("wheel", "onWheel");
-        this.wireUpViewportEvent("mousemove", "onMouseMotion");
-        this.wireUpViewportEvent("mouseleave", "onMouseLeave");
+        this.containerEl = this.pageRectTracker.containerEl;
+        this.wireUpContentCenterEvent("mousedown", "onMouseDown");
+        this.wireUpContentCenterEvent("mouseup", "onMouseUp");
+        this.wireUpContentCenterEvent("wheel", "onWheel");
+        this.wireUpContentCenterEvent("mousemove", "onMouseMotion");
+        this.wireUpContentCenterEvent("mouseleave", "onMouseLeave");
 
-        this.state = new UiContentCenterMainState(this.pageRectTracker);
+        this.state = new UiContentCenterIdleState(this.pageRectTracker);
     }
 
     terminate() {
@@ -181,8 +176,8 @@ class UiContentCenter {
         }
     }
 
-    wireUpViewportEvent(jsEventName, handlerFuncName) {
-        this.viewportEl.addEventListener(jsEventName, e => {
+    wireUpContentCenterEvent(jsEventName, handlerFuncName) {
+        this.containerEl.addEventListener(jsEventName, e => {
             this.state[handlerFuncName](e);
             this.pollStateChange();
         });

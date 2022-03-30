@@ -23,6 +23,7 @@ class UiScrollbar extends Observable {
         this.el.addEventListener("mousedown", () => this.onMouseDown());
 
         this.throttledScrollHandlerPending = false;
+        this.scrollWasChangedProgrammatically = false;
     }
 
     // Kind of confusing: The knob represents the visible area, the trough represents the content (which is
@@ -58,7 +59,7 @@ class UiScrollbar extends Observable {
     }
 
     onScroll() {
-        // MSDN suggests doing this: https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event#scroll_event_throttling
+        // MDN suggests doing this: https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event#scroll_event_throttling
         // An alternative might be to have the viewing area only emit events on animation frames?
         if (!this.throttledScrollHandlerPending) {
             this.throttledScrollHandlerPending = true;
@@ -81,7 +82,8 @@ class UiScrollbar extends Observable {
 
         // HACK: Fix some numerical precision problems ... Ideally there would be a way to
         // tell the Web API not to call us when the scroll position was set programmatically ...
-        if (Math.abs(scrollPos - this.scrollPos) < 2) {
+        if (this.scrollWasChangedProgrammatically) {
+            this.scrollWasChangedProgrammatically = false;
             return;
         }
 
@@ -124,6 +126,7 @@ class UiScrollbar extends Observable {
         }
 
         this.el.scrollTo(scrollOptions);
+        this.scrollWasChangedProgrammatically = true;
     }
 
     getElSize() {
