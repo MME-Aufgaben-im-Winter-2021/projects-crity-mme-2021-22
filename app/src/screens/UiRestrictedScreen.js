@@ -1,5 +1,6 @@
 import { AccountSession, accountSession, LoginState } from "../common/model/AccountSession.js";
 import { Listener } from "../common/model/Observable.js";
+import { cloneDomTemplate } from "../common/ui/dom-utils.js";
 import { assert } from "../common/utils.js";
 import { UiScreen } from "./UiScreen.js";
 import { uiScreenSwapper } from "./uiScreenSwapper.js";
@@ -60,11 +61,16 @@ class UiRestrictedScreen extends UiScreen {
             // logout and anonymous account creation are running (we will lose control over the main
             // thread while that is happening), and also we need to make sure no callbacks are running.
             // So the approach is to resuscitate the screen once the state is known again.
-            // TODO: This is not perfect, since DOM elements will not be destroyed and we are not using our safe
-            // Listener infrastructure for them ...
+            // TODO: This is not perfect, since there will still be asynchronous nonsense going on that's related to Appwrite etc.
             // TODO: Also, we will lose any state that is not kept in the screen parameters ...
             if (this.restrictedInitRan) {
                 this.terminateRestricted();
+
+                // Ugly, replace the DOM.
+                let newEl = cloneDomTemplate(this.templateSelector);
+                this.el.parentNode.replaceChild(newEl, this.el);
+                this.el = newEl;
+
                 this.restrictedInitRan = false;
             }
         } else {

@@ -7,6 +7,7 @@ class UiScreen {
     constructor(templateSelector, screenParameters) {
         this.el = cloneDomTemplate(templateSelector);
         this.screenParameters = screenParameters;
+        this.templateSelector = templateSelector;
     }
 
     // Override this if you need to do initialization that might call #uiScreenScreenSwapper.loadScreen().
