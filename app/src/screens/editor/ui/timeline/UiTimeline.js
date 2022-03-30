@@ -76,6 +76,9 @@ class UiTimeline {
     async onFileSelectorConcluded() {
         let version = await data.versionList.createVersion(data.presentationId, "V"+(data.versionList.versions.items.length+1), this.fileInputEl.files[0], this.selectedVersion);
         data.selTracker.activateVersion(version);
+
+        // This is needed to get the change event even when the user uploads the same file twice.
+        this.fileInputEl.value = null;
     }
 }
 
