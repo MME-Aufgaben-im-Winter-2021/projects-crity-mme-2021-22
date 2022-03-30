@@ -151,12 +151,12 @@
         </div>
 
         <!-- comment list -->
-        <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
+        <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-slate-500 p-2">
             <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
         </div>
         <div class="id-comment-editor flex flex-col shrink-0 bg-slate-500">
-            <div class="flex flex-row justify-between bg-slate-400 p-2">
-                <span class="font-semibold text-lg comment-editor-text"></span>
+            <div class="flex flex-row justify-between bg-slate-600 p-2">
+                <span class="font-semibold text-lg text-white comment-editor-text"></span>
                 <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
             </div>
             <div class="p-2">
@@ -187,5 +187,5 @@
         E.g., programmatically adding style.left = "10px" places the circle's _center_ at 10px (relative to
         the upper left corner of the canvas) 
     -->
-    <div class="rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800 pointer-obj"></div>
+    <div class="rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 border-2 border-slate-800 pointer-obj" style="background-color: orange;"></div>
 </template>

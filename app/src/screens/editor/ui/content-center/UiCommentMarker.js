@@ -45,6 +45,11 @@ class UiCommentMarker {
         this.el.style.height = 
         this.el.style.width = 
         `${this.versionComment.selected ? UiCommentMarker.DIAM_WHEN_OPEN : UiCommentMarker.DIAM_WHEN_CLOSED}px`;
+        if(this.versionComment.selected){
+            this.el.style.backgroundColor = "red";
+        }else{
+            this.el.style.backgroundColor = "orange";
+        }
     }
 }
 
