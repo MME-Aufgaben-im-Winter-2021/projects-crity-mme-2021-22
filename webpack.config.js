@@ -17,7 +17,7 @@ export default {
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({ template: "app/src/index.html" }),
+        new HtmlWebpackPlugin({ template: "app/src/index.html", favicon: "app/resources/img/favicon.ico" }),
         new MiniCssExtractPlugin({ filename: "text_layer_builder.css" })
     ]
 };
