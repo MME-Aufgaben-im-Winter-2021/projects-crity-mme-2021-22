@@ -36,7 +36,7 @@ class UiLoginScreen extends UiRestrictedScreen {
     }
 
     redirect() {
-        uiScreenSwapper.loadScreen("dashboard", {});
+        uiScreenSwapper.loadScreen("dashboard", {}, false);
     }
 
     terminate() {

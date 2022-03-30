@@ -27,7 +27,7 @@ class UiRestrictedScreen extends UiScreen {
     }
 
     redirect() {
-        uiScreenSwapper.loadScreen("login", {});
+        uiScreenSwapper.loadScreen("login", {}, false);
     }
 
     constructor(templateSelector, screenParameters) {
