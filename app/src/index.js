@@ -9,7 +9,7 @@
 //                                                        __/ |
 //                                                       |___/
 //
-// Uni Regensburg, MME Abschlussprojekte WS 20/21.
+// Uni Regensburg, MME Abschlussprojekte WS 21/22.
 //
 // Team Crity (feedback loop):
 //      - Lee-Ann Seegets
