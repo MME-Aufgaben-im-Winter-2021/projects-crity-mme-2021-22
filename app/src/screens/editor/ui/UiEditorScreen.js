@@ -4,7 +4,6 @@ import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
-import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
 
 // TODO: We probably won't want to inherit from restricted screen, since people
 // should be able to add comments without an account? That doesn't work at the
@@ -43,8 +42,7 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     async getProjectDataForNavbar() {
-        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation),
-            account = await appwrite.account.get();
+        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation);
 
         this.navBarInfo.textContent = appwritePresentation.title;
     }

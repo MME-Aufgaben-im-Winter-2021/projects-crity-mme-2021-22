@@ -1,4 +1,4 @@
-import { accountSession, AccountSession, LoginState } from "../../../common/model/AccountSession.js";
+import { accountSession, LoginState } from "../../../common/model/AccountSession.js";
 import { Listener } from "../../../common/model/Observable.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";
