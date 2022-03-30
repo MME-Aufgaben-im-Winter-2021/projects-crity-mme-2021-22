@@ -36,4 +36,4 @@ import { uiScreenSwapper } from "./screens/uiScreenSwapper.js";
 import "./screens/import-screens.js";
 
 // And GO!!!
-uiScreenSwapper.loadScreenFromUrl();
+uiScreenSwapper.loadScreenFromUrl(false);
