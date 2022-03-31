@@ -4,7 +4,7 @@ import { appwrite } from "./appwrite.js";
 import { Presentation } from "./Presentation.js";
 import { Query } from "appwrite";
 import { accountSession } from "./AccountSession.js";
-import { assert, unused } from "../utils.js";
+import { assert } from "../utils.js";
 
 // Responsible for querying presentations by their author.
 class PresentationList {
