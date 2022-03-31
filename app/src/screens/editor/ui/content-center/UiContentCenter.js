@@ -7,15 +7,21 @@ import { UiMarkerLayer } from "./UiMarkerLayer.js";
 import { UiCanvasLayer } from "./UiCanvasLayer.js";
 import { UiContentCenterScrollbar } from "./UiContainerScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
-import { clamped, lerp, unused } from "../../../../common/utils.js";
+import { clamped, scaleRect, translateRect, unused } from "../../../../common/utils.js";
 import { MouseButtonCodes } from "../../../../common/ui/dom-utils.js";
 
+// "Content center": The area for the PDF viewer. This includes the scrollbars.
+// "Container": Content center minus the scrollbars. This contains the layers for the page.
+
+// Since we need to implement panning, we are currently using an inheritance-base state machine.
 class UiContentCenterState {
     constructor(pageRectTracker) {
         this.pageRectTracker = pageRectTracker;
         this.nextState = null;
     }
 
+    // Call this from your event handler if you want to transition state. This is handled by the UiContentCenter
+    // after your handler finishes.
     changeToState(nextState) {
         this.nextState = nextState;
     }
@@ -42,20 +48,6 @@ class UiContentCenterState {
     }
 }
 
-function translateRect(rect, xOffset, yOffset) {
-    rect.left += xOffset;
-    rect.right += xOffset;
-    rect.top += yOffset;
-    rect.bottom += yOffset;
-}
-
-function scaleRect(rect, factor, xPivot, yPivot) {
-    rect.left = lerp(xPivot, rect.left, factor);
-    rect.right = lerp(xPivot, rect.right, factor);
-    rect.top = lerp(yPivot, rect.top, factor);
-    rect.bottom = lerp(yPivot, rect.bottom, factor);
-}
-
 class UiContentCenterPanningState extends UiContentCenterState {
     onMouseUp(e) {
         if (e.button === MouseButtonCodes.MIDDLE) {
@@ -75,6 +67,7 @@ class UiContentCenterPanningState extends UiContentCenterState {
     }
 }
 
+// The default state.
 class UiContentCenterIdleState extends UiContentCenterState {
     onMouseDown(e) {
         switch (e.button) {
@@ -141,6 +134,7 @@ class UiContentCenter {
     constructor(screen) {
         this.pageRectTracker = new UiPageRectTracker(screen);
 
+        // The PDF viewer consists of multiple "layers," which are shown on top of each other.
         this.canvasLayer = new UiCanvasLayer(screen, this.pageRectTracker);
         this.markerLayer = new UiMarkerLayer(screen, this.pageRectTracker);
         this.textLayer = new UiTextLayer(screen, this.pageRectTracker);
@@ -176,6 +170,7 @@ class UiContentCenter {
         }
     }
 
+    // Connect a state machine handler to a DOM event emitted by the "container."
     wireUpContentCenterEvent(jsEventName, handlerFuncName) {
         this.containerEl.addEventListener(jsEventName, e => {
             this.state[handlerFuncName](e);

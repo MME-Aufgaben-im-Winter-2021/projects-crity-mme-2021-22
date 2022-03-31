@@ -25,6 +25,7 @@ class UiLoginScreen extends UiRestrictedScreen {
         this.createAccountButtonEl = this.el.querySelector(".id-create-account-button");
         this.createAccountButtonEl.addEventListener("click", () => this.onCreateAccountButtonClicked());
 
+        // TODO: This code is all over the place, see my TODO in the navbar for how this could be refactored.
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.add("hidden");
         this.copyLinkButton = document.querySelector("#copy-link-button");

@@ -4,6 +4,8 @@ import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { lerp } from "../../../../common/utils.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
+// CommentMarker: A colored dot to show the current page. The dots are instantiated HTML <template>s, which we
+// position such that they match the "xyOnPage" from the database.
 class UiCommentMarker {
     static DIAM_WHEN_OPEN = 2*15;
     static DIAM_WHEN_CLOSED = 2*7;

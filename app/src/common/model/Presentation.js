@@ -1,3 +1,4 @@
+// Client-side representation of the entries in the "presentations" collection.
 class Presentation {
     constructor(appwriteId, title, description) {
         this.appwriteId = appwriteId;

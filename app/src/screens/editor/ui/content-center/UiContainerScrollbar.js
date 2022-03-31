@@ -2,6 +2,7 @@ import { Listener } from "../../../../common/model/Observable.js";
 import { UiScrollbar } from "../../../../common/ui/UiScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
+// See UiScrollbar for explanations on the terminology used here.
 class UiContentCenterScrollbar extends UiScrollbar {
     constructor(screen, pageRectTracker, axis) {
         super(screen.el.querySelector(`.id-scrollbar-${axis}-container`), axis);

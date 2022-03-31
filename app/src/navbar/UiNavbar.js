@@ -3,8 +3,19 @@ import { Listener } from "../common/model/Observable.js";
 import { cloneDomTemplate } from "../common/ui/dom-utils.js";
 import { uiScreenSwapper } from "../screens/uiScreenSwapper.js";
 
+// The blue bar at the top: The navbar, that's how they call it.
+// We show the navbar regardless of the current screen.
+// TODO:Currently, we also manipulate the navbar's DOM elements for some of the fields
+// directly (e.g. in UiEditorScreen), a better design would probably be to have the navbar provide
+// an API to swap in screen-specific templates (that was the main reason why the navbar was made global).
+
 var uiNavbar;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// Navbar panels: The buttons that show up at the right (sign in, user name, etc.).
+// This is dependent on the login state:
+
+// When the user is logged in, we show guess what:
 class UiLoggedInAccountPanel {
     constructor() {
         this.el = cloneDomTemplate("#logged-in-template");
@@ -25,6 +36,7 @@ class UiLoggedInAccountPanel {
     }
 }
 
+// When the account session is in the logged out state, we show:
 class UiLoggedOutAccountPanel {
     constructor() {
         this.el = cloneDomTemplate("#logged-out-template");
@@ -42,6 +54,7 @@ class UiLoggedOutAccountPanel {
     }
 }
 
+// Responsible for switching between the two navbar panels (see beginning of the file for more details)
 class UiAccountPanel {
     constructor() {
         this.el = document.querySelector(".id-account-panel");
@@ -71,6 +84,7 @@ class UiAccountPanel {
     }
 }
 
+// The navbar as a whole.
 class UiNavbar {
     constructor() {
         this.el = document.querySelector("#navbar");

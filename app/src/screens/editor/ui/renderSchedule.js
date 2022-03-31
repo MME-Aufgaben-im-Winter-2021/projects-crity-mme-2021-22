@@ -2,6 +2,9 @@ import { assert, unused } from "../../../common/utils.js";
 
 var renderSchedule;
 
+// We schedule render tasks, since rendering all pages at once makes us lag for large PDFs.
+// We prioritize the page in the viewer over the thumbnails.
+
 // https://stackoverflow.com/a/17386803
 function canvasIsBlank(context) {
     let pixelBuffer = new Uint32Array(context.getImageData(0, 0, context.canvas.width, context.canvas.height).data.buffer);
@@ -9,6 +12,8 @@ function canvasIsBlank(context) {
     return !pixelBuffer.some(color => color !== 0);
 }
 
+// A render task. Probably best to use the name scheduleTask for the instances, to tell it apart
+// from PDF.JS's render tasks.
 class ScheduleTask {
     constructor(pdfPage, priorityLevel, pdfJsRenderConfig) {
         this.pdfPage = pdfPage;
@@ -47,6 +52,7 @@ class RenderSchedule {
         this.runningTasks = new Set();
     }
 
+    // Returns a task object that you can use to e.g. reprioritize the task.
     createTask(pdfPage, initialPriorityLevel, pdfJsRenderConfig) {
         let task = new ScheduleTask(pdfPage, initialPriorityLevel, pdfJsRenderConfig);
         this.addTaskToBucket(task);

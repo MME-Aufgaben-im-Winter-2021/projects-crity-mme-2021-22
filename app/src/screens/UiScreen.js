@@ -1,5 +1,10 @@
 import { cloneDomTemplate } from "../common/ui/dom-utils.js";
 
+// UiScreen: _Everything_ that shows up underneath the navbar!
+// This is basically what any reasonable person would do with multiple HTML files.
+// The main reason used to be that we wanted to de-duplicate the navbar code (should probably have
+// used the template system instead), besides lofty dreams for animated screen transitions ...
+
 class UiScreen {
     // Overwrite this when you inherit. This tells UiRegistry.add() under which URL to place the screen.
     static NAME = undefined;

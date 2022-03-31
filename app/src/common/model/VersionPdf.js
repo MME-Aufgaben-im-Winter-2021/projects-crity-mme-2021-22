@@ -2,13 +2,12 @@ import { Observable, Event } from "./Observable.js";
 import { PdfPage } from "./PdfPage.js";
 import * as pdfjsLib from "pdfjs-dist/webpack.js";
 
+// VersionPdf: Unlike the Version class, which stores some of the lighter data related to PDFs,
+// this _downloads_ the PDF! For the timeline, there is no need for all that data!
+//
 // Wraps PDFJS's PDFDocumentProxy.
 //
-// We maintain the notion of an "active" page number.
-// This is the page that is visible in the viewer and where the
-// comments are taken from.
-//
-// The first page has pageNo _1_(not 0)! This is to keep things consistent
+// The first page has pageNo _1_(not 0)! This grievous sacrifice was made to keep things consistent
 // with PDFJS.
 class VersionPdf extends Observable {
     // Events {

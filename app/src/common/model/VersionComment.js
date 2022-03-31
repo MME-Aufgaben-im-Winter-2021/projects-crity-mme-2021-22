@@ -4,6 +4,11 @@ import { Observable, Event } from "./Observable.js";
 import { accountSession } from "./AccountSession.js";
 import { Query } from "appwrite";
 
+// VersionComment: Ties a comment to a version. Our initial plan was to have one comment show up in multiple
+// versions, hence the distinction in the code.
+// The client-side representation of the commentVersions collection.
+// TODO: Some of the stuff in here is conceptually more related to Comment, e.g. tracking votes. But since
+// we no longer plan to have per-version comments this distinction is getting artificial anyway ...
 class VersionComment extends Observable {
     // TODO: Is there a better place for this? Should we add constants for _all_ collection IDs?
     // These are instances of Threads, just one!
@@ -12,6 +17,8 @@ class VersionComment extends Observable {
     static THREAD_VOTES_COLLECTION_ID = "6214e708a17a5ac6fa84";
 
     static EVENT_PAGE_POS_CHANGED = "PAGE_POS_CHANGED";
+
+    // TODO: Tracking selection is kind of specific to the editor, and not a property of the VersionComment itself ...
     static EVENT_SELECTION_STATE_CHANGED = "SELECTION_STATE_CHANGED";
 
     constructor(version, pageNo, comment, pageX, pageY, commentId) {
@@ -21,6 +28,8 @@ class VersionComment extends Observable {
         this.pageNo = pageNo;
 
         this.comment = comment;
+
+        // Relative page coordinates, see ViewingArea.
         this.pageX = pageX;
         this.pageY = pageY;
 

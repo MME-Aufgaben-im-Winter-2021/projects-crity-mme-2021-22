@@ -7,6 +7,10 @@ import { cloneDomTemplate } from "../../../common/ui/dom-utils.js";
 import { Listener } from "../../../common/model/Observable.js";
 import { VersionPdf } from "../../../common/model/VersionPdf.js";
 
+// The main container: The area underneath the timeline, where 
+// - the active version gets shown after it has loaded (UiLoadedVersion)
+// - a load screen gets shown while it gets loaded (UiLoadingVersion).
+
 class UiLoadedVersion {
     constructor() {
         this.el = cloneDomTemplate("#editor-loaded-version");
@@ -23,6 +27,8 @@ class UiLoadedVersion {
     }
 }
 
+// TODO: Ideally, we would like to show a progress bar, but this doesn't seem possible since
+// the Appwrite server doesn't send a ContentLength header?
 class UiLoadingVersion {
     constructor() {
         this.el = cloneDomTemplate("#editor-loading-version");

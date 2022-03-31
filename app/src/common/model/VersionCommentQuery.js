@@ -5,6 +5,8 @@ import { VersionComment } from "./VersionComment.js";
 
 // Responsible for tracking comments that match a certain query. Keep this generic and put the editor-specific code
 // in the editor model.
+// TODO: Loading comments is currently slow since we wait for every asynchronous fetch instead of firing off all the
+// fetches at once.
 class VersionCommentQuery {
     // TODO: Unless if I messed up this should return the comments for *all* pages of the version, but yours truly didn't test.
     static PAGE_NO_ANY = "PAGE_NO_ANY";

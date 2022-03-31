@@ -5,6 +5,7 @@ import { RenderSchedule } from "../renderSchedule.js";
 import { UiPageCanvas } from "../UiPageCanvas.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
+// CanvasLayer: Positions and scales, and drives the canvas with the rendered page.
 class UiCanvasLayer {
     constructor(screen, pageRectTracker) {
         this.listener = new Listener();

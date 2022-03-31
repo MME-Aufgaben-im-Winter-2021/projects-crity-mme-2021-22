@@ -6,6 +6,7 @@ import { Query } from "appwrite";
 import { accountSession } from "./AccountSession.js";
 import { assert, unused } from "../utils.js";
 
+// Responsible for querying presentations by their author.
 class PresentationList {
     static PRESENTATIONS_COLLECTION_ID = "presentations";
 

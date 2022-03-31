@@ -4,6 +4,19 @@ import { assert } from "../utils.js";
 
 var accountSession;
 
+// Account Session: The state machine that tracks the current login state of the user.
+// The code is quite hairy, mainly due to the fact that login and logout are asynchronous,
+// and switching that state without a full page refresh can introduce all sorts of nasty bugs
+// (e.g. what if the user clicks a button that relies on either an anonymous or non-anonymous account
+// being present, but we have none since the asynchronous logout is happening).
+
+// In Appwrite, no data can be posted (or read?) without some session. However, Appwrite provides so-called
+// "anonymous sessions," which we can use to be able to show presentations to users that are not presently
+// logged in.
+// The AccountSession abstracts away the distinction between logged-out and logged-in-anonymously, it will
+// always try to create an anonymous session for users that are logged out, and only assume the "LOGGED_OUT"
+// state once that anonymous session is created.
+
 const LoginState = {
     // The page just finished loading. Where are asynchronously checking if we have any sessions.
     // Or: we are currently trying to log into an anonymous session. Etc.
@@ -78,16 +91,17 @@ class AccountSession extends Observable {
     }
 
     async createAccountAndLogIn(name, email, password) {
-        // FIXME: What should we do in the UNKNOWN state?
+        // Always be sure that no UI component is live while we are not in the right state.
         assert(this.loginState === LoginState.LOGGED_OUT);
 
-        // TODO: Handle failure. (UPDATE: No longer that urgent, since the browser checks password length for us now).
+        // TODO: Handle failure. (UPDATE: No longer that urgent, since the browser checks password length for us now. BUT this 
+        // can still fail if the email is already associated to an account!).
         await appwrite.account.create("unique()", email, password, name);
         this.logIn(email, password);
     }
 
     logIn(email, password, message) {
-        // FIXME: What should we do in the UNKNOWN state?
+        // Always be sure that no UI component is live while we are not in the right state.
         assert(this.loginState === LoginState.LOGGED_OUT);
 
         this.pChangeLoginState(LoginState.UNKNOWN);
@@ -115,41 +129,13 @@ class AccountSession extends Observable {
         await this.createAnonymousSession();
     }
 
+    // We keep an internal copy of the account data we are interested in, to avoid
+    // tons of requests.
     async pUpdateAccountData() {            
         let account = await appwrite.account.get();
         this.pAccountId = account.$id;
         this.pAccountName = account.name;
     }
-
-    /*
-    onceLoginStateIsKnownDo(doWhat, listener) {
-        if (this.loginState !== LoginState.UNKNOWN) {
-            doWhat();
-        } else {
-            let alreadyCalled = false;
-            this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
-                if (!alreadyCalled && this.loginState !== LoginState.UNKNOWN) {
-                    alreadyCalled = true;
-                    doWhat();
-                }
-            }, listener);
-        }
-    }
-
-    onceLoggedInDo(doWhat, listener) {
-        if (this.loginState === LoginState.LOGGED_IN) {
-            doWhat();
-        } else {
-            let alreadyCalled = false;
-            this.addEventListener(AccountSession.EVENT_LOGIN_STATE_CHANGED, () => {
-                if (!alreadyCalled && this.loginState === LoginState.LOGGED_IN) {
-                    alreadyCalled = true;
-                    doWhat();
-                }
-            }, listener);
-        }
-    }
-    */
 
     pChangeLoginState(loginState) {
         if (this.loginState === loginState) {
@@ -157,6 +143,7 @@ class AccountSession extends Observable {
         }
 
         if (loginState === LoginState.LOGGED_IN) {
+            // Make sure we update the account data _before_ calling this function.
             assert(this.pAccountId !== null);
         }
 
