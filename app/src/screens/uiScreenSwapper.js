@@ -43,8 +43,6 @@ class UiScreenSwapper {
     loadScreen(screenToLoad, screenParameters, pushIntoBrowserHistory=true) {
         let url, screenClass;
 
-        this.el.innerHTML = "";
-
         url = UiScreen.formatUrl(screenToLoad, screenParameters);
         if (pushIntoBrowserHistory) {
             window.history.pushState({}, "", url);
@@ -53,6 +51,7 @@ class UiScreenSwapper {
         }
 
         this.screen?.terminate();
+        this.el.innerHTML = "";
 
         screenClass = uiScreenRegistry.getClass(screenToLoad);
         if (screenClass === undefined) {
