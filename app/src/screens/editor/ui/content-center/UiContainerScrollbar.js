@@ -2,7 +2,8 @@ import { Listener } from "../../../../common/model/Observable.js";
 import { UiScrollbar } from "../../../../common/ui/UiScrollbar.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
-class UiViewportScrollbar extends UiScrollbar {
+// See UiScrollbar for explanations on the terminology used here.
+class UiContentCenterScrollbar extends UiScrollbar {
     constructor(screen, pageRectTracker, axis) {
         super(screen.el.querySelector(`.id-scrollbar-${axis}-container`), axis);
 
@@ -29,7 +30,7 @@ class UiViewportScrollbar extends UiScrollbar {
 
         pageSize = pageEnd - pageStart;
 
-        super.reconfigure(0, pageSize, -pageStart, this.getViewportSize() - pageStart);
+        super.reconfigure(0, pageSize, -pageStart, this.getContainerSize() - pageStart);
     }
 
     onVisibleIntervalChanged() {
@@ -48,12 +49,12 @@ class UiViewportScrollbar extends UiScrollbar {
         this.pageRectTracker.setPageRect(pageRect);
     }
 
-    getViewportSize() {
+    getContainerSize() {
         let result;
         if (this.axis === "x") {
-            result = this.pageRectTracker.getViewportWidth();
+            result = this.pageRectTracker.getContainerWidth();
         } else {
-            result = this.pageRectTracker.getViewportHeight();
+            result = this.pageRectTracker.getContainerHeight();
         }
         return result;
     }
@@ -64,4 +65,4 @@ class UiViewportScrollbar extends UiScrollbar {
     }
 }
 
-export { UiViewportScrollbar };
+export { UiContentCenterScrollbar };

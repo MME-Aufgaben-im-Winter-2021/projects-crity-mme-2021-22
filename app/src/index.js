@@ -9,7 +9,7 @@
 //                                                        __/ |
 //                                                       |___/
 //
-// Uni Regensburg, MME Abschlussprojekte WS 20/21.
+// Uni Regensburg, MME Abschlussprojekte WS 21/22.
 //
 // Team Crity (feedback loop):
 //      - Lee-Ann Seegets
@@ -25,7 +25,7 @@ import "/app/resources/css/text_layer_builder.css";
 // The screens rely on the navbar, so let's import this first.
 import "./navbar/UiNavbar.js";
 
-// UiScreens depend on the screenbar, so let's import this now
+// UiScreens depend on the navbar, so let's import this now
 // to make dependencies clear, even though this is only needed
 // farther down.
 import { uiScreenSwapper } from "./screens/uiScreenSwapper.js";
@@ -35,5 +35,5 @@ import { uiScreenSwapper } from "./screens/uiScreenSwapper.js";
 // any circular dependencies. 
 import "./screens/import-screens.js";
 
-// And GO!
-uiScreenSwapper.loadScreenFromUrl();
+// And GO!!!
+uiScreenSwapper.loadScreenFromUrl(false);

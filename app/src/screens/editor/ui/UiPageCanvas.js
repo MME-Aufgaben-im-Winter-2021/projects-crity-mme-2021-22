@@ -43,8 +43,8 @@ class UiPageCanvas {
 
         viewport = pdfPage.viewport;
 
-        // Without any transform, PDFJS will try to render in the coordinate system
-        // given by the viewport. Apply a scale to make the PDF fit into the canvas.
+        // Without any transform, PDFJS will try to render in "PDFJS coordinates", i.e. the coordinate system
+        // given by the viewport. Apply a scale to make the PDF fit into the canvas (which might be thumbnail).
         // An alternative solution might be to create a new viewport, but this seems nicest.
         scaleX = this.canvasEl.width / viewport.width;
         scaleY = this.canvasEl.height / viewport.height;
@@ -52,7 +52,7 @@ class UiPageCanvas {
         this.scheduleTask = renderSchedule.createTask(pdfPage, this.priorityLevel, {
             canvasContext: this.canvasCtx,
 
-            // I think this encodes the first two rows of the 3x3 homogeneous transform in column-major
+            // Like CSS transforms; this encodes the first two rows of the 3x3 homogeneous transform in column-major
             // layout (last row can be set to 0 0 1 for affine transforms). It is applied like so:
             // transformed_x = transform[0]*x + transform[2]*y + transform[4]
             // transformed_y = transform[1]*x + transform[3]*y + transform[5]

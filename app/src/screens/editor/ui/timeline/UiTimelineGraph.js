@@ -53,11 +53,14 @@ class UiTimelineGraph {
         this.network = new vis.Network(container, data, options);
 
         this.network.on("click", function (params) {
+            // Leaving this null deselects the node.
+            let selectedNode = null;
+
             params.event = "[original event]";
-            if (typeof this.getNodeAt(params.pointer.DOM) === "undefined") {
-                return;
+            if (typeof this.getNodeAt(params.pointer.DOM) !== "undefined") {
+                selectedNode = this.getNodeAt(params.pointer.DOM);
             }
-            timeline.nodeSelected(this.getNodeAt(params.pointer.DOM));
+            timeline.nodeSelected(selectedNode);
         });
         this.network.on("doubleClick", function (params) {
             params.event = "[original event]";

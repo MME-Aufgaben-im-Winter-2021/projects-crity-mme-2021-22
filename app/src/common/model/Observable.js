@@ -2,6 +2,12 @@
 
 import { assert, generateId } from "../utils.js";
 
+// Death-safe event handling. We try to handle dying listeners and observers. Observers inherit
+// the Observable class, listeners instantiate the Listener class.
+// This is necessary to avoid zombie-callbacks when a screen dies. However, the problem is not fully
+// fixed since some people are still using async-await, which is pretty hard to control when it comes to
+// corner-cases ....
+
 class Event {
     constructor(type, data) {
         this.type = type;

@@ -4,7 +4,12 @@ import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { lerp } from "../../../../common/utils.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
+// CommentMarker: A colored dot to show the current page. The dots are instantiated HTML <template>s, which we
+// position such that they match the "xyOnPage" from the database.
 class UiCommentMarker {
+    static DIAM_WHEN_OPEN = 2*15;
+    static DIAM_WHEN_CLOSED = 2*7;
+
     constructor(pageRectTracker, versionComment) {
         this.pageRectTracker = pageRectTracker;
         this.versionComment = versionComment;
@@ -13,9 +18,12 @@ class UiCommentMarker {
 
         this.versionComment.addEventListener(VersionComment.EVENT_PAGE_POS_CHANGED, () => this.updatePosition(), this.listener);
         this.pageRectTracker.addEventListener(UiPageRectTracker.EVENT_PAGE_RECT_CHANGED, () => this.updatePosition(), this.listener);
-        this.versionComment.addEventListener(VersionComment.EVENT_SELECTED, e => this.setSelected(e), this.listener);
+        this.versionComment.addEventListener(VersionComment.EVENT_SELECTION_STATE_CHANGED, () => this.updateSelectionState(), this.listener);
 
         this.updatePosition();
+
+        this.el.style.transition = "width 0.2s, height 0.2s";
+        this.updateSelectionState();
     }
 
     terminate() {
@@ -35,13 +43,14 @@ class UiCommentMarker {
         this.el.style.top = `${y}px`;
     }
 
-    setSelected(e) {
-        if(e.data.open) {
-            this.el.classList.remove("h-4", "w-4");
-            this.el.classList.add("h-6", "w-6");
+    updateSelectionState() {
+        this.el.style.height = 
+        this.el.style.width = 
+        `${this.versionComment.selected ? UiCommentMarker.DIAM_WHEN_OPEN : UiCommentMarker.DIAM_WHEN_CLOSED}px`;
+        if(this.versionComment.selected){
+            this.el.style.backgroundColor = "red";
         }else{
-            this.el.classList.remove("h-6", "w-6");
-            this.el.classList.add("h-4", "w-4");
+            this.el.style.backgroundColor = "orange";
         }
     }
 }

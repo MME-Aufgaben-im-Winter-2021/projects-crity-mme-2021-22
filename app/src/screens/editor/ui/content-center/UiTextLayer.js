@@ -4,6 +4,12 @@ import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 import pdfjsLib from "pdfjs-dist/webpack.js";
 import { UiPageRectTracker } from "./UiPageRectTracker.js";
 
+// PDFJS renders into a canvas, however this alone does not allow for selecting
+// text. We therefore construct a rough facsimile (the "text layer") of the PDF in the DOM.
+// PDFJS does this for us. This facsimile is positioned atop the canvas. The text is all there,
+// but we make it transparent. A good way to understand how this works is to using element inspection
+// in your web browser.
+// This class is responsible for constructing, positioning and scaling that text layer.
 class UiTextLayer {
     constructor(screen, pageRectTracker) {
         this.textLayerEl = screen.el.querySelector(".id-pdf-text-layer");
@@ -23,7 +29,6 @@ class UiTextLayer {
     async onActivePageChanged() {
         let activePage, pdfJsPage, viewport, textContent, textDivs, textContentItemsStr, textLayerFrag;
 
-        // TODO(optimize): Don't fetch the page everywhere.
         activePage = data.selTracker.activePage;
         pdfJsPage = activePage.pdfJsPage;
         viewport = activePage.viewport;

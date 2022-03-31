@@ -2,10 +2,29 @@ import { Observable, Event } from "../model/Observable.js";
 import { assert, lerp } from "../utils.js";
 import { cloneDomTemplate } from "./dom-utils.js";
 
-// Custom scrollbar. Works by creating a dummy div that is big enough to produce the desired knob length.
+// Custom scrollbar. 
+// For our PDF viewer, taking full control over the scrollbar seemed much easier than trying to put the
+// canvas into a scrollable div, and then getting zoom and the text layer to work ...
+// 
+// So we try to do everything ourselves. This scrollbar was written for 1D content, for 2D content
+// instantiate it twice! The idea is that we have two intervals:
+// - The content interval. This is the "world". For e.g., PDFs set this to the edge coordinates of the page
+//   in viewport coordinates.
+// - The view interval. This is the interval of the content that is in view, i.e. if you're zoomed in this interval
+//   is smaller than the content interval.
+// We also try to support cases where the neither the content interval is contained in the view interval, nor the view interval
+// is contained in the content interval; e.g. for PDFs this means the gray area is showing on only one side. In that case,
+// we shrink the scrollbar knob, but since the WEB API's do not support this behavior we have to adjust the view interval when
+// the user starts dragging the knob.
+//
+// Works by creating a dummy div("fakeContent") that is big enough to produce the desired knob length.
 class UiScrollbar extends Observable {
     static EVENT_VISIBLE_INTERVAL_CHANGED = "VISIBLE_INTERVAL_CHANGED";
 
+    // containerDiv: Where the scrollbar will be put. See UiEditorScreen.html for an example (not that
+    // for some reason the classes for x and y had to be different, don't ask me why; I have no idea),
+    // but you might have to play with CSS quite a bit to get it to work so good luck with that.
+    // If the axis is "x" the knob moves from left to right. For axis==="y", ...
     constructor(containerDiv, axis) {
         super();
 
@@ -23,6 +42,7 @@ class UiScrollbar extends Observable {
         this.el.addEventListener("mousedown", () => this.onMouseDown());
 
         this.throttledScrollHandlerPending = false;
+        this.scrollWasChangedProgrammatically = false;
     }
 
     // Kind of confusing: The knob represents the visible area, the trough represents the content (which is
@@ -48,6 +68,7 @@ class UiScrollbar extends Observable {
         this.scrollTo(this.scrollPos);
     }
 
+    // Compute some useful values that we don't store explicitly.
     computeDerivedSizes() {
         let visibleSize = this.visibleEnd - this.visibleStart, 
             clippedVisibleSize = Math.min(this.contentEnd, this.visibleEnd) - Math.max(this.contentStart, this.visibleStart),
@@ -58,7 +79,7 @@ class UiScrollbar extends Observable {
     }
 
     onScroll() {
-        // MSDN suggests doing this: https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event#scroll_event_throttling
+        // MDN suggests doing this: https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event#scroll_event_throttling
         // An alternative might be to have the viewing area only emit events on animation frames?
         if (!this.throttledScrollHandlerPending) {
             this.throttledScrollHandlerPending = true;
@@ -81,7 +102,8 @@ class UiScrollbar extends Observable {
 
         // HACK: Fix some numerical precision problems ... Ideally there would be a way to
         // tell the Web API not to call us when the scroll position was set programmatically ...
-        if (Math.abs(scrollPos - this.scrollPos) < 2) {
+        if (this.scrollWasChangedProgrammatically) {
+            this.scrollWasChangedProgrammatically = false;
             return;
         }
 
@@ -124,6 +146,7 @@ class UiScrollbar extends Observable {
         }
 
         this.el.scrollTo(scrollOptions);
+        this.scrollWasChangedProgrammatically = true;
     }
 
     getElSize() {

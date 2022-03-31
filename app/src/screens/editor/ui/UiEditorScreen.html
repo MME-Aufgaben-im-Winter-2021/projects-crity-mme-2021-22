@@ -1,12 +1,68 @@
 <template id="editor-screen-template">
     <div class="flex h-full flex-col main-screen">
-        <!-- main content -->
-        <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
+        <div class="tooltip-container absolute h-4/5 w-screen p-32 z-10">
+            <div class="bg-slate-600 w-full h-full p-5 rounded-lg border-4 border-slate-200">
+                <div class="flex flex-col h-full justify-between items-center">
+                    <div class="flex flex-col items-center">
+                        <span class="text-4xl font-bold text-white mb-2">Welcome to our Crity Feedback-Loop-App</span>
+                        <span class="text-xl font-bold text-white">Here we gonna show you the basic controls of our app!</span>
+
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xl font-bold text-white">The PDF-Editor:</span>
+                        <div class="flex flex-row flex-wrap w-full items-center justify-around"> 
+                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Middle-Mouse-Button pressed</span>(Move the PFD)</span>
+                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Scrollwheel</span>(Scale the PDF)</span>
+                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Left-Mouse-Button</span>(Add a thread)</span>
+                        </div>
+
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xl font-bold text-white">The Version-Timeline:</span>
+                        <div class="flex flex-row flex-wrap items-center"> 
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Button-pressed</span>(Move the versiontree)</span>
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Scrollwheel</span>(Scale the versiontree)</span>
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white no-underline">Left-Mouse-Button</span>(Select a node to add a version with the AddVersion-Button)</span>
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Button-Doubleclick</span>(Open a version)</span>
+                        </div>
+
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-xl font-bold text-white">The Thread-System:</span>
+                        <div class="flex flex-row flex-wrap items-center"> 
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Click-Arrow</span>(Open thread)</span>
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Click-Like</span>(Like thread)</span>
+                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white no-underline">Refresh-Page</span>(Sort threads by like an update likes)</span>
+                        </div>
+
+                    </div>
+                    <button class="close-tooltip-button bg-slate-400 top-0 right-0 p-1 border-2 rounded-xl">Close Tooltip</button>
+                </div>
+            </div>
+        </div>
+        <!-- view layers -->
+        <div class="flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden relative">
+            <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
+            </div>
+
+            <div class="flex timeline-content h-3/5 w-full absolute bottom-0 bg-slate-900 bg-opacity-95">
+                <button
+                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-400 active:bg-slate-900"
+                >
+                    <input class="id-file-input" type="file" name="name" style="display: none" />
+                    <span class="label font-bold">Add Version</span>
+                </button>
+                <div class="grow relative">
+                    <div class="w-full h-full absolute" id="mynetwork"></div>
+                </div>
+            </div>
         </div>
         
-        <!-- timeline -->
-        <div class="id-bottom-bar bottom-0 flex w-screen h-3/5 shrink-0 flex-col bg-slate-900 text-white absolute">
-            <div class="flex w-full justify-center bg-slate-800 timeline-header">
+        <!-- timeline header -->
+        <div class="id-bottom-bar bottom-0 flex w-screen shrink-0 flex-col text-white">
+            <!-- TODO: Do we want a canvas for fancy graphics? -->
+            <div class="flex w-full justify-center bg-slate-800 timeline-header relative">
+
                 <button class="rounded-b bg-slate-400 hover:bg-slate-600 timeline-hide-button">
                     <!-- "hide"-arrow, to be shown when timeline is visible -->
                     <svg
@@ -40,19 +96,6 @@
                     </svg>
                 </button>
             </div>
-            <!-- TODO: Do we want a canvas for fancy graphics? -->
-            <div class="flex h-full timeline-content">
-                <button
-                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white transition hover:bg-slate-400 active:bg-slate-900"
-                >
-                    <input class="id-file-input" type="file" name="name" style="display: none" />
-                    <span class="label font-bold">Add Version</span>
-                </button>
-                <div class="grow relative">
-                    <div class="w-full h-full absolute" id="mynetwork"></div>
-                </div>
-
-            </div>
         </div>
         <!-- /content wrapper -->
     </div>
@@ -71,7 +114,7 @@
     <!-- content center -->
     <div class="id-content-center flex flex-col grow bg-slate-600">
         <div class="flex grow">
-            <div class="id-viewport grow relative overflow-hidden">
+            <div class="id-content-center-container grow relative overflow-hidden">
                 <canvas class="id-pdf-canvas absolute top-0 left-0"></canvas>
                 <div class="id-marker-container absolute top-0 left-0 w-10 h-10"></div>
                 <div class="id-pdf-text-layer textLayer"></div>
@@ -83,9 +126,10 @@
     </div>
     <!-- sidebar right -->
     <div class="id-sidebar-right ml-auto flex h-full w-1/4 flex-col">
-        <!-- search/sort/filter bar -->
+        <!-- Unimplemented
+        < !-- search/sort/filter bar -- >
         <div class="flex w-auto flex-row items-center bg-zinc-200 px-1">
-            <!-- search bar -->
+            < !-- search bar -- >
             <div class="relative flex-grow p-1">
                 <input
                     type="text"
@@ -107,7 +151,7 @@
                     </svg>
                 </button>
             </div>
-            <!-- sort/filter btn -->
+            < !-- sort/filter btn -- >
             <div class="flex items-center">
                 <button class="id-sort-btn px-1">
                     <svg
@@ -139,15 +183,20 @@
                     </svg>
                 </button>
             </div>
-            <!-- /search/sort/filter bar -->
+            < !-- /search/sort/filter bar -- >
         </div>
+        -->
+        <div class="flex w-auto flex-row items-center bg-slate-600 p-3 text-white font-bold text-lg">
+            Comments for this page (click page to add)
+        </div>
+
         <!-- comment list -->
-        <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-zinc-100 p-2">
+        <div class="id-comment-list flex grow w-auto flex-col gap-2 overflow-y-scroll bg-slate-500 p-2">
             <!-- Existierende Threads können hier mittels des Thread-Templates eingefügt werden -->
         </div>
         <div class="id-comment-editor flex flex-col shrink-0 bg-slate-500">
-            <div class="flex flex-row justify-between bg-slate-400 p-2">
-                <span class="font-semibold text-lg comment-editor-text"></span>
+            <div class="flex flex-row justify-between bg-slate-600 p-2">
+                <span class="font-semibold text-lg text-white comment-editor-text"></span>
                 <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
             </div>
             <div class="p-2">
@@ -178,5 +227,5 @@
         E.g., programmatically adding style.left = "10px" places the circle's _center_ at 10px (relative to
         the upper left corner of the canvas) 
     -->
-    <div class="w-4 h-4 rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 bg-amber-500 border-2 border-slate-800 pointer-obj"></div>
+    <div class="rounded-full absolute opacity-50 -translate-x-1/2 -translate-y-1/2 border-2 border-slate-800 pointer-obj" style="background-color: orange;"></div>
 </template>

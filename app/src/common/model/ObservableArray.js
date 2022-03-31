@@ -1,6 +1,10 @@
 import { Observable, Event } from "./Observable.js";
 
 // Array + Events.
+// Following MVC tradition, we try to make the model notify everyone about changes using events,
+// instead of having the people changing the data call the UI-related functions that deal with the changes.
+// Since arrays are pretty common, we have a generic class, still a bit meager but hey we can add stuff as we
+// go.
 class ObservableArray extends Observable {
     static EVENT_ITEM_ADDED = "ITEM_ADDED";
     static EVENT_ITEM_REMOVED = "ITEM_REMOVED";

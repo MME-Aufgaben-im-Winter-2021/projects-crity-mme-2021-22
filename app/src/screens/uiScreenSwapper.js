@@ -41,16 +41,19 @@ class UiScreenSwapper {
     // WARNING: For UiScreens, this will call the terminate function! Best idea is to not do anything after
     // calling this!
     loadScreen(screenToLoad, screenParameters, pushIntoBrowserHistory=true) {
-        this.el.innerHTML = "";
+        let url, screenClass;
 
+        url = UiScreen.formatUrl(screenToLoad, screenParameters);
         if (pushIntoBrowserHistory) {
-            let url = UiScreen.formatUrl(screenToLoad, screenParameters);
             window.history.pushState({}, "", url);
+        } else {
+            window.history.replaceState({}, "", url);
         }
 
         this.screen?.terminate();
+        this.el.innerHTML = "";
 
-        let screenClass = uiScreenRegistry.getClass(screenToLoad);
+        screenClass = uiScreenRegistry.getClass(screenToLoad);
         if (screenClass === undefined) {
             // TODO: Proper error handling, e.g. redirect to an error screen and pass the bad screen name as a screenParameter?
             console.error(`Tried to access bad screen ${screenToLoad}`);

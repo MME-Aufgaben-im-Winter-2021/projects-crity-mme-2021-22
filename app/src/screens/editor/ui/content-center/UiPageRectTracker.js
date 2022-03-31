@@ -3,6 +3,7 @@ import { data } from "../../model/data.js";
 import { EditorSelTracker } from "../../model/EditorSelTracker.js";
 import { EditorViewingArea } from "../../model/ViewingArea.js";
 
+// Tracks all the possible changes to the page rect, see EditorViewingArea for more details.
 class UiPageRectTracker extends Observable {
     static EVENT_PAGE_RECT_CHANGED = "PAGE_RECT_CHANGED";
 
@@ -10,7 +11,7 @@ class UiPageRectTracker extends Observable {
         super();
 
         this.listener = new Listener();
-        this.viewportEl = screen.el.querySelector(".id-viewport");
+        this.containerEl = screen.el.querySelector(".id-content-center-container");
         this.resizeObserver = new ResizeObserver(entries => {
             for (let entry of entries) {
                 if (entry.contentBoxSize && data.selTracker.activePage) {
@@ -18,7 +19,7 @@ class UiPageRectTracker extends Observable {
                 }
             }
         });
-        this.resizeObserver.observe(this.viewportEl);
+        this.resizeObserver.observe(this.containerEl);
 
         // Changing the active page might change the aspect ratio, which in turn changes the page rect.
         data.selTracker.addEventListener(EditorSelTracker.EVENT_ACTIVE_PAGE_CHANGED, () => this.emitChangeEvent(), this.listener);
@@ -29,30 +30,30 @@ class UiPageRectTracker extends Observable {
     terminate() {
         super.terminate();
         this.listener.terminate();
-        this.resizeObserver.unobserve(this.viewportEl);
+        this.resizeObserver.unobserve(this.containerEl);
     }
 
     emitChangeEvent() {
         this.notifyAll(new Event(UiPageRectTracker.EVENT_PAGE_RECT_CHANGED, {}));
     }
 
-    getViewportWidth() {
-        return this.viewportEl.offsetWidth;
+    getContainerWidth() {
+        return this.containerEl.offsetWidth;
     }
 
-    getViewportHeight() {
-        return this.viewportEl.offsetHeight;
+    getContainerHeight() {
+        return this.containerEl.offsetHeight;
     }
 
-    clientToViewportCoords(clientX, clientY) {
-        let boundingRect, viewportX, viewportY;
+    clientToContainerCoords(clientX, clientY) {
+        let boundingRect, containerX, containerY;
 
-        boundingRect = this.viewportEl.getBoundingClientRect();
+        boundingRect = this.containerEl.getBoundingClientRect();
         
-        viewportX = clientX - boundingRect.left;
-        viewportY = clientY - boundingRect.top;
+        containerX = clientX - boundingRect.left;
+        containerY = clientY - boundingRect.top;
 
-        return [viewportX, viewportY];
+        return [containerX, containerY];
     }
 
     computePageRect() {
@@ -62,7 +63,7 @@ class UiPageRectTracker extends Observable {
         if (data.selTracker.activePage !== null) {
             asp = data.selTracker.activePage.asp;
         }
-        pageRect = data.viewingArea.computePageRect(asp, this.viewportEl.offsetWidth, this.viewportEl.offsetHeight);
+        pageRect = data.viewingArea.computePageRect(asp, Math.max(1, this.containerEl.offsetWidth), Math.max(1, this.containerEl.offsetHeight));
         return pageRect;
     }
 
@@ -70,7 +71,7 @@ class UiPageRectTracker extends Observable {
         if (data.selTracker.activePage === null) {
             return;
         }
-        data.viewingArea.setPageRect(data.selTracker.activePage.asp, this.viewportEl.offsetWidth, this.viewportEl.offsetHeight, pageRect);
+        data.viewingArea.setPageRect(data.selTracker.activePage.asp, Math.max(1, this.containerEl.offsetWidth), Math.max(1, this.containerEl.offsetHeight), pageRect);
     }
 }
 

@@ -17,7 +17,7 @@ class UiTimeline {
         this.listener = new Listener();
         data.versionList.versions.addEventListener(ObservableArray.EVENT_ITEM_ADDED, e => this.onVersionAdded(e), this.listener);
 
-        this.timelineWindow = document.querySelector(".id-bottom-bar");
+        this.timelineContent = document.querySelector(".timeline-content");
         this.timelineHideButton = document.querySelector(".timeline-hide-button");
         this.timelineHideButton.addEventListener("click", () => this.timelineHideButtonClicked());
         this.timelineHeader = document.querySelector(".timeline-header");
@@ -41,14 +41,12 @@ class UiTimeline {
     }
 
     timelineHideButtonClicked() {
-        if(this.timelineWindow.style.display === "none") {
-            this.timelineWindow.style.display = "flex";
-            this.timelineWindow.insertBefore(this.timelineHeader, this.el);
+        if(this.timelineContent.style.display === "none") {
+            this.timelineContent.style.display = "flex";
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
         }else{
-            this.timelineWindow.style.display = "none";
-            this.mainScreen.appendChild(this.timelineHeader);
+            this.timelineContent.style.display = "none";
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
         }
@@ -76,6 +74,9 @@ class UiTimeline {
     async onFileSelectorConcluded() {
         let version = await data.versionList.createVersion(data.presentationId, "V"+(data.versionList.versions.items.length+1), this.fileInputEl.files[0], this.selectedVersion);
         data.selTracker.activateVersion(version);
+
+        // This is needed to get the change event even when the user uploads the same file twice.
+        this.fileInputEl.value = null;
     }
 }
 

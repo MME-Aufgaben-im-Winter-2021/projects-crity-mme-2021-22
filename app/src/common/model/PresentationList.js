@@ -4,8 +4,9 @@ import { appwrite } from "./appwrite.js";
 import { Presentation } from "./Presentation.js";
 import { Query } from "appwrite";
 import { accountSession } from "./AccountSession.js";
-import { assert, unused } from "../utils.js";
+import { assert } from "../utils.js";
 
+// Responsible for querying presentations by their author.
 class PresentationList {
     static PRESENTATIONS_COLLECTION_ID = "presentations";
 
@@ -53,14 +54,11 @@ class PresentationList {
         return appwritePresentation;
     }
 
-    async updatePresentation(presentation, title, description) {
-        // TODO: Update the presentation on the server side.
-        unused(title);
-        unused(description);
-
+    async updatePresentation(presentation) {
         await appwrite.database.updateDocument(
             PresentationList.PRESENTATIONS_COLLECTION_ID,
             presentation.appwriteId,
+            presentation.toAppwriteDocument(),
         );
     }
 

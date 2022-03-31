@@ -79,7 +79,9 @@ class UiPresentationItem {
         this.titleEl.textContent = newTitle;
         this.descriptionEl.textContent = newDescription;
         this.editModal.classList.add("hidden");
-        this.parent.updatePresentation(this.el, newTitle, newDescription);
+        this.presentation.title = newTitle;
+        this.presentation.description = newDescription;
+        data.presentationList.updatePresentation(this.presentation);
     }
 
     onDropDownDeleteClicked() {

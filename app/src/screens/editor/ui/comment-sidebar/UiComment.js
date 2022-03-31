@@ -1,5 +1,5 @@
 import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
-import { accountSession } from "../../../../common/model/AccountSession.js";
+import { accountSession, LoginState } from "../../../../common/model/AccountSession.js";
 
 class UiComment {
     constructor(comment, parent, versionComment) {
@@ -8,6 +8,7 @@ class UiComment {
         this.comment = comment;
 
         this.el = cloneDomTemplate("#thread-template");
+        this.mainPanel =this.el.querySelector(".thread-main-panel");
 
         this.textEl = this.el.querySelector(".thread-title");
         this.textEl.textContent = comment.text;
@@ -38,12 +39,14 @@ class UiComment {
     }
 
     checkForVotes(comment) {
-        comment.votes.forEach(id => {
-            if(id === accountSession.accountId) {
-                this.toggleVote();
-                this.voted = true;
-            }
-        });
+        if (accountSession.loginState === LoginState.LOGGED_IN) {
+            comment.votes.forEach(id => {
+                if(id === accountSession.accountId) {
+                    this.toggleVote();
+                    this.voted = true;
+                }
+            });
+        }
     }
 
     addComments(comment) {
@@ -84,14 +87,16 @@ class UiComment {
     toggle() {
         if (this.comments.style.display === "none") {
             this.comments.style.display = "block";
+            this.el.style.backgroundColor = "#94a3b8";
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
-            this.versionComment.commentOpened();
+            this.versionComment.setSelected();
         } else {
             this.comments.style.display = "none";
             this.arrowUp.classList.remove("hidden");
+            this.el.style.backgroundColor = "#cbd5e1";
             this.arrowDown.classList.add("hidden");
-            this.versionComment.commentClosed();
+            this.versionComment.unsetSelected();
         }
     }
 

@@ -6,13 +6,15 @@ import { Observable, Event } from "./Observable.js";
 import { ObservableArray } from "./ObservableArray.js";
 import { Version } from "./Version.js";
 
+// Query the versions that belong to a presentation.
 class VersionList extends Observable {
+    // Since the fetch is asynchronous, we do this instead of blocking.
     static EVENT_INITIAL_FETCH_CONCLUDED = "INITIAL_FETCH_CONCLUDED";
 
     constructor(presentationId) {
         super();
 
-        assert(accountSession.loginState === LoginState.LOGGED_IN);
+        assert(accountSession.loginState !== LoginState.UNKNOWN);
         this.presentationId = presentationId;
         this.versions = new ObservableArray();
 

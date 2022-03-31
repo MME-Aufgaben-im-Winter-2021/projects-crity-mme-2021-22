@@ -1,13 +1,10 @@
 import { initData, terminateData } from "../model/data.js";
-import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 import { UiTimeline } from "./timeline/UiTimeline.js";
 import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
+import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
 
-// TODO: We probably won't want to inherit from restricted screen, since people
-// should be able to add comments without an account? That doesn't work at the
-// moment, so for now this is probably okay.
 class UiEditorScreen extends UiRestrictedScreen {
     static NAME = "editor";
 
@@ -15,16 +12,24 @@ class UiEditorScreen extends UiRestrictedScreen {
         super("#editor-screen-template", screenParameters);
     }
 
+    loginStateIsCompatible() {
+        return true;
+    }
+
     initRestricted() {
         initData(this.screenParameters.presentation);
 
+        // TODO: Move navbar-related code out of UiEditorScreen.
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.remove("hidden");
-        this.userName = document.querySelector(".id-user-name");
         this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
         this.copyLinkButton.addEventListener("click", () => this.onCopyLinkButtonClicked());
+
+        this.tooltipCloseButton = document.querySelector(".close-tooltip-button");
+        this.tooltipCloseButton.addEventListener("click", () => this.onTooltipButtonClose());
+        this.tooltipContainer = document.querySelector(".tooltip-container");
 
         this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
@@ -38,11 +43,9 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     async getProjectDataForNavbar() {
-        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation),
-            account = await appwrite.account.get();
+        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation);
 
         this.navBarInfo.textContent = appwritePresentation.title;
-        this.userName.textContent= account.name;
     }
 
     onCopyLinkButtonClicked() {
@@ -50,6 +53,10 @@ class UiEditorScreen extends UiRestrictedScreen {
 
         // TODO: Make this a custom popup (like we do with the presentation creation dialog).
         //alert("URL copied to clipboard!!!");
+    }
+
+    onTooltipButtonClose() {
+        this.tooltipContainer.classList.toggle("hidden");
     }
 }
 
