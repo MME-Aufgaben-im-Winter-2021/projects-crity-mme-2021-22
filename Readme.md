@@ -25,7 +25,7 @@ Danach bleibt man angemeldet, bis man sich oben in der Navigationsleiste abmelde
 ### Dashboard
 Nach der Anmeldung oder durch Klick auf das Logo gelangen angemeldete Nutzer auf das Dashboard. Dort können durch Klick auf den (+) Button neue Präsentationen erstellt werden. 
 
-![Erstellen einer Präsentation](/screenshots/create-presentation-1.png)
+![Erstellen einer Präsentation](/screenshots/präsentationsErstellung.png)
 
 Jede Präsentation hat einen Titel und eine Beschreibung. Alle Präsentationen eines Nutzers werden im Dashboard angezeigt. Durch Klick auf den (...) Knopf der Präsentationen können
 - Titel/Beschreibung bearbeitet werden
