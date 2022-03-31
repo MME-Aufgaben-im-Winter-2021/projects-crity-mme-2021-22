@@ -54,14 +54,11 @@ class PresentationList {
         return appwritePresentation;
     }
 
-    async updatePresentation(presentation, title, description) {
-        // TODO: Update the presentation on the server side.
-        unused(title);
-        unused(description);
-
+    async updatePresentation(presentation) {
         await appwrite.database.updateDocument(
             PresentationList.PRESENTATIONS_COLLECTION_ID,
             presentation.appwriteId,
+            presentation.toAppwriteDocument(),
         );
     }
 

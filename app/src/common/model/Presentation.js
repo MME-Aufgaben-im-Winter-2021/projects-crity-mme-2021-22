@@ -12,6 +12,10 @@ class Presentation {
             appwritePresentation.title,
             appwritePresentation.description);
     }
+
+    toAppwriteDocument() {
+        return {title: this.title, description: this.description};
+    }
 }
 
 export { Presentation };
