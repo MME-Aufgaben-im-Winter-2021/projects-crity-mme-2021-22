@@ -44,9 +44,11 @@ Um den Editor einer Präsentation zu öffnen, braucht man nicht angemeldet zu se
 
 Jede Präsentation besteht aus mehren Versionen. Jede Version ist geknüpft an eine PDF. Die Versionen werden in der Timeline angezeigt, die ein- und ausgeklappt werden kann.
 
+![Zeitleiste](/screenshots/timeline.png)
+
 Um eine Version (und somit eine PDF) hochzuladen, kann man auf den (Add Version)-Button klicken. Versionen werden als Knoten in einer Baumstruktur angezeigt. Diese Knoten werden selektiert werden. Der selektierte Knoten erhält die neue Präsentation als Kind. Ist kein Knoten selektiert, so wird die Präsentation als Wurzelknoten erstellt. Durch **Doppelklick** wird eine Version ausgewählt, und man kann sich durch Einklappen der Timeline betrachten. Derzeit kann jeder eine neue Version erstellen. Mit der linken Maustaste kann man die Ansicht verschieben, durch Drehen des Mausrads kann man scrollen.
 
-![Zeitleiste](/screenshots/timeline.png)
+![Zeitleistevideo](/screenshots/2022-03-31-19-39-15.avi)
 
 Jede PDF besteht bekanntlich aus mehreren Seiten. Diese Seiten werden links in Form von Thumbnails angezeigt. Durch Klick auf ein Thumbnail wird die entsprechende Seite ausgewählt.
 
