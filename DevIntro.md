@@ -18,7 +18,7 @@ We're basically doing MVC, except we ditch the view/controller distinction. Inst
 The **UI** talks to the **model** by calling member functions. We've tried to avoid doing any significant amount of abstract logic inside the **UI**, except if the logic involves UI state.
 The **model** talks to the **UI** by emitting change events. That way, we avoid circular call dependencies. This comes at the expense of more obtuse control flow :( Grepping for the event names might help.
 
-## Source Tree
+## Source Tree (out of date)
 
 |Directory|Description|
 |--|--|
