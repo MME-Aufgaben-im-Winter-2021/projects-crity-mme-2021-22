@@ -30,6 +30,10 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.copyLinkButton.classList.remove("hidden");
         this.copyLinkButton.addEventListener("click", () => this.onCopyLinkButtonClicked());
 
+        this.tooltipCloseButton = document.querySelector(".close-tooltip-button");
+        this.tooltipCloseButton.addEventListener("click", () => this.onTooltipButtonClose());
+        this.tooltipContainer = document.querySelector(".tooltip-container");
+
         this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
     }
@@ -52,6 +56,10 @@ class UiEditorScreen extends UiRestrictedScreen {
 
         // TODO: Make this a custom popup (like we do with the presentation creation dialog).
         //alert("URL copied to clipboard!!!");
+    }
+
+    onTooltipButtonClose() {
+        this.tooltipContainer.classList.toggle("hidden");
     }
 }
 

@@ -8,6 +8,7 @@ class UiComment {
         this.comment = comment;
 
         this.el = cloneDomTemplate("#thread-template");
+        this.mainPanel =this.el.querySelector(".thread-main-panel");
 
         this.textEl = this.el.querySelector(".thread-title");
         this.textEl.textContent = comment.text;
@@ -86,12 +87,14 @@ class UiComment {
     toggle() {
         if (this.comments.style.display === "none") {
             this.comments.style.display = "block";
+            this.el.style.backgroundColor = "#94a3b8";
             this.arrowUp.classList.add("hidden");
             this.arrowDown.classList.remove("hidden");
             this.versionComment.setSelected();
         } else {
             this.comments.style.display = "none";
             this.arrowUp.classList.remove("hidden");
+            this.el.style.backgroundColor = "#cbd5e1";
             this.arrowDown.classList.add("hidden");
             this.versionComment.unsetSelected();
         }

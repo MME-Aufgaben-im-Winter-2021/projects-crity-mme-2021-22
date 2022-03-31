@@ -26,6 +26,7 @@ class UiCommentList {
         this.commentInputFieldEl.addEventListener("keydown", e => this.onKeyDown(e));
 
         this.commentEditorText = screen.el.querySelector(".comment-editor-text");
+
     }
 
     terminate() {
@@ -58,6 +59,7 @@ class UiCommentList {
         });
         this.uiComments.length = 0;
         this.el.innerHTML = "";
+        this.toggleCommentEditor(false);
     }
 
     onCommentEditingStarted() {
