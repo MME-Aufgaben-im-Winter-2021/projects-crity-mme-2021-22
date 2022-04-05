@@ -29,6 +29,12 @@ class UiTimeline {
         this.selectedVersion = null;
         this.graph = new UiTimelineGraph(this);
     }
+
+    setAuthorRestriction(isAuthor) {
+        if(!isAuthor) {
+            this.addVersionButtonEl.style.display = "none";
+        }
+    }
     
     nodeSelected(nodeId) {
         this.selectedVersion = nodeId;

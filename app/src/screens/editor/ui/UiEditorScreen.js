@@ -4,6 +4,7 @@ import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
+import { accountSession } from "../../../common/model/AccountSession.js"
 
 class UiEditorScreen extends UiRestrictedScreen {
     static NAME = "editor";
@@ -22,7 +23,6 @@ class UiEditorScreen extends UiRestrictedScreen {
         // TODO: Move navbar-related code out of UiEditorScreen.
         this.navBarInfo = document.querySelector(".id-info");
         this.navBarInfo.classList.remove("hidden");
-        this.getProjectDataForNavbar();
         this.copyLinkButton = document.querySelector("#copy-link-button");
         this.copyLinkButton.classList.remove("hidden");
         this.copyLinkButton.addEventListener("click", () => this.onCopyLinkButtonClicked());
@@ -33,6 +33,8 @@ class UiEditorScreen extends UiRestrictedScreen {
 
         this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
+
+        this.setUpUserRelatedData();
     }
 
     terminateRestricted() {
@@ -42,10 +44,17 @@ class UiEditorScreen extends UiRestrictedScreen {
         terminateData();
     }
 
-    async getProjectDataForNavbar() {
+    async setUpUserRelatedData() {
         let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation);
-
-        this.navBarInfo.textContent = appwritePresentation.title;
+        let text;
+        if(appwritePresentation.author === accountSession.pAccountId) {
+            text = appwritePresentation.title + " (Author)";
+            this.timeline.setAuthorRestriction(true);
+        }else{
+            text = appwritePresentation.title;
+            this.timeline.setAuthorRestriction(false);
+        }
+        this.navBarInfo.textContent = text;
     }
 
     onCopyLinkButtonClicked() {
