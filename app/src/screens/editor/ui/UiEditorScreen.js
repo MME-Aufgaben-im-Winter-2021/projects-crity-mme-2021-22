@@ -82,6 +82,11 @@ class UiEditorScreen extends UiRestrictedScreen {
 
         // TODO: Make this a custom popup (like we do with the presentation creation dialog).
         //alert("URL copied to clipboard!!!");
+        let copyLinkAlert = document.querySelector(".id-copyLink-tooltip");
+        copyLinkAlert.classList.toggle("hidden");
+        setTimeout(function() {
+            copyLinkAlert.classList.toggle("hidden");
+        }, 3000);
     }
 
     onTooltipButtonClose() {
