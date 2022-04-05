@@ -97,7 +97,6 @@ class UiTimelineGraph {
     changeSelectedNodeColor(nodeId, red) {
         let newColor;
 
-        console.log(nodeId + red);
         if(red) {
             newColor = "box";
         }else{

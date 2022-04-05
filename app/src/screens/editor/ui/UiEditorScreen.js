@@ -4,7 +4,8 @@ import { uiScreenRegistry } from "../../uiScreenRegistry.js";
 import { appwrite } from "../../../common/model/appwrite.js";
 import { UiEditorMainContainer } from "./UiEditorMainContainer.js";
 import { UiRestrictedScreen } from "../../UiRestrictedScreen.js";
-import { accountSession } from "../../../common/model/AccountSession.js"
+import { accountSession } from "../../../common/model/AccountSession.js";
+import { KeyCodes } from "../../../common/ui/dom-utils.js";
 
 class UiEditorScreen extends UiRestrictedScreen {
     static NAME = "editor";
@@ -30,6 +31,17 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.tooltipCloseButton = document.querySelector(".close-tooltip-button");
         this.tooltipCloseButton.addEventListener("click", () => this.onTooltipButtonClose());
         this.tooltipContainer = document.querySelector(".tooltip-container");
+        this.controlsTooltip = document.querySelector(".id-controls-tooltip");
+        this.usernameTooltip = document.querySelector(".id-username-tooltip");
+        if(this.getCookie() === "tooltip") {
+            this.controlsTooltip.classList.toggle("hidden");
+        }
+        if(accountSession.pAccountName !== undefined) {
+            this.usernameTooltip.classList.toggle("hidden");
+        }else{
+            this.displayNameInput = document.querySelector(".id-display-name");
+            this.displayNameInput.addEventListener("keydown", e => this.onKeyDown(e));
+        }
 
         this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
@@ -42,6 +54,14 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.timeline.terminate();
 
         terminateData();
+    }
+
+    onKeyDown(e) {
+        if(e.keyCode !== KeyCodes.ENTER) {
+            return;
+        }
+        accountSession.pAccountName = this.displayNameInput.value;
+        this.usernameTooltip.classList.toggle("hidden");
     }
 
     async setUpUserRelatedData() {
@@ -65,7 +85,20 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     onTooltipButtonClose() {
-        this.tooltipContainer.classList.toggle("hidden");
+        this.controlsTooltip.classList.toggle("hidden");
+        this.setCookie("tooltip", 100);
+    }
+
+    setCookie(value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        let expires = "expires="+ date.toUTCString();
+        document.cookie = value + ";" + expires + ";path=/";
+    }
+
+    getCookie() {
+        let decodedCookie = decodeURIComponent(document.cookie);
+        return decodedCookie;
     }
 }
 

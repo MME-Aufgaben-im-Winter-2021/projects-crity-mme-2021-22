@@ -4,6 +4,7 @@ import { data, EditorData } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
 import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 import { KeyCodes } from "../../../../common/ui/dom-utils.js";
+import { accountSession } from "../../../../common/model/AccountSession.js";
 
 class UiCommentList {
     constructor(screen) {
@@ -18,7 +19,7 @@ class UiCommentList {
 
         this.el2 = screen.el.querySelector(".id-comment-editor");
 
-        this.nameInputFieldEl = screen.el.querySelector(".id-name-input");
+        this.nameInputFieldEl = screen.el.querySelector(".id-user-name");
 
         this.quitEditingButtonEl = screen.el.querySelector(".id-quit-editing-button");
 
@@ -73,7 +74,7 @@ class UiCommentList {
         if (visible) {
             this.el2.style = "";
             this.quitEditingButtonEl.style = "display: none";
-            this.commentEditorText.textContent = "Add Comment";
+            this.commentEditorText.textContent = "Start discussing";
         } else {
             this.el2.style = "display: none";
         }
@@ -100,13 +101,13 @@ class UiCommentList {
     }
 
     onKeyDown(e) {
-        if(this.commentEditorText.textContent !== "Add Comment") {
+        if(this.commentEditorText.textContent !== "Start discussing") {
             return;
         }
         if(e.keyCode !== KeyCodes.ENTER) {
             return;
         }
-        this.lastOpen.versionComment.submitComment(this.nameInputFieldEl.value, this.commentInputFieldEl.value);
+        this.lastOpen.versionComment.submitComment(accountSession.pAccountName, this.commentInputFieldEl.value);
     }
 }
 
