@@ -33,6 +33,8 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.tooltipContainer = document.querySelector(".tooltip-container");
         this.controlsTooltip = document.querySelector(".id-controls-tooltip");
         this.usernameTooltip = document.querySelector(".id-username-tooltip");
+
+        
         if(this.getCookie() === "tooltip") {
             this.controlsTooltip.classList.toggle("hidden");
         }
@@ -40,13 +42,13 @@ class UiEditorScreen extends UiRestrictedScreen {
             this.usernameTooltip.classList.toggle("hidden");
         }else{
             this.displayNameInput = document.querySelector(".id-display-name");
+            accountSession.pAccountName = "Unknown";
             this.displayNameInput.addEventListener("keydown", e => this.onKeyDown(e));
         }
-
+        
+        this.setUpUserRelatedData();
         this.mainContainer = new UiEditorMainContainer(this);
         this.timeline = new UiTimeline(this);
-
-        this.setUpUserRelatedData();
     }
 
     terminateRestricted() {
@@ -70,9 +72,11 @@ class UiEditorScreen extends UiRestrictedScreen {
         if(appwritePresentation.author === accountSession.pAccountId) {
             text = appwritePresentation.title + " (Author)";
             this.timeline.setAuthorRestriction(true);
+            this.authorMode = true;
         }else{
             text = appwritePresentation.title;
             this.timeline.setAuthorRestriction(false);
+            this.authorMode = false;
         }
         this.navBarInfo.textContent = text;
     }

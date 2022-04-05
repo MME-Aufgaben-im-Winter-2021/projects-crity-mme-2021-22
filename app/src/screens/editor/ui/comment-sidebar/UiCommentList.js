@@ -7,10 +7,11 @@ import { KeyCodes } from "../../../../common/ui/dom-utils.js";
 import { accountSession } from "../../../../common/model/AccountSession.js";
 
 class UiCommentList {
-    constructor(screen) {
+    constructor(screen, editorScreen) {
         this.el = screen.el.querySelector(".id-comment-list");
         this.listener = new Listener();
 
+        this.editorScreen = editorScreen;
         this.uiComments = [];
         this.lastOpen = null;
 
@@ -30,6 +31,10 @@ class UiCommentList {
 
     }
 
+    setCommentsReviewerMode() {
+        this.authorMode = false;
+    }
+
     terminate() {
         this.listener.terminate();
     }
@@ -42,7 +47,7 @@ class UiCommentList {
     }
 
     onVersionCommentAdded(versionComment) {
-        let uiComment = new UiComment(versionComment.comment, this, versionComment);
+        let uiComment = new UiComment(versionComment.comment, this, versionComment, this.editorScreen);
         for(let i = 0; i < this.uiComments.length; i++) {
             if(this.uiComments[i].comment.votes.length < uiComment.comment.votes.length) {
                 this.el.insertBefore(uiComment.el, this.uiComments[i].el);

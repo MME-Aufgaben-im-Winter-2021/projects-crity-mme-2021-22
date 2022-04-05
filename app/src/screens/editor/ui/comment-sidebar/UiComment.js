@@ -2,7 +2,7 @@ import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { accountSession, LoginState } from "../../../../common/model/AccountSession.js";
 
 class UiComment {
-    constructor(comment, parent, versionComment) {
+    constructor(comment, parent, versionComment, editorScreen) {
         this.parent = parent;
         this.versionComment = versionComment;
         this.comment = comment;
@@ -18,6 +18,10 @@ class UiComment {
 
         this.comments = this.el.querySelector(".thread-comments");
         this.comments.style.display = "none";
+
+        if(!editorScreen.authorMode){
+            this.el.querySelector(".checkbox-div").classList.toggle("hidden");
+        }
 
         this.vote = this.el.querySelector(".thread-like");
         this.vote.addEventListener("click", () => this.voteClicked());
