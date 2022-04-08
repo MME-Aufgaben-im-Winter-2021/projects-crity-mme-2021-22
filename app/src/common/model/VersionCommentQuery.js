@@ -21,6 +21,7 @@ class VersionCommentQuery {
         this.subscribeToCommentsVersionCollections();
         this.subscribeToThreadCommentsCollection();
 
+        console.log("Created Query " + version);
         this.pFetch();
     }
     

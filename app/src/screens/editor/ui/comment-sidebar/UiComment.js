@@ -7,6 +7,7 @@ class UiComment {
         this.versionComment = versionComment;
         this.comment = comment;
 
+        console.log("Received version " + versionComment.version);
         this.el = cloneDomTemplate("#thread-template");
         this.mainPanel =this.el.querySelector(".thread-main-panel");
 
@@ -19,8 +20,18 @@ class UiComment {
         this.comments = this.el.querySelector(".thread-comments");
         this.comments.style.display = "none";
 
+        this.checkbox = this.el.querySelector(".checkbox");
+        this.checkboxDiv = this.el.querySelector(".checkbox-div");
+        this.checkbox.addEventListener("change", () => this.checkboxChanged());
+
         if(!editorScreen.authorMode){
-            this.el.querySelector(".checkbox-div").classList.toggle("hidden");
+            this.checkboxDiv.classList.toggle("hidden");
+        }else{
+            for(let i = 0; i < versionComment.version.commentsChecked.length; i++){
+                if(versionComment.version.commentsChecked[i] === versionComment.id){
+                    this.checkbox.checked = true;
+                }
+            }
         }
 
         this.vote = this.el.querySelector(".thread-like");
@@ -40,6 +51,10 @@ class UiComment {
         this.voted = false;
         this.checkForVotes(comment);
         this.addComments(comment);
+    }
+
+    checkboxChanged() {
+        this.versionComment.version.setCheckedArray(this.versionComment.id);
     }
 
     checkForVotes(comment) {

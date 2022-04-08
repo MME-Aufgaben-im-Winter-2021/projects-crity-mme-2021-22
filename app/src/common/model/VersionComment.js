@@ -38,6 +38,7 @@ class VersionComment extends Observable {
         this.uiComment = null;
 
         this.selected = false;
+        console.log("Version Comment " + version);
     }
 
     static async fromAppwriteDocument(version, appwriteVersionComment) {
