@@ -7,7 +7,6 @@ class UiComment {
         this.versionComment = versionComment;
         this.comment = comment;
 
-        console.log("Received version " + versionComment.version);
         this.el = cloneDomTemplate("#thread-template");
         this.mainPanel =this.el.querySelector(".thread-main-panel");
 
@@ -24,6 +23,7 @@ class UiComment {
         this.checkboxDiv = this.el.querySelector(".checkbox-div");
         this.checkbox.addEventListener("change", () => this.checkboxChanged());
 
+        
         if(!editorScreen.authorMode){
             this.checkboxDiv.classList.toggle("hidden");
         }else{
@@ -33,11 +33,17 @@ class UiComment {
                 }
             }
         }
-
-        this.vote = this.el.querySelector(".thread-like");
-        this.vote.addEventListener("click", () => this.voteClicked());
+        
+        this.vote = this.el.querySelector(".thread-like");       
         this.voteFilled = this.el.querySelector(".thread-like-filled");
-        this.voteFilled.addEventListener("click", () => this.voteClicked());
+        
+
+        if(editorScreen.userId !== null) {
+            this.vote.addEventListener("click", () => this.voteClicked());
+            this.voteFilled.addEventListener("click", () => this.voteClicked());
+        }else{
+            this.vote.addEventListener("click", () => this.voteNoAccess());
+        }
 
         this.arrowUp = this.el.querySelector(".thread-arrow-up");
         this.arrowUp.addEventListener("click", () => this.clicked());
@@ -96,6 +102,15 @@ class UiComment {
             this.voted = true;
         }
         
+    }
+
+    voteNoAccess() {
+        let copyLinkAlert = document.querySelector(".id-copyLink-tooltip");
+        copyLinkAlert.textContent = "Not logged in!";
+        copyLinkAlert.classList.toggle("hidden");
+        setTimeout(function() {
+            copyLinkAlert.classList.toggle("hidden");
+        }, 2000);
     }
 
     votesChanged(newVotes) {

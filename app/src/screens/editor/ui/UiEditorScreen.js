@@ -73,10 +73,12 @@ class UiEditorScreen extends UiRestrictedScreen {
             text = appwritePresentation.title + " (Author)";
             this.timeline.setAuthorRestriction(true);
             this.authorMode = true;
+            this.userId = accountSession.pAccountId;
         }else{
             text = appwritePresentation.title;
             this.timeline.setAuthorRestriction(false);
             this.authorMode = false;
+            this.userId = accountSession.pAccountId;
         }
         this.navBarInfo.textContent = text;
     }
@@ -87,6 +89,7 @@ class UiEditorScreen extends UiRestrictedScreen {
         // TODO: Make this a custom popup (like we do with the presentation creation dialog).
         //alert("URL copied to clipboard!!!");
         let copyLinkAlert = document.querySelector(".id-copyLink-tooltip");
+        copyLinkAlert.textContent = " URL copied to clipboard!";
         copyLinkAlert.classList.toggle("hidden");
         setTimeout(function() {
             copyLinkAlert.classList.toggle("hidden");

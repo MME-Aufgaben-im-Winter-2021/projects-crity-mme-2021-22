@@ -43,7 +43,6 @@ class VersionList extends Observable {
                 presentation = presentationVersion.presentation,
                 commentsChecked = presentationVersion.commentsChecked,
                 version = new Version(label, pdfUrl, presentationVersion.$id, presentation, previousVersion, commentsChecked);
-                console.log("Received version " + i + version);
             
             this.versions.push(version);
         }
