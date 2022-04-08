@@ -10,6 +10,8 @@ class UiTimeline {
         this.addVersionButtonEl = screen.el.querySelector(".id-add-version-button");
         this.addVersionButtonEl.addEventListener("click", () => this.onAddButtonClicked());
 
+        this.authorContent = screen.el.querySelector(".author-timeline-data");
+
         // Hidden file input element, we only use this to open a file dialog box.
         this.fileInputEl = screen.el.querySelector(".id-file-input");
         this.fileInputEl.addEventListener("change", () => this.onFileSelectorConcluded());
@@ -36,7 +38,7 @@ class UiTimeline {
 
     setAuthorRestriction(isAuthor) {
         if(!isAuthor) {
-            this.addVersionButtonEl.style.display = "none";
+            this.authorContent.style.display = "none";
         }
     }
     

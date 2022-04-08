@@ -34,6 +34,8 @@ class UiEditorScreen extends UiRestrictedScreen {
         this.controlsTooltip = document.querySelector(".id-controls-tooltip");
         this.usernameTooltip = document.querySelector(".id-username-tooltip");
 
+        this.tooltipOpenButton = document.querySelector(".id-show-main-tooltip");
+        this.tooltipOpenButton.addEventListener("click", () => this.onTooltipOpen());
         
         if(this.getCookie() === "tooltip") {
             this.controlsTooltip.classList.toggle("hidden");
@@ -98,7 +100,13 @@ class UiEditorScreen extends UiRestrictedScreen {
 
     onTooltipButtonClose() {
         this.controlsTooltip.classList.toggle("hidden");
-        this.setCookie("tooltip", 100);
+        if(this.getCookie() !== "tooltip") {
+            this.setCookie("tooltip", 100);
+        }
+    }
+
+    onTooltipOpen() {
+        this.controlsTooltip.classList.toggle("hidden");
     }
 
     setCookie(value, days) {
