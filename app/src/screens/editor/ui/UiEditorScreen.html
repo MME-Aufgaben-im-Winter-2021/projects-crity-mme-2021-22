@@ -58,12 +58,34 @@
             </div>
 
             <div class="flex timeline-content h-3/5 w-full absolute bottom-0 bg-slate-900 bg-opacity-95">
-                <button
-                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-400 active:bg-slate-900"
-                >
-                    <input class="id-file-input" type="file" name="name" style="display: none" />
-                    <span class="label font-bold">Add Version</span>
-                </button>
+                <div class="flex flex-col items-center w-3/12 h-full p-5">
+                    <button
+                        class="id-add-version-button w-fit h-fit m-2 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-600 active:bg-slate-900"
+                    >
+                        <input class="id-file-input" type="file" name="name" style="display: none" />
+                        <span class="label font-bold">Add Version</span>
+                    </button>
+                    <span class="h-fit text-lg font-semibold text-white">Press the "Add Version"-Button to add a version of your presentation to:<span class="tooltip-whichVersion text-orange-500 text-2xl font-extrabold pl-2">ROOT</span></span>
+                    <button class="id-show-timeline-tooltip rounded-md p-1 mt-7 mb-1 bg-slate-400 hover:bg-slate-600 text-white font-bold">Tooltip</button>
+                    <div class="tooltip-timeline overflow-y-scroll hidden">
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">1</span>
+                            <span class="text-white text-lg font-semibold">Move version-tree with Left-Mouse-Button + Resize with Scroll-Wheel</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">2</span>
+                            <span class="text-white text-lg font-semibold">The opened version has a squared border</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">3</span>
+                            <span class="text-white text-lg font-semibold">Version-Selection as parent by Left-Mouse-Button clicking them. Clicking no version sets root as parent</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">4</span>
+                            <span class="text-white text-lg font-semibold">Double-Left-Mouse-Button click a version to open it</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="grow relative">
                     <div class="w-full h-full absolute" id="mynetwork"></div>
                 </div>

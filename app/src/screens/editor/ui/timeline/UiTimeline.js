@@ -25,6 +25,10 @@ class UiTimeline {
         this.arrowUp = document.querySelector(".timeline-arrow-up");
         this.arrowDown = document.querySelector(".timeline-arrow-down");
 
+        this.timelineTooltip = screen.el.querySelector(".tooltip-timeline");
+        this.timelineTooltipButton = screen.el.querySelector(".id-show-timeline-tooltip");
+        this.timelineTooltipButton.addEventListener("click", () => this.timelineTooltipButtonClicked());
+
         this.versions = [];
         this.selectedVersion = null;
         this.graph = new UiTimelineGraph(this);
@@ -38,6 +42,11 @@ class UiTimeline {
     
     nodeSelected(nodeId) {
         this.selectedVersion = nodeId;
+        let val = "ROOT";
+        if(nodeId !== null) {
+            val = this.versions.find(x => x.appwriteId === nodeId).label;
+        }
+        document.querySelector(".tooltip-whichVersion").textContent = val;
     }
 
     nodeDoubleClicked(nodeId) {
@@ -56,6 +65,10 @@ class UiTimeline {
             this.arrowUp.classList.remove("hidden");
             this.arrowDown.classList.add("hidden");
         }
+    }
+
+    timelineTooltipButtonClicked() {
+        this.timelineTooltip.classList.toggle("hidden");
     }
 
     terminate() {
