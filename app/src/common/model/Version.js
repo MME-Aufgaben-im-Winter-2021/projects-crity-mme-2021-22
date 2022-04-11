@@ -26,7 +26,7 @@ class Version {
             "presentationVersions",
             this.appwriteId,
             {commentsChecked: this.commentsChecked},
-        )
+        );
     }
 }
 

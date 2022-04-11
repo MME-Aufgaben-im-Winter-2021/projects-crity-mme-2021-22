@@ -69,8 +69,8 @@ class UiEditorScreen extends UiRestrictedScreen {
     }
 
     async setUpUserRelatedData() {
-        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation);
-        let text;
+        let appwritePresentation = await appwrite.database.getDocument("presentations", this.screenParameters.presentation),
+            text;
         if(appwritePresentation.author === accountSession.pAccountId) {
             text = appwritePresentation.title + " (Author)";
             this.timeline.setAuthorRestriction(true);
