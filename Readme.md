@@ -1,4 +1,4 @@
-# Projekt Crity
+# Projekt: Crity
 
 Die aktuelle _Release_-Version dieses Projekts kann unter: https://crity.software-engineering.education aufgerufen werden.
 
