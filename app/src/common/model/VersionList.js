@@ -40,8 +40,10 @@ class VersionList extends Observable {
                 storageFileId = presentationVersion.storageFile,
                 pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
                 previousVersion = presentationVersion.previous,
-                version = new Version(label, pdfUrl, presentationVersion.$id, previousVersion);
-
+                presentation = presentationVersion.presentation,
+                commentsChecked = presentationVersion.commentsChecked,
+                version = new Version(label, pdfUrl, presentationVersion.$id, presentation, previousVersion, commentsChecked);
+            
             this.versions.push(version);
         }
     }
@@ -52,10 +54,14 @@ class VersionList extends Observable {
                 file, 
                 ["role:all"], 
                 ["role:all"]),
-            appwriteVersion = await appwrite.database.createDocument("presentationVersions", "unique()", {label, storageFile: storageFile.$id, presentation: presentationId, previous}),
+            appwriteVersion = await appwrite.database.createDocument(
+                "presentationVersions", 
+                "unique()", 
+                {label, storageFile: storageFile.$id, presentation: presentationId, previous},
+            ),
             storageFileId = storageFile.$id,
             pdfUrl = await appwrite.storage.getFileDownload(storageFileId),
-            version = new Version(label, pdfUrl, appwriteVersion.$id, previous);
+            version = new Version(label, pdfUrl, appwriteVersion.$id, presentationId, previous, []);
 
         this.versions.push(version);
 

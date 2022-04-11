@@ -1,57 +1,97 @@
 <template id="editor-screen-template">
     <div class="flex h-full flex-col main-screen">
-        <div class="tooltip-container absolute h-4/5 w-screen p-32 z-10">
-            <div class="bg-slate-600 w-full h-full p-5 rounded-lg border-4 border-slate-200">
+        <div class="tooltip-container pointer-events-none absolute flex flex-col items-center h-4/5 w-screen z-10">
+            <div class="right-0 m-3 pointer-events-auto">
+                <button class="id-show-main-tooltip rounded-md p-1 bg-slate-400 hover:bg-slate-800 text-white font-bold">Tooltip</button>
+            </div>
+            <!-- ControlsTooltip -->
+            <div class="id-controls-tooltip pointer-events-auto bg-slate-600 w-4/5 h-fit p-5 rounded-lg border-4 border-slate-200">
                 <div class="flex flex-col h-full justify-between items-center">
                     <div class="flex flex-col items-center">
                         <span class="text-4xl font-bold text-white mb-2">Welcome to our Crity Feedback-Loop-App</span>
                         <span class="text-xl font-bold text-white">Here we gonna show you the basic controls of our app!</span>
-
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="text-xl font-bold text-white">The PDF-Editor:</span>
-                        <div class="flex flex-row flex-wrap w-full items-center justify-around"> 
-                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Middle-Mouse-Button pressed</span>(Move the PFD)</span>
-                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Scrollwheel</span>(Scale the PDF)</span>
-                            <span class="ml-1 text-lg font-medium text-white"><span class="ml-5 text-lg font-bold text-orange-500 underline">Left-Mouse-Button</span>(Add a thread)</span>
+                        <span class="text-xl font-bold text-white border-2 rounded-lg border-white p-1 mt-2">The PDF-Editor:</span>
+                        <div class="flex flex-col flex-wrap items-left"> 
+                            <span class="ml-1 text-lg font-medium text-white px-2"><span class="ml-5 text-lg font-bold text-orange-500 underline mr-2">Left-Mouse-Button on PDF</span>(Add a comment/review referencing the specific point on the PDF)</span>
+                            <span class="ml-1 text-lg font-medium text-white px-2"><span class="ml-5 text-lg font-bold text-orange-500 underline mr-2">Middle-Mouse-Button pressed</span>(Move the PFD)</span>
+                            <span class="ml-1 text-lg font-medium text-white px-2"><span class="ml-5 text-lg font-bold text-orange-500 underline mr-2">Scrollwheel</span>(Scale the PDF)</span>
                         </div>
-
                     </div>
+                    
                     <div class="flex flex-col items-center">
-                        <span class="text-xl font-bold text-white">The Version-Timeline:</span>
-                        <div class="flex flex-row flex-wrap items-center"> 
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Button-pressed</span>(Move the versiontree)</span>
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Scrollwheel</span>(Scale the versiontree)</span>
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white no-underline">Left-Mouse-Button</span>(Select a node to add a version with the AddVersion-Button)</span>
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Button-Doubleclick</span>(Open a version)</span>
+                        <span class="text-xl font-bold text-white border-2 rounded-lg border-white p-1 mt-2">The Chat-System:</span>
+                        <div class="flex flex-col flex-wrap items-left"> 
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">Left-Mouse-Click-Arrow</span>(Opens Comment and allows discussing the comment)</span>
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">Left-Mouse-Click-Like</span>(Like thread)</span>
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">Refresh-Page</span>(Sort threads by like an update likes)</span>
                         </div>
-
                     </div>
+
                     <div class="flex flex-col items-center">
-                        <span class="text-xl font-bold text-white">The Thread-System:</span>
-                        <div class="flex flex-row flex-wrap items-center"> 
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Click-Arrow</span>(Open thread)</span>
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white underline">Left-Mouse-Click-Like</span>(Like thread)</span>
-                            <span class="ml-5 text-lg font-bold text-orange-500"><span class="ml-1 text-lg font-medium text-white no-underline">Refresh-Page</span>(Sort threads by like an update likes)</span>
+                        <span class="text-xl font-bold text-white border-2 rounded-lg border-white p-1 mt-2">Being the author:</span>
+                        <div class="flex flex-col flex-wrap items-left"> 
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">Comments</span>(You can check the comments, if you already worked on them)</span>
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">Timeline</span>(You can add versions to the project)</span>
+                            <span class="ml-5 text-lg font-bold text-white px-2"><span class="ml-1 text-lg font-medium text-orange-500 underline mr-2">What to do now?</span>(Add a version of your PDF, copy the link and send it to your reviewers)</span>
                         </div>
-
                     </div>
-                    <button class="close-tooltip-button bg-slate-400 top-0 right-0 p-1 border-2 rounded-xl">Close Tooltip</button>
+                    <button class="close-tooltip-button bg-slate-400 top-0 right-0 p-1 border-2  mt-2 rounded-xl">Close Tooltip</button>
                 </div>
             </div>
+            <!-- Username -->
+            <div class="id-username-tooltip pointer-events-auto bg-slate-600 flex flex-col items-center w-1/5 h-1/6 m-5 pt-2 rounded-lg border-4 border-slate-200">
+                <span class="text-xl font-bold text-white pb-2">Please insert a display name:</span>
+                <input
+                    class="id-display-name w-3/5 rounded py-2 pr-12 pl-5 focus:outline-none"
+                    type="text"
+                    placeholder="Name"
+                />
+                <span class="text-lg font-bold text-white pb-2">and close with Enter!</span>
+            </div>
+            <!-- CopyLinkPopUp -->
+            <div class="id-copyLink-tooltip text-center bg-slate-800 items-center w-1/5 m-5 p-2 rounded-lg border-4 border-slate-200 text-xl font-bold text-white hidden">
+                URL copied to clipboard!
+            </div>
         </div>
+
         <!-- view layers -->
         <div class="flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden relative">
             <div class="id-main-container flex w-screen flex-auto grow flex-row justify-between overflow-y-hidden ">
             </div>
 
             <div class="flex timeline-content h-3/5 w-full absolute bottom-0 bg-slate-900 bg-opacity-95">
-                <button
-                    class="id-add-version-button w-fit h-fit m-5 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-400 active:bg-slate-900"
-                >
-                    <input class="id-file-input" type="file" name="name" style="display: none" />
-                    <span class="label font-bold">Add Version</span>
-                </button>
+                <div class="flex flex-col items-center w-3/12 h-full p-5">
+                    <div class="author-timeline-data flex flex-col items-center">
+                        <button
+                            class="id-add-version-button w-fit h-fit m-2 selected:bg-amber-500 selected:text-black rounded-xl bg-slate-400 p-4 text-white hover:bg-slate-600 active:bg-slate-900"
+                        >
+                            <input class="id-file-input" type="file" name="name" style="display: none" />
+                            <span class="label font-bold">Add Version</span>
+                        </button>
+                        <span class="h-fit text-lg font-semibold text-white">Press the "Add Version"-Button to add a version of your presentation to:<span class="tooltip-whichVersion text-orange-500 text-2xl font-extrabold pl-2">ROOT</span></span>
+                    </div>
+                    <button class="id-show-timeline-tooltip rounded-md p-1 mt-7 mb-1 bg-slate-400 hover:bg-slate-600 text-white font-bold">Tooltip</button>
+                    <div class="tooltip-timeline overflow-y-scroll hidden">
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">1</span>
+                            <span class="text-white text-lg font-semibold">Move version-tree with Left-Mouse-Button + Resize with Scroll-Wheel</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">2</span>
+                            <span class="text-white text-lg font-semibold">The opened version has a squared border</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">3</span>
+                            <span class="text-white text-lg font-semibold">Version-Selection as parent by Left-Mouse-Button clicking them. Clicking no version sets root as parent</span>
+                        </div>
+                        <div class="flex flex-row">
+                            <span class="text-white text-lg font-semibold border-2 rounded-full p-1 m-1 border-white">4</span>
+                            <span class="text-white text-lg font-semibold">Double-Left-Mouse-Button click a version to open it</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="grow relative">
                     <div class="w-full h-full absolute" id="mynetwork"></div>
                 </div>
@@ -198,13 +238,6 @@
             <div class="flex flex-row justify-between bg-slate-600 p-2">
                 <span class="font-semibold text-lg text-white comment-editor-text"></span>
                 <button class="id-quit-editing-button font-semibold border-2 px-2 border-black rounded-lg text-lg bg-slate-800 text-white">X</button>
-            </div>
-            <div class="p-2">
-                <input
-                    class="id-name-input w-3/5 rounded py-2 pr-12 pl-5 focus:outline-none"
-                    type="text"
-                    placeholder="Name"
-                />
             </div>
             <div class="p-2">
                 <!-- TODO: Make this a multi-line input field -->

@@ -2,7 +2,7 @@ import { cloneDomTemplate } from "../../../../common/ui/dom-utils.js";
 import { accountSession, LoginState } from "../../../../common/model/AccountSession.js";
 
 class UiComment {
-    constructor(comment, parent, versionComment) {
+    constructor(comment, parent, versionComment, editorScreen) {
         this.parent = parent;
         this.versionComment = versionComment;
         this.comment = comment;
@@ -19,10 +19,31 @@ class UiComment {
         this.comments = this.el.querySelector(".thread-comments");
         this.comments.style.display = "none";
 
-        this.vote = this.el.querySelector(".thread-like");
-        this.vote.addEventListener("click", () => this.voteClicked());
+        this.checkbox = this.el.querySelector(".checkbox");
+        this.checkboxDiv = this.el.querySelector(".checkbox-div");
+        this.checkbox.addEventListener("change", () => this.checkboxChanged());
+
+        
+        if(!editorScreen.authorMode){
+            this.checkboxDiv.classList.toggle("hidden");
+        }else{
+            for(let i = 0; i < versionComment.version.commentsChecked.length; i++){
+                if(versionComment.version.commentsChecked[i] === versionComment.id){
+                    this.checkbox.checked = true;
+                }
+            }
+        }
+        
+        this.vote = this.el.querySelector(".thread-like");       
         this.voteFilled = this.el.querySelector(".thread-like-filled");
-        this.voteFilled.addEventListener("click", () => this.voteClicked());
+        
+
+        if(editorScreen.userId !== null) {
+            this.vote.addEventListener("click", () => this.voteClicked());
+            this.voteFilled.addEventListener("click", () => this.voteClicked());
+        }else{
+            this.vote.addEventListener("click", () => this.voteNoAccess());
+        }
 
         this.arrowUp = this.el.querySelector(".thread-arrow-up");
         this.arrowUp.addEventListener("click", () => this.clicked());
@@ -36,6 +57,10 @@ class UiComment {
         this.voted = false;
         this.checkForVotes(comment);
         this.addComments(comment);
+    }
+
+    checkboxChanged() {
+        this.versionComment.version.setCheckedArray(this.versionComment.id);
     }
 
     checkForVotes(comment) {
@@ -77,6 +102,15 @@ class UiComment {
             this.voted = true;
         }
         
+    }
+
+    voteNoAccess() {
+        let copyLinkAlert = document.querySelector(".id-copyLink-tooltip");
+        copyLinkAlert.textContent = "Not logged in!";
+        copyLinkAlert.classList.toggle("hidden");
+        setTimeout(function() {
+            copyLinkAlert.classList.toggle("hidden");
+        }, 2000);
     }
 
     votesChanged(newVotes) {

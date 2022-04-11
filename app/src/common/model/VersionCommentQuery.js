@@ -61,7 +61,6 @@ class VersionCommentQuery {
     }
 
     async onThreadCollectionChanged(response) {
-        console.log(this.versionCommentsNormalArray.length);
         this.versionCommentsNormalArray.find(obj => { 
             return obj.id === response.payload.commentId;
         }).commentUpdate(response.payload);

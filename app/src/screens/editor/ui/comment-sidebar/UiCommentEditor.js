@@ -2,13 +2,14 @@ import { data } from "../../model/data.js";
 import { Listener } from "../../../../common/model/Observable.js";
 import { EditorCommentEditing } from "../../model/EditorCommentEditing.js";
 import { KeyCodes } from "../../../../common/ui/dom-utils.js";
+import { accountSession } from "../../../../common/model/AccountSession.js";
 
 class UiCommentEditor {
     constructor(screen) {
         this.listener = new Listener();
         this.el = screen.el.querySelector(".id-comment-editor");
 
-        this.nameInputFieldEl = screen.el.querySelector(".id-name-input");
+        this.nameInputFieldEl = screen.el.querySelector(".id-user-name");
 
         this.quitEditingButtonEl = screen.el.querySelector(".id-quit-editing-button");
         this.quitEditingButtonEl.addEventListener("click", () => this.onQuitEditingButtonClicked());
@@ -32,7 +33,7 @@ class UiCommentEditor {
         if (visible) {
             this.el.style = "";
             this.quitEditingButtonEl.style = "";
-            this.commentEditorText.textContent = "Add Thread";
+            this.commentEditorText.textContent = "Add Comment";
             
         } else {
             this.el.style = "display: none";
@@ -40,7 +41,7 @@ class UiCommentEditor {
     }
 
     onKeyDown(e) {
-        if(this.commentEditorText.textContent !== "Add Thread") {
+        if(this.commentEditorText.textContent !== "Add Comment") {
             return;
         }
         if(e.keyCode !== KeyCodes.ENTER) {
@@ -50,7 +51,7 @@ class UiCommentEditor {
         // TODO: (Why) do we need this?
         e.preventDefault();
         
-        data.commentEditing.editedVersionComment.comment.author = this.nameInputFieldEl.value;
+        data.commentEditing.editedVersionComment.comment.author = accountSession.pAccountName;
         data.commentEditing.editedVersionComment.comment.text = this.commentInputFieldEl.value;
         this.commentInputFieldEl.value = "";
 

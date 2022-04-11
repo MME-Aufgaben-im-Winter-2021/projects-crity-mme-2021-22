@@ -12,12 +12,12 @@ import { VersionPdf } from "../../../common/model/VersionPdf.js";
 // - a load screen gets shown while it gets loaded (UiLoadingVersion).
 
 class UiLoadedVersion {
-    constructor() {
+    constructor(editorScreen) {
         this.el = cloneDomTemplate("#editor-loaded-version");
 
         this.thumbnailBar = new UiThumbnailBar(this);
         this.contentCenter = new UiContentCenter(this);
-        this.rightSideBar = new UiRightSidebar(this);
+        this.rightSideBar = new UiRightSidebar(this, editorScreen);
     }
 
     terminate() {
@@ -41,6 +41,7 @@ class UiLoadingVersion {
 
 class UiEditorMainContainer {
     constructor(screen) {
+        this.editorScreen = screen;
         this.el = screen.el.querySelector(".id-main-container");
 
         this.listener = new Listener();
@@ -63,7 +64,7 @@ class UiEditorMainContainer {
     }
 
     onPdfLoaded() {
-        this.setContent(new UiLoadedVersion());
+        this.setContent(new UiLoadedVersion(this.editorScreen));
     }
 
     terminate() {
